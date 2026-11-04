@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %}Flick Reports — Admin{% endblock %}
+{% block content %}
+<div style="max-width:900px;margin:32px auto;padding:0 16px 60px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px">
+    <div>
+      <h1 style="font-size:20px;font-weight:900;color:#111;margin:0 0 4px"><i class="fas fa-flag" style="color:#ef4444"></i> Flick Reports</h1>
+      <p style="font-size:13px;color:#888;margin:0">{{ pending_count }} pending report{{ pending_count|pluralize }}</p>
+    </div>
+    <a href="/super-admin/flicks/" style="font-size:13px;color:#0a66c2;font-weight:700"><i class="fas fa-arrow-left"></i> Back to Flicks</a>
+  </div>
+
+  <!-- Filter tabs -->
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+    {% for s,label in 'pending:Pending,reviewed:Reviewed,dismissed:Dismissed'|cut:''|truncatechars:0|default:'x'|slice:':0' %}{% endfor %}
+    <a href="?status=pending" style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;
+      {% if status_filter == 'pending' %}background:#ef4444;color:#fff{% else %}background:#f3f4f6;color:#444{% endif %}">
+      Pending
+    </a>
+    <a href="?status=reviewed" style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;
+      {% if status_filter == 'reviewed' %}background:#0a66c2;color:#fff{% else %}background:#f3f4f6;color:#444{% endif %}">
+      Reviewed
+    </a>
+    <a href="?status=dismissed" style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;
+      {% if status_filter == 'dismissed' %}background:#6b7280;color:#fff{% else %}background:#f3f4f6;color:#444{% endif %}">
+      Dismissed
+    </a>
+    <a href="?status=" style="padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;
+      {% if not status_filter %}background:#111;color:#fff{% else %}background:#f3f4f6;color:#444{% endif %}">
+      All
+    </a>
+  </div>
+
+  {% if reports %}
+  <div style="display:flex;flex-direction:column;gap:14px">
+    {% for report in reports %}
+    <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);
+      border-left:4px solid {% if report.status == 'pending' %}#ef4444{% elif report.status == 'reviewed' %}#0a66c2{% else %}#9ca3af{% endif %}">
+
+      <div style="display:flex;align-items:stretch;gap:0">
+
+        <!-- Flick thumbnail -->
+        <div style="width:90px;flex-shrink:0;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden">
+          {% if report.flick.image %}
+            <img src="{{ report.flick.image.url }}" style="width:90px;height:90px;object-fit:cover;display:block">
+          {% elif report.flick.video %}
+            <i class="fas fa-video" style="font-size:24px;color:#555"></i>
+          {% else %}
+            <i class="fas fa-photo-video" style="font-size:24px;color:#555"></i>
+          {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div style="flex:1;padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:800;padding:3px 10px;border-radius:20px;
+              {% if report.status == 'pending' %}background:#fee2e2;color:#991b1b
+              {% elif report.status == 'reviewed' %}background:#dbeafe;color:#1e40af
+              {% else %}background:#f3f4f6;color:#6b7280{% endif %}">
+              {{ report.get_status_display }}
+            </span>
+            <span style="font-size:12px;font-weight:700;background:#fff3cd;color:#856404;padding:3px 10px;border-radius:20px">
+              <i class="fas fa-flag" style="color:#ef4444"></i> {{ report.get_reason_display }}
+            </span>
+          </div>
+
+          <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:2px">
+            Flick by: <span style="color:#0a66c2">{{ report.flick.user.get_full_name|default:report.flick.user.phone }}</span>
+            {% if report.flick.title %} — "{{ report.flick.title }}"{% endif %}
+          </div>
+          <div style="font-size:12px;color:#666;margin-bottom:4px">
+            Reported by: <strong>{{ report.user.get_full_name|default:report.user.phone }}</strong> · {{ report.created_at|date:"d M Y, h:i A" }}
+          </div>
+          {% if report.note %}
+          <div style="font-size:12px;color:#374151;background:#f9fafb;border-radius:8px;padding:6px 10px;margin-top:4px;border-left:3px solid #ef4444">
+            "{{ report.note }}"
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:8px;padding:10px 14px;border-top:1px solid #f0f0f0;background:#fafafa;flex-wrap:wrap">
+        {% if report.status == 'pending' %}
+        <form method="POST" style="display:inline">
+          {% csrf_token %}
+          <input type="hidden" name="report_id" value="{{ report.pk }}">
+          <input type="hidden" name="action" value="delete_flick">
+          <button type="submit" onclick="return confirm('Delete this flick permanently?')"
+            style="padding:7px 16px;background:#ef4444;color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer">
+            <i class="fas fa-trash"></i> Delete Flick
+          </button>
+        </form>
+        <form method="POST" style="display:inline">
+          {% csrf_token %}
+          <input type="hidden" name="report_id" value="{{ report.pk }}">
+          <input type="hidden" name="action" value="reviewed">
+          <button type="submit"
+            style="padding:7px 16px;background:#0a66c2;color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer">
+            <i class="fas fa-check"></i> Mark Reviewed
+          </button>
+        </form>
+        <form method="POST" style="display:inline">
+          {% csrf_token %}
+          <input type="hidden" name="report_id" value="{{ report.pk }}">
+          <input type="hidden" name="action" value="dismiss">
+          <button type="submit"
+            style="padding:7px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer">
+            <i class="fas fa-times"></i> Dismiss
+          </button>
+        </form>
+        {% else %}
+        <span style="font-size:12px;color:#aaa;padding:7px 0">No actions available — already {{ report.get_status_display|lower }}.</span>
+        {% endif %}
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div style="text-align:center;padding:60px 20px;background:#fff;border-radius:16px;border:1.5px solid #e5e7eb">
+    <i class="fas fa-flag" style="font-size:40px;color:#e5e7eb;display:block;margin-bottom:12px"></i>
+    <h4 style="font-size:15px;font-weight:700;color:#444;margin-bottom:6px">No reports found</h4>
+    <p style="font-size:13px;color:#888">No {{ status_filter }} reports at the moment.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

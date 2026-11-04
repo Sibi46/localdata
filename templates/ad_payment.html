@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payment - {{ ad.title }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/advertiser.css' %}?v=2">{% endblock %}
+
+{% block content %}
+<div class="payment-page">
+  <div class="payment-card">
+    <div class="payment-header">
+      <i class="fas fa-lock"></i>
+      <h2>Secure Payment</h2>
+      <p style="color:#888;font-size:13px;margin-top:4px">Complete payment to activate your advertisement</p>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <p style="font-size:13px;font-weight:700;color:#444;margin-bottom:12px"><i class="fas fa-receipt"></i> Order Summary</p>
+      <div class="order-row">
+        <span class="order-label">Ad Type</span>
+        <span style="font-weight:600">{{ ad.package.get_ad_type_display }}</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Package</span>
+        <span>{{ ad.package.name }}</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Title</span>
+        <span>{{ ad.title }}</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Duration</span>
+        <span>{{ ad.package.duration_days }} days</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Amount</span>
+        <span>₹{{ payment.amount }}</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">GST (18%)</span>
+        <span>₹{{ payment.gst_amount }}</span>
+      </div>
+      <div class="order-row total">
+        <span>Total</span>
+        <span style="color:#0a66c2">₹{{ payment.total_amount }}</span>
+      </div>
+    </div>
+
+    <!-- Payment Method -->
+    <div class="payment-methods">
+      <h4><i class="fas fa-credit-card"></i> Choose Payment Method</h4>
+      <div class="method-options">
+        <div class="method-option selected" data-method="upi" onclick="selectMethod('upi', this)">
+          <i class="fas fa-mobile-alt"></i> UPI
+        </div>
+        <div class="method-option" data-method="card" onclick="selectMethod('card', this)">
+          <i class="far fa-credit-card"></i> Card
+        </div>
+        <div class="method-option" data-method="netbanking" onclick="selectMethod('netbanking', this)">
+          <i class="fas fa-university"></i> Net Banking
+        </div>
+      </div>
+    </div>
+
+    <div class="mock-note">
+      <i class="fas fa-info-circle" style="margin-top:1px;flex-shrink:0"></i>
+      <span><strong>Development Mode:</strong> This is a simulated payment. Click "Pay Now" to confirm. Integrate Razorpay / PayU for production.</span>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="method" id="paymentMethod" value="upi">
+      <button type="submit" class="pay-now-btn" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Processing...'">
+        <i class="fas fa-lock"></i> Pay ₹{{ payment.total_amount }} Now
+      </button>
+    </form>
+
+    <p style="text-align:center;font-size:12px;color:#aaa;margin-top:16px">
+      <i class="fas fa-shield-alt"></i> Secure 256-bit SSL Encrypted Payment
+    </p>
+  </div>
+</div>
+
+<script>
+function selectMethod(method, el) {
+  document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('paymentMethod').value = method;
+}
+</script>
+{% endblock %}

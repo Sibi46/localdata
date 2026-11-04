@@ -1,0 +1,59 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Search{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <div class="psec-title" style="margin-bottom:16px">🔍 Search</div>
+  <form method="get" style="display:flex;gap:10px;margin-bottom:24px">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search communities, events, causes..." class="pform-input" style="flex:1">
+    <button type="submit" class="pbtn pbtn-primary">Search</button>
+  </form>
+
+  {% if q %}
+  {% if results.communities %}
+  <div class="psec-header"><div class="psec-title">Communities</div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:24px">
+    {% for c in results.communities %}
+    <a href="/portal/c/{{ c.page_id }}/" class="pcard"><div class="pcard-body">
+      <div style="font-size:10px;font-family:monospace;color:#1d4ed8;font-weight:700">{{ c.page_id }}</div>
+      <div style="font-size:14px;font-weight:800;color:#0f172a;margin-top:2px">{{ c.name }}</div>
+      <div style="font-size:11px;color:#64748b">{{ c.purpose|truncatechars:60 }}</div>
+    </div></a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if results.causes %}
+  <div class="psec-header"><div class="psec-title">Causes</div></div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+    {% for c in results.causes %}
+    <a href="/portal/cause/{{ c.pk }}/" class="pcard"><div class="pcard-body" style="padding:12px 14px">
+      <div style="font-size:13px;font-weight:800;color:#0f172a">{{ c.name }}</div>
+      <div style="font-size:11px;color:#64748b">{{ c.community.name }} · {{ c.support_count }} supporters</div>
+    </div></a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+
+
+  {% if results.activities %}
+  <div class="psec-header"><div class="psec-title">Activities</div></div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+    {% for a in results.activities %}
+    <a href="/portal/activity/{{ a.pk }}/" class="pcard"><div class="pcard-body" style="padding:12px 14px">
+      <div style="font-size:13px;font-weight:800;color:#0f172a">{{ a.name }}</div>
+      <div style="font-size:11px;color:#64748b">{{ a.community.name }} · {{ a.date|date:"d M Y" }}</div>
+    </div></a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if not results %}
+  <div class="pempty"><div class="pempty-icon">🔍</div><div class="pempty-text">No results for "{{ q }}"</div></div>
+  {% endif %}
+
+  {% else %}
+  <div class="pempty"><div class="pempty-icon">🔍</div><div class="pempty-text">Type something to search</div></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Renew Ad — Local From{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:40px auto;padding:0 16px 80px">
+
+  <a href="/ads/my-ads/" style="font-size:13px;color:#0a66c2;text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-bottom:24px">
+    <i class="fas fa-arrow-left"></i> Back to My Ads
+  </a>
+
+  <!-- Ad info card -->
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;overflow:hidden;margin-bottom:24px;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px">
+      <img src="{{ ad.image.url }}" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:1.5px solid #e5e7eb">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#111">{{ ad.company_name }}</div>
+        {% if ad.expires_at %}
+        <div style="font-size:12px;color:#c62828;font-weight:700;margin-top:3px"><i class="fas fa-calendar-times"></i> Expired {{ ad.expires_at|date:"d M Y" }}</div>
+        {% endif %}
+        <div style="font-size:12px;color:#888;margin-top:2px">{{ ad.description|truncatechars:80 }}</div>
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div style="padding:12px 16px;border-radius:10px;margin-bottom:16px;background:#fce4ec;border-left:4px solid #c62828;color:#c62828;font-size:13px;font-weight:700">
+      <i class="fas fa-exclamation-circle"></i> {{ msg }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Renewal plan card -->
+  <div style="background:linear-gradient(135deg,#1a237e,#0a66c2);color:#fff;border-radius:16px;padding:24px;margin-bottom:24px;text-align:center">
+    <div style="font-size:13px;opacity:.8;margin-bottom:6px">Renewal Plan</div>
+    <div style="font-size:36px;font-weight:900;margin-bottom:4px">₹{{ settings.renewal_price }}</div>
+    <div style="font-size:14px;opacity:.85"><i class="fas fa-calendar-check"></i> {{ settings.renewal_days }} more days of active listing</div>
+  </div>
+
+  <!-- UPI section -->
+  {% if settings.upi_id %}
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:20px;margin-bottom:20px">
+    <div style="font-size:13px;color:#555;font-weight:700;margin-bottom:10px"><i class="fas fa-qrcode" style="color:#0a66c2"></i> Pay via UPI</div>
+    <div style="display:flex;align-items:center;gap:10px;background:#f0f9ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 16px">
+      <span id="upiId" style="font-size:16px;font-weight:800;color:#0a66c2;flex:1;word-break:break-all">{{ settings.upi_id }}</span>
+      <button type="button" onclick="copyUpi()" style="padding:7px 14px;background:#0a66c2;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">
+        <i class="fas fa-copy"></i> Copy
+      </button>
+    </div>
+    <div style="font-size:12px;color:#888;margin-top:10px"><i class="fas fa-info-circle"></i> Pay ₹{{ settings.renewal_price }} to the UPI ID above, then fill in the details below.</div>
+  </div>
+  {% else %}
+  <div style="background:#fff8e1;border:1.5px solid #fde68a;border-radius:12px;padding:16px;margin-bottom:20px;font-size:13px;color:#92400e;text-align:center">
+    <i class="fas fa-exclamation-triangle"></i> UPI ID not set. Please contact admin.
+  </div>
+  {% endif %}
+
+  <!-- Payment form -->
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:24px">
+    <div style="font-size:15px;font-weight:800;color:#111;margin-bottom:18px"><i class="fas fa-receipt" style="color:#f3a000"></i> Payment Details</div>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <label style="font-size:13px;font-weight:700;color:#333;display:block;margin-bottom:6px">Transaction ID / UTR Number <span style="color:#c62828">*</span></label>
+      <input type="text" name="transaction_id" placeholder="e.g. 4234987654321"
+        style="width:100%;padding:11px 14px;border:1.5px solid #d1d5db;border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:18px"
+        required>
+
+      <label style="font-size:13px;font-weight:700;color:#333;display:block;margin-bottom:6px">Payment Screenshot <span style="color:#c62828">*</span></label>
+      <div style="border:2px dashed #d1d5db;border-radius:10px;padding:24px;text-align:center;margin-bottom:18px;cursor:pointer;position:relative" onclick="document.getElementById('ssInput').click()">
+        <i class="fas fa-image" style="font-size:28px;color:#bbb;display:block;margin-bottom:8px"></i>
+        <div style="font-size:13px;color:#888">Tap to upload payment screenshot</div>
+        <div id="fileName" style="font-size:12px;color:#0a66c2;margin-top:8px;font-weight:700;display:none"></div>
+        <input id="ssInput" type="file" name="screenshot" accept="image/*" required
+          style="position:absolute;inset:0;opacity:0;cursor:pointer"
+          onchange="showName(this)">
+      </div>
+
+      <img id="ssPreview" style="display:none;width:100%;border-radius:10px;margin-bottom:18px;border:1.5px solid #e5e7eb;object-fit:contain;max-height:220px">
+
+      <button type="submit" style="width:100%;padding:14px;background:linear-gradient(135deg,#1a237e,#0a66c2);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer">
+        <i class="fas fa-paper-plane"></i> Submit Renewal Request
+      </button>
+      <div style="font-size:12px;color:#888;text-align:center;margin-top:10px">
+        Admin will verify your payment and extend your ad by 30 days.
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+function copyUpi() {
+  var t = document.getElementById('upiId').innerText;
+  navigator.clipboard.writeText(t).then(function() {
+    event.target.closest('button').innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(function(){ event.target.closest('button').innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000);
+  });
+}
+function showName(input) {
+  if (input.files && input.files[0]) {
+    document.getElementById('fileName').style.display = 'block';
+    document.getElementById('fileName').innerText = input.files[0].name;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = document.getElementById('ssPreview');
+      img.src = e.target.result;
+      img.style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

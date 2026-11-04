@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Advertise With Us — Local From{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── Hero ── */
+.ar-hero{background:linear-gradient(135deg,#0a66c2 0%,#003d82 100%);color:#fff;padding:64px 20px 52px;text-align:center}
+.ar-hero-inner{max-width:700px;margin:0 auto}
+.ar-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:600;margin-bottom:18px}
+.ar-hero h1{font-size:clamp(24px,4vw,38px);font-weight:900;line-height:1.2;margin-bottom:14px}
+.ar-hero>div>p{font-size:15px;opacity:.85;margin-bottom:34px}
+.ar-stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap}
+.ar-stats div strong{display:block;font-size:26px;font-weight:900}
+.ar-stats div span{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.6px}
+
+/* ── Sections ── */
+.ar-sec{padding:56px 20px}
+.ar-sec-alt{background:#f7f8fa}
+.ar-wrap{max-width:1080px;margin:0 auto}
+.ar-wrap-sm{max-width:660px;margin:0 auto}
+.ar-sec-hd{text-align:center;margin-bottom:38px}
+.ar-sec-hd h2{font-size:24px;font-weight:800;color:#111;margin-bottom:8px}
+.ar-sec-hd p{font-size:14px;color:#666}
+
+/* ── Ad Format Cards ── */
+.ar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.ar-card{background:#fff;border:1.5px solid #eaecf2;border-radius:14px;padding:22px;transition:all .2s}
+.ar-card:hover{border-color:#0a66c2;box-shadow:0 6px 24px rgba(10,102,194,.12);transform:translateY(-2px)}
+.ar-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.ar-card h4{font-size:15px;font-weight:700;color:#111;margin-bottom:7px}
+.ar-card p{font-size:13px;color:#666;line-height:1.6;margin-bottom:12px}
+.ar-badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700}
+
+/* ── Steps ── */
+.ar-steps{display:flex;align-items:flex-start;justify-content:center;gap:0;flex-wrap:wrap}
+.ar-step{text-align:center;flex:1;min-width:110px;max-width:180px}
+.ar-step-n{width:30px;height:30px;border-radius:50%;background:#0a66c2;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.ar-step-ic{width:58px;height:58px;border-radius:50%;background:#fff;border:2px solid #dde4f0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#0a66c2;margin:0 auto 12px;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.ar-step h4{font-size:14px;font-weight:700;color:#111;margin-bottom:5px}
+.ar-step p{font-size:12px;color:#888;padding:0 6px;line-height:1.5}
+.ar-line{flex-shrink:0;width:36px;height:2px;background:#d0dae8;margin-top:70px}
+
+/* ── Form Card ── */
+.ar-form-card{background:#fff;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.10);border:1px solid #eaecf2;overflow:hidden}
+.ar-form-hd{background:linear-gradient(135deg,#0a66c2,#004182);color:#fff;padding:26px 30px;display:flex;align-items:center;gap:16px}
+.ar-form-hd-icon{width:50px;height:50px;border-radius:13px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ar-form-hd h2{font-size:18px;font-weight:800;margin-bottom:3px}
+.ar-form-hd p{font-size:13px;opacity:.8;margin:0}
+.ar-form-body{padding:26px 30px 30px}
+.ar-grp-title{font-size:11px;font-weight:700;color:#0a66c2;text-transform:uppercase;letter-spacing:.7px;display:flex;align-items:center;gap:7px;padding-bottom:10px;border-bottom:2px solid #e8f0fe;margin-bottom:18px}
+.ar-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.ar-field{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.ar-field label{font-size:13px;font-weight:600;color:#374151}
+.ar-req{color:#ef4444}
+.ar-field input,.ar-field textarea,.ar-field select{padding:11px 14px;border:1.5px solid #dde1ea;border-radius:9px;font-size:14px;font-family:inherit;outline:none;background:#fafbfc;color:#111;transition:border-color .2s,box-shadow .2s;width:100%;box-sizing:border-box}
+.ar-field input:focus,.ar-field textarea:focus,.ar-field select:focus{border-color:#0a66c2;box-shadow:0 0 0 3px rgba(10,102,194,.10);background:#fff}
+.ar-field textarea{resize:vertical;min-height:85px}
+.ar-icon-wrap{position:relative}
+.ar-icon-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#bbb;font-size:14px;pointer-events:none}
+.ar-icon-wrap input{padding-left:36px}
+.ar-note{background:#f0f6ff;border:1px solid #c8ddf8;border-radius:9px;padding:12px 15px;font-size:13px;color:#1d4ed8;display:flex;align-items:flex-start;gap:9px;margin-top:4px}
+.ar-note i{margin-top:1px;flex-shrink:0}
+.ar-submit{width:100%;margin-top:22px;padding:14px;background:linear-gradient(135deg,#0a66c2,#004182);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .2s;box-shadow:0 4px 16px rgba(10,102,194,.28)}
+.ar-submit:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(10,102,194,.4)}
+.ar-alert{display:flex;align-items:center;gap:9px;padding:12px 18px;font-size:14px;border-radius:9px;margin:0 30px 16px}
+.ar-alert-success{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+.ar-alert-error{background:#fce4ec;color:#c62828;border:1px solid #ef9a9a}
+.ar-alert-info,.ar-alert-warning{background:#fff8e1;color:#f57f17;border:1px solid #ffe082}
+.ar-account-strip{display:flex;align-items:center;gap:14px;background:#e8f5e9;border-bottom:1px solid #c8e6c9;padding:14px 24px;color:#2e7d32;font-size:13px}
+.ar-account-strip i{font-size:22px;flex-shrink:0}
+.ar-account-strip strong{display:block;font-size:14px;font-weight:700}
+.ar-account-strip span{color:#555;font-size:12px}
+.ar-upload-area{border:2px dashed #c8d8fb;border-radius:10px;padding:22px 16px;text-align:center;cursor:pointer;background:#f8fbff;transition:all .2s;color:#5a7bbd}
+.ar-upload-area:hover{border-color:#0a66c2;background:#eef4ff}
+.ar-upload-area i{font-size:28px;display:block;margin-bottom:6px;color:#0a66c2}
+.ar-upload-area p{font-size:13px;font-weight:600;margin:0 0 2px}
+.ar-upload-area small{font-size:11px;color:#999}
+.ar-img-preview{max-width:100%;max-height:160px;border-radius:8px;object-fit:cover;margin-top:10px;display:none}
+
+@media(max-width:600px){
+  .ar-row{grid-template-columns:1fr}
+  .ar-form-hd{flex-direction:column;text-align:center;padding:20px}
+  .ar-form-body{padding:20px}
+  .ar-steps{flex-direction:column;align-items:center}
+  .ar-line{width:2px;height:28px;margin:0 auto}
+  .ar-alert{margin:0 20px 14px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if recent_flicks %}
+<!-- ⚡ FLICKS — YouTube Shorts strip -->
+<div style="background:#0a0a0a;padding:20px 0 14px">
+  <div style="max-width:1080px;margin:0 auto;padding:0 16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px;font-weight:900;color:#fff">⚡ Flicks</span>
+        <span style="font-size:12px;color:rgba(255,255,255,.5);font-weight:500">See what employers &amp; job seekers are sharing</span>
+      </div>
+      <a href="/flicks/" style="font-size:12px;font-weight:700;color:#7c9eff;text-decoration:none">See all <i class="fas fa-chevron-right"></i></a>
+    </div>
+    <!-- Horizontal scroll strip -->
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;scrollbar-color:#333 transparent;-webkit-overflow-scrolling:touch">
+      {% for flick in recent_flicks %}
+      <div style="flex-shrink:0;width:120px;border-radius:12px;overflow:hidden;background:#1a1a1a;position:relative;cursor:pointer" onclick="advFsOpen({{ forloop.counter0 }})">
+        {% if flick.video %}
+        <video src="{{ flick.video.url }}" style="width:120px;height:214px;object-fit:cover;display:block" preload="metadata" muted playsinline></video>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;pointer-events:none"><i class="fas fa-play" style="color:#fff;font-size:12px;margin-left:2px"></i></div>
+        {% elif flick.image %}
+        <img src="{{ flick.image.url }}" style="width:120px;height:214px;object-fit:cover;display:block">
+        {% else %}
+        <div style="width:120px;height:214px;background:linear-gradient(135deg,#7c3aed,#0a66c2);display:flex;align-items:center;justify-content:center"><i class="fas fa-bolt" style="font-size:32px;color:rgba(255,255,255,.35)"></i></div>
+        {% endif %}
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:18px 7px 7px">
+          <div style="font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ flick.user.get_full_name|default:flick.user.username }}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;display:flex;align-items:center;gap:3px"><i class="fas fa-heart" style="font-size:8px;color:#ff4d6d"></i> {{ flick.like_count }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen viewer -->
+<div id="adv-fs" style="display:none;position:fixed;inset:0;background:#000;z-index:10000;touch-action:none">
+  <div style="position:absolute;top:0;left:0;right:0;padding:env(safe-area-inset-top,12px) 16px 28px;background:linear-gradient(rgba(0,0,0,.75),transparent);z-index:2;display:flex;align-items:center;gap:10px">
+    <div id="adv-avatar" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#0a66c2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0"></div>
+    <div style="flex:1"><div id="adv-name" style="font-size:13px;font-weight:800;color:#fff"></div><div id="adv-time" style="font-size:11px;color:rgba(255,255,255,.6)"></div></div>
+    <button onclick="advFsClose()" style="background:rgba(0,0,0,.45);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center"><i class="fas fa-times"></i></button>
+  </div>
+  <div id="adv-media" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden"></div>
+  <div onclick="advNav(-1)" style="position:absolute;left:0;top:0;bottom:0;width:35%;z-index:3;cursor:pointer"></div>
+  <div onclick="advNav(1)"  style="position:absolute;right:56px;top:0;bottom:0;width:calc(35% - 56px);z-index:3;cursor:pointer"></div>
+  <div style="position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;align-items:center;gap:22px;z-index:4">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <button id="adv-like-btn" onclick="advLike()" style="background:none;border:none;cursor:pointer;color:#fff;font-size:28px;padding:0;line-height:1"><i id="adv-like-icon" class="far fa-heart"></i></button>
+      <span id="adv-like-count" style="font-size:12px;font-weight:700;color:#fff">0</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <button onclick="advShare()" style="background:none;border:none;cursor:pointer;color:#fff;font-size:26px;padding:0;line-height:1"><i class="far fa-paper-plane"></i></button>
+      <span style="font-size:12px;font-weight:700;color:#fff">Share</span>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:0;left:0;right:60px;padding:60px 16px 28px;background:linear-gradient(transparent,rgba(0,0,0,.85));z-index:3">
+    <div id="adv-cap-name" style="font-size:14px;font-weight:800;color:#fff;margin-bottom:4px"></div>
+    <div id="adv-cap" style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;max-height:64px;overflow:hidden"></div>
+  </div>
+  <div id="adv-dots" style="position:absolute;top:env(safe-area-inset-top,12px);left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:5;padding-top:4px"></div>
+  <div id="adv-toast" style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.18);backdrop-filter:blur(8px);color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;white-space:nowrap">Link copied!</div>
+</div>
+
+<script>
+const _advcsrf = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+const _advFlicks = [
+  {% for flick in recent_flicks %}
+  { pk:{{ flick.pk }}, name:"{{ flick.user.get_full_name|default:flick.user.username|escapejs }}", initial:"{{ flick.user.first_name|first|upper }}", time:"{{ flick.created_at|timesince }} ago", video:"{% if flick.video %}{{ flick.video.url }}{% endif %}", image:"{% if flick.image %}{{ flick.image.url }}{% endif %}", title:"{{ flick.title|escapejs }}", caption:"{{ flick.caption|escapejs }}", likes:{{ flick.like_count }}, liked:{% if flick.pk in liked_ids %}true{% else %}false{% endif %} }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+let _advIdx = 0;
+
+function advFsOpen(i) { _advIdx = i; document.getElementById('adv-fs').style.display = 'block'; document.body.style.overflow = 'hidden'; advRender(); advDots(); }
+function advFsClose() { document.getElementById('adv-fs').style.display = 'none'; document.body.style.overflow = ''; document.getElementById('adv-media').querySelectorAll('video').forEach(v=>{v.pause();v.currentTime=0;}); }
+function advNav(d) { const n=_advIdx+d; if(n<0||n>=_advFlicks.length)return; document.getElementById('adv-media').querySelectorAll('video').forEach(v=>{v.pause();v.currentTime=0;}); _advIdx=n; advRender(); advUpdateDots(); }
+
+function advRender() {
+  const f=_advFlicks[_advIdx];
+  document.getElementById('adv-avatar').textContent=f.initial;
+  document.getElementById('adv-name').textContent=f.name;
+  document.getElementById('adv-time').textContent=f.time;
+  document.getElementById('adv-cap-name').textContent=f.name;
+  document.getElementById('adv-cap').textContent=f.title?(f.title+(f.caption?' · '+f.caption:'')):f.caption;
+  document.getElementById('adv-like-count').textContent=f.likes;
+  const ic=document.getElementById('adv-like-icon'); ic.className=f.liked?'fas fa-heart':'far fa-heart'; ic.style.color=f.liked?'#ff4d6d':'#fff';
+  const m=document.getElementById('adv-media'); m.innerHTML='';
+  if(f.video){const v=document.createElement('video');v.src=f.video;v.controls=true;v.autoplay=true;v.playsInline=true;v.style.cssText='width:100%;height:100%;object-fit:contain;max-height:100vh';m.appendChild(v);}
+  else if(f.image){const img=document.createElement('img');img.src=f.image;img.style.cssText='width:100%;height:100%;object-fit:contain;max-height:100vh';m.appendChild(img);}
+  else{m.innerHTML='<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg,#7c3aed,#0a66c2)"><i class="fas fa-bolt" style="font-size:80px;color:rgba(255,255,255,.3)"></i></div>';}
+}
+function advDots() {
+  const dots=document.getElementById('adv-dots'); dots.innerHTML='';
+  _advFlicks.forEach((_,i)=>{const d=document.createElement('div');d.style.cssText='width:'+(i===_advIdx?'20px':'6px')+';height:3px;border-radius:2px;background:'+(i===_advIdx?'#fff':'rgba(255,255,255,.4)')+';transition:all .2s';dots.appendChild(d);});
+}
+function advUpdateDots(){const dots=document.getElementById('adv-dots').children;for(let i=0;i<dots.length;i++){dots[i].style.width=i===_advIdx?'20px':'6px';dots[i].style.background=i===_advIdx?'#fff':'rgba(255,255,255,.4)';}}
+function advLike(){
+  {% if request.user.is_authenticated %}
+  const f=_advFlicks[_advIdx];
+  fetch('/flicks/'+f.pk+'/like/',{method:'POST',headers:{'X-CSRFToken':_advcsrf}}).then(r=>r.json()).then(d=>{
+    if(!d.success)return;f.liked=d.liked;f.likes=d.count;
+    document.getElementById('adv-like-count').textContent=d.count;
+    const ic=document.getElementById('adv-like-icon');ic.className=d.liked?'fas fa-heart':'far fa-heart';ic.style.color=d.liked?'#ff4d6d':'#fff';
+    if(d.liked){ic.style.transform='scale(1.4)';setTimeout(()=>ic.style.transform='scale(1)',300);}
+  });
+  {% else %}
+  window.location='/login/';
+  {% endif %}
+}
+function advShare(){
+  const f=_advFlicks[_advIdx];const url=window.location.origin+'/flicks/#fk-'+f.pk;
+  if(navigator.share){navigator.share({title:f.name+' on Local From',url}).catch(()=>{});}
+  else{navigator.clipboard.writeText(url).then(()=>{const t=document.getElementById('adv-toast');t.style.opacity='1';setTimeout(()=>t.style.opacity='0',2000);});}
+}
+let _advTsX=0;
+document.getElementById('adv-fs').addEventListener('touchstart',e=>{_advTsX=e.touches[0].clientX;},{passive:true});
+document.getElementById('adv-fs').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-_advTsX;if(Math.abs(dx)>50)advNav(dx<0?1:-1);},{passive:true});
+document.addEventListener('keydown',e=>{if(!document.getElementById('adv-fs').style.display||document.getElementById('adv-fs').style.display==='none')return;if(e.key==='Escape')advFsClose();if(e.key==='ArrowRight')advNav(1);if(e.key==='ArrowLeft')advNav(-1);});
+</script>
+{% endif %}
+
+<!-- REGISTRATION FORM -->
+<section class="ar-sec" id="register-form">
+  <div class="ar-wrap-sm">
+
+    <div class="ar-form-card">
+
+      <div class="ar-form-hd">
+        <div class="ar-form-hd-icon"><i class="fas fa-bullhorn"></i></div>
+        <div>
+          <h2>{% if reapply %}Re-apply as Advertiser{% else %}Register as Advertiser{% endif %}</h2>
+          <p>Our team will review and contact you within 24 hours</p>
+        </div>
+      </div>
+
+      {% if messages %}
+        {% for msg in messages %}
+        <div class="ar-alert ar-alert-{{ msg.tags }}" style="margin-top:20px">
+          <i class="fas fa-info-circle"></i> {{ msg }}
+        </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Logged-in account info strip -->
+      <div class="ar-account-strip">
+        <i class="fas fa-user-check"></i>
+        <div>
+          <strong>Posting as: {{ user.get_full_name|default:user.username }}</strong>
+          <span>{{ user.get_user_type_display }} &nbsp;·&nbsp; {{ user.phone }}</span>
+        </div>
+      </div>
+
+      {% if reapply and adv.rejection_note %}
+      <div style="background:#fce4ec;border:1.5px solid #f48fb1;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start">
+        <i class="fas fa-exclamation-circle" style="color:#c62828;margin-top:2px;flex-shrink:0"></i>
+        <div>
+          <strong style="color:#b71c1c">Rejection reason:</strong>
+          <span style="color:#c62828"> {{ adv.rejection_note }}</span>
+          <p style="margin:6px 0 0;font-size:13px;color:#880e4f">Please update your details below and re-submit for review.</p>
+        </div>
+      </div>
+      {% elif reapply %}
+      <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
+        <i class="fas fa-redo" style="color:#e65100"></i>
+        <span style="color:#bf360c">Your previous application was rejected. Update your details and re-submit.</span>
+      </div>
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data" class="ar-form-body">
+        {% csrf_token %}
+
+        <div class="ar-grp-title"><i class="fas fa-building"></i> Business Information</div>
+
+        <div class="ar-row">
+          <div class="ar-field">
+            <label>Business Name <span class="ar-req">*</span></label>
+            <input type="text" name="business_name" required placeholder="Company / Shop Name" value="{% if adv %}{{ adv.business_name }}{% elif user.company %}{{ user.company.company_name }}{% endif %}">
+          </div>
+          <div class="ar-field">
+            <label>Contact Person <span class="ar-req">*</span></label>
+            <input type="text" name="contact_person" required value="{% if adv %}{{ adv.contact_person }}{% else %}{{ user.get_full_name|default:user.username }}{% endif %}" placeholder="Owner / Manager Name">
+          </div>
+        </div>
+
+        <div class="ar-row">
+          <div class="ar-field">
+            <label>Phone Number <span class="ar-req">*</span></label>
+            <div class="ar-icon-wrap">
+              <i class="fas fa-phone"></i>
+              <input type="tel" name="phone" required maxlength="10" pattern="[6-9][0-9]{9}" value="{% if adv %}{{ adv.phone }}{% else %}{{ user.phone }}{% endif %}" placeholder="10-digit mobile">
+            </div>
+          </div>
+          <div class="ar-field">
+            <label>Email Address</label>
+            <div class="ar-icon-wrap">
+              <i class="fas fa-envelope"></i>
+              <input type="email" name="email" value="{% if adv %}{{ adv.email }}{% else %}{{ user.email }}{% endif %}" placeholder="business@email.com">
+            </div>
+          </div>
+        </div>
+
+        <div class="ar-field">
+          <label>Business Address <span class="ar-req">*</span></label>
+          <textarea name="address" required placeholder="Full address with city and PIN code">{% if adv %}{{ adv.address }}{% else %}{{ user.address }}{% endif %}</textarea>
+        </div>
+
+        <div class="ar-field">
+          <label>Business Description <span class="ar-req">*</span></label>
+          <textarea name="description" required rows="4" maxlength="500" placeholder="Tell us about your business — what you offer, your services, why customers should choose you… (minimum 30 words)" oninput="descCount(this)" style="resize:vertical">{% if adv %}{{ adv.description }}{% endif %}</textarea>
+          <div style="display:flex;justify-content:space-between;margin-top:3px">
+            <small id="descWordWarn" style="color:#e65100;font-weight:700;display:none"><i class="fas fa-exclamation-triangle"></i> Minimum 30 words required</small>
+            <small id="descCharCount" style="color:#aaa;font-weight:700;margin-left:auto">{% if adv %}{{ adv.description|length }}{% else %}0{% endif %} / 500 chars &nbsp;|&nbsp; <span id="descWordCount">{% if adv %}{{ adv.description.split|length }}{% else %}0{% endif %}</span> words</small>
+          </div>
+        </div>
+
+        <div class="ar-grp-title" style="margin-top:24px"><i class="fas fa-id-card"></i> Optional Details</div>
+
+        <div class="ar-row">
+          <div class="ar-field">
+            <label>GST Number</label>
+            <input type="text" name="gst" maxlength="15" placeholder="22AAAAA0000A1Z5" value="{% if adv %}{{ adv.gst }}{% endif %}">
+          </div>
+          <div class="ar-field">
+            <label>Website</label>
+            <div class="ar-icon-wrap">
+              <i class="fas fa-globe"></i>
+              <input type="url" name="website" placeholder="https://yourwebsite.com" value="{% if adv %}{{ adv.website }}{% endif %}">
+            </div>
+          </div>
+        </div>
+
+        <div class="ar-note">
+          <i class="fas fa-shield-alt"></i>
+          Your ad account will be linked to your existing employer login. No new password needed.
+        </div>
+
+        <button type="submit" class="ar-submit">
+          <i class="fas fa-paper-plane"></i> {% if reapply %}Re-submit Application{% else %}Submit Ad Registration{% endif %}
+        </button>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<script>
+function descCount(ta) {
+  const len = ta.value.length;
+  const words = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
+  document.getElementById('descWordCount').textContent = words;
+  const warn = document.getElementById('descWordWarn');
+  warn.style.display = words < 30 ? 'inline' : 'none';
+  const el = document.getElementById('descCharCount');
+  el.style.color = len > 450 ? '#e65100' : len > 300 ? '#f3a000' : '#aaa';
+}
+document.addEventListener('DOMContentLoaded', function(){
+  var form = document.querySelector('form.ar-form') || document.querySelector('form');
+  if(form) form.addEventListener('submit', function(e){
+    var ta = document.querySelector('textarea[name="description"]');
+    if(ta){
+      var words = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
+      if(words < 30){ e.preventDefault(); document.getElementById('descWordWarn').style.display='inline'; ta.focus(); }
+    }
+  });
+});
+function previewLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('arFileName').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('arImgPreview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('arUploadArea').style.borderColor = '#0a66c2';
+    document.getElementById('arUploadArea').style.background = '#eef4ff';
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+{% endblock %}

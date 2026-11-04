@@ -1,0 +1,134 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Members — {{ community.name }}{% endblock %}
+{% block content %}
+<style>
+.mm-wrap{max-width:960px;margin:0 auto}
+.mm-section-title{font-size:13px;font-weight:800;color:#0f172a;margin:22px 0 12px;display:flex;align-items:center;gap:8px}
+.mm-section-title span{background:#f1f5f9;border-radius:20px;padding:2px 10px;font-size:11px;color:#64748b;font-weight:700}
+.mm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.mm-card{background:#fff;border-radius:16px;border:1.5px solid #e2e8f0;overflow:hidden;transition:all .18s}
+.mm-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);border-color:#c7d2fe}
+.mm-card-top{height:56px;background:linear-gradient(135deg,#4f46e5,#7c3aed);position:relative}
+.mm-avatar{width:52px;height:52px;border-radius:50%;background:#fff;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#4f46e5;position:absolute;bottom:-22px;left:14px;overflow:hidden;flex-shrink:0}
+.mm-avatar img{width:100%;height:100%;object-fit:cover}
+.mm-card-body{padding:28px 14px 14px}
+.mm-name{font-size:13px;font-weight:800;color:#0f172a;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mm-pincode{font-size:11px;color:#64748b;margin-bottom:8px}
+.mm-role-badge{display:inline-block;background:#ede9fe;color:#4f46e5;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;margin-bottom:8px}
+.mm-divider{border:none;border-top:1px solid #f1f5f9;margin:10px 0}
+.mm-actions{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.mm-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.mm-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;text-decoration:none;transition:all .15s}
+.mm-tab.pending{border-color:#f97316;color:#f97316}.mm-tab.pending.on{background:#f97316;color:#fff}
+.mm-tab.approved{border-color:#059669;color:#059669}.mm-tab.approved.on{background:#059669;color:#fff}
+.mm-tab.rejected{border-color:#ef4444;color:#ef4444}.mm-tab.rejected.on{background:#ef4444;color:#fff}
+.mm-tab.removed{border-color:#ef4444;color:#ef4444}.mm-tab.removed.on{background:#ef4444;color:#fff}
+</style>
+
+<div class="mm-wrap">
+  <div class="psec-header">
+    <div>
+      <div class="psec-title">👥 Members</div>
+      <div class="psec-sub">{{ community.name }}</div>
+    </div>
+    {% if is_admin %}
+    <a href="/portal/c/{{ community.page_id }}/dashboard/" class="pbtn pbtn-outline pbtn-sm">← Dashboard</a>
+    {% else %}
+    <a href="/portal/c/{{ community.page_id }}/" class="pbtn pbtn-outline pbtn-sm">← Community</a>
+    {% endif %}
+  </div>
+
+  {% if is_admin %}
+  <div class="mm-tabs">
+    <a href="?status=pending"  class="mm-tab pending  {% if status_filter == 'pending'  %}on{% endif %}">⏳ Pending</a>
+    <a href="?status=approved" class="mm-tab approved {% if status_filter == 'approved' %}on{% endif %}">✅ Members</a>
+    <a href="?status=rejected" class="mm-tab rejected {% if status_filter == 'rejected' %}on{% endif %}">✕ Rejected</a>
+    <a href="?status=removed"  class="mm-tab removed  {% if status_filter == 'removed'  %}on{% endif %}">🗑 Removed</a>
+  </div>
+  {% endif %}
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div style="background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if is_admin and status_filter != 'approved' %}
+  {# Non-approved tabs: flat list #}
+  <div class="mm-grid">
+    {% for m in memberships %}
+    <div class="mm-card">
+      <div class="mm-card-top">
+        <div class="mm-avatar">
+          {% with p=m.user.seeker %}{% if p and p.photo %}<img src="{{ p.photo.url }}">{% else %}{{ m.user.get_full_name|default:m.user.username|first|upper }}{% endif %}{% endwith %}
+        </div>
+      </div>
+      <div class="mm-card-body">
+        <div class="mm-name">{{ m.user.get_full_name|default:m.user.username }}</div>
+        <div class="mm-pincode">{{ m.user.email }}</div>
+        {% if m.user.pincode %}<div class="mm-pincode">📍 {{ m.user.pincode }}</div>{% endif %}
+        <hr class="mm-divider">
+        <form method="post" class="mm-actions">
+          {% csrf_token %}
+          <input type="hidden" name="member_id" value="{{ m.pk }}">
+          {% if m.status == 'pending' %}
+            <button name="action" value="approve" class="pbtn pbtn-green pbtn-sm" style="flex:1">✓ Approve</button>
+            <button name="action" value="reject" class="pbtn pbtn-red pbtn-sm" style="flex:1">✕ Reject</button>
+          {% elif m.status == 'rejected' %}
+            <button name="action" value="approve" class="pbtn pbtn-green pbtn-sm" style="flex:1">Re-approve</button>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8;font-size:14px;font-weight:600">No {{ status_filter }} members</div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  {# Approved members — split into role sections #}
+
+  {# President #}
+  {% for m in memberships %}{% if m.current_role_key == 'president' %}
+  {% if forloop.first %}<div class="mm-section-title">👑 President</div><div class="mm-grid" style="margin-bottom:6px">{% endif %}
+  {% include 'portal/member_card_snippet.html' %}
+  {% if forloop.last %}</div>{% endif %}
+  {% endif %}{% endfor %}
+
+  {# Vice President #}
+  {% for m in memberships %}{% if m.current_role_key == 'vice_president' %}
+  {% if forloop.first %}<div class="mm-section-title">🥈 Vice President</div><div class="mm-grid" style="margin-bottom:6px">{% endif %}
+  {% include 'portal/member_card_snippet.html' %}
+  {% if forloop.last %}</div>{% endif %}
+  {% endif %}{% endfor %}
+
+  {# Other role holders #}
+  {% for m in memberships %}{% if m.current_role_key and m.current_role_key != 'president' and m.current_role_key != 'vice_president' %}
+  {% if forloop.first %}<div class="mm-section-title">⭐ Role Holders</div><div class="mm-grid" style="margin-bottom:6px">{% endif %}
+  {% include 'portal/member_card_snippet.html' %}
+  {% if forloop.last %}</div>{% endif %}
+  {% endif %}{% endfor %}
+
+  {# Regular members (no role) #}
+  {% for m in memberships %}{% if not m.current_role_key %}
+  {% if forloop.first %}<div class="mm-section-title">👤 Members</div><div class="mm-grid">{% endif %}
+  {% include 'portal/member_card_snippet.html' %}
+  {% if forloop.last %}</div>{% endif %}
+  {% endif %}{% endfor %}
+
+  {% if not memberships %}
+  <div style="text-align:center;padding:60px 20px;color:#94a3b8;font-size:14px;font-weight:600">No members yet</div>
+  {% endif %}
+
+  {% endif %}
+</div>
+
+<script>
+function toggleCustomRole(sel) {
+  var inp = sel.closest('form').querySelector('.custom-role-input');
+  if (!inp) return;
+  inp.style.display = sel.value === 'other' ? 'block' : 'none';
+  if (sel.value === 'other') inp.focus();
+}
+</script>
+{% endblock %}

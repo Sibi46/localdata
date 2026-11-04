@@ -1,0 +1,44 @@
+{% extends "admin_base.html" %}
+{% block title %}State Admin List{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-user-shield" style="color:#0a66c2"></i> State Admins</div>
+
+<div class="ap-card">
+  <div class="ap-card-header">
+    <h3>All State Admins ({{ admins|length }})</h3>
+    <a href="/super-admin/state-admins/create/" class="ap-btn ap-btn-primary"><i class="fas fa-plus"></i> Add State Admin</a>
+  </div>
+  <div class="ap-table-wrap">
+    <table class="ap-table">
+      <thead><tr><th>Admin</th><th>State</th><th>Phone</th><th>Appointed By</th><th>Since</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for a in admins %}
+        <tr>
+          <td>
+            <div class="ap-user-row">
+              <div class="ap-avatar">{{ a.user.get_full_name|default:a.user.username|first|upper }}</div>
+              <div>
+                <div class="ap-user-name">{{ a.user.get_full_name|default:a.user.username }}</div>
+                <div class="ap-user-meta">@{{ a.user.username }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{% if a.state %}<strong>{{ a.state.name }}</strong><br><small style="color:#888">{{ a.state.code }}</small>{% else %}—{% endif %}</td>
+          <td>{{ a.user.phone|default:"—" }}</td>
+          <td>{{ a.appointed_by.get_full_name|default:a.appointed_by.username|default:"—" }}</td>
+          <td style="font-size:12px;color:#888">{{ a.created_at|date:"d M Y" }}</td>
+          <td><span class="status-pill {% if a.is_active %}pill-active{% else %}pill-suspended{% endif %}">{{ a.is_active|yesno:"Active,Suspended" }}</span></td>
+          <td>
+            <a href="/super-admin/admins/{{ a.pk }}/toggle/" class="ap-btn {% if a.is_active %}ap-btn-danger{% else %}ap-btn-success{% endif %}" style="font-size:11px">
+              {{ a.is_active|yesno:"Suspend,Activate" }}
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;color:#bbb;padding:40px">No state admins yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

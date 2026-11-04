@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}File a Report – Community Watch{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#f1f5f9}
+  #cwpTopBar{position:sticky;top:0;z-index:200;background:#1e293b;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #cwpTopBar a.back{color:#94a3b8;text-decoration:none;font-size:20px}
+  #cwpTopBar h2{font-size:16px;font-weight:900;color:#fff;margin:0;flex:1}
+
+  .cwp-wrap{padding:14px 16px 100px;max-width:600px;margin:0 auto}
+  .cwp-card{background:#fff;border-radius:16px;border:1.5px solid #e2e8f0;padding:18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .cwp-section{font-size:11px;font-weight:900;color:#374151;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+  .cwp-label{font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block}
+  .cwp-input,.cwp-textarea{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:inherit;background:#f8fafc;color:#111;box-sizing:border-box;outline:none}
+  .cwp-input:focus,.cwp-textarea:focus{border-color:#374151;background:#fff}
+  .cwp-textarea{resize:none;min-height:100px}
+  .cwp-field{margin-bottom:14px}
+
+  .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .cat-btn{padding:10px 4px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;text-align:center;cursor:pointer;font-size:11px;font-weight:700;color:#374151}
+  .cat-btn.selected{border-color:#1e293b;background:#e2e8f0;color:#111}
+  .cat-icon-el{font-size:1.3rem;display:block;margin-bottom:2px}
+
+  .sev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .sev-btn{padding:12px 6px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:#374151}
+  .sev-btn.selected-low{border-color:#16a34a;background:#dcfce7;color:#166534}
+  .sev-btn.selected-medium{border-color:#d97706;background:#fef3c7;color:#92400e}
+  .sev-btn.selected-high{border-color:#dc2626;background:#fee2e2;color:#991b1b}
+  .sev-icon{font-size:1.3rem;display:block;margin-bottom:3px}
+
+  .cwp-photo-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px dashed #e2e8f0;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;color:#374151;background:#f8fafc}
+  .cwp-photo-label:hover{border-color:#374151;background:#e2e8f0}
+  #photoPreview{display:none;width:100%;max-height:180px;object-fit:cover;border-radius:12px;margin-top:8px}
+
+  .cwp-submit{width:100%;padding:14px;background:linear-gradient(135deg,#1e293b,#374151);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit}
+  .cwp-submit:active{opacity:.85}
+
+  .cwp-warn{background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:12px 14px;font-size:12px;color:#991b1b;margin-bottom:14px;line-height:1.5}
+</style>
+
+<div id="cwpTopBar">
+  <a href="/community/community-watch/" class="back">&#8592;</a>
+  <h2>⚠️ File a Report</h2>
+</div>
+
+<div class="cwp-wrap">
+  <div class="cwp-warn">
+    ⚠️ <strong>Important:</strong> This is a community alert system — not a replacement for emergency services. For life-threatening situations, call <strong>112</strong> immediately.
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="category" id="catHidden" required>
+    <input type="hidden" name="severity" id="sevHidden" value="medium">
+
+    <div class="cwp-card">
+      <div class="cwp-section">Category *</div>
+      <div class="cat-grid">
+        {% for val, label in categories %}
+        <div class="cat-btn" data-val="{{ val }}" onclick="selectCat(this)">
+          <span class="cat-icon-el" id="ci-{{ val }}">📋</span>
+          <span>{{ label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="cwp-card">
+      <div class="cwp-section">Severity *</div>
+      <div class="sev-grid">
+        <div class="sev-btn" data-val="low" onclick="selectSev(this,'low')">
+          <span class="sev-icon">🟢</span>Low
+        </div>
+        <div class="sev-btn selected-medium" data-val="medium" onclick="selectSev(this,'medium')">
+          <span class="sev-icon">🟡</span>Medium
+        </div>
+        <div class="sev-btn" data-val="high" onclick="selectSev(this,'high')">
+          <span class="sev-icon">🔴</span>High / Urgent
+        </div>
+      </div>
+    </div>
+
+    <div class="cwp-card">
+      <div class="cwp-section">Report Details *</div>
+      <div class="cwp-field">
+        <label class="cwp-label">Title *</label>
+        <input class="cwp-input" type="text" name="title" placeholder="Brief summary of the incident" required maxlength="200">
+      </div>
+      <div class="cwp-field">
+        <label class="cwp-label">Description *</label>
+        <textarea class="cwp-textarea" name="description" placeholder="Describe what happened, when, and any relevant details..." required></textarea>
+      </div>
+      <div class="cwp-field">
+        <label class="cwp-label">Location</label>
+        <input class="cwp-input" type="text" name="location" placeholder="Street name, landmark, area..." maxlength="200">
+      </div>
+      <div class="cwp-field">
+        <label class="cwp-label">Pincode</label>
+        <input class="cwp-input" type="text" name="pincode" placeholder="Your pincode" maxlength="10">
+      </div>
+    </div>
+
+    <div class="cwp-card">
+      <div class="cwp-section">Photo Evidence (optional)</div>
+      <label class="cwp-photo-label" for="photoInput">📸 Upload Photo</label>
+      <input type="file" id="photoInput" name="image" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+      <img id="photoPreview" alt="Preview">
+    </div>
+
+    <button type="submit" class="cwp-submit">⚠️ Submit Report</button>
+  </form>
+</div>
+
+<script>
+var catIcons={theft:'🚨',suspicious:'👁️',hazard:'⚠️',lost_found:'🔍',noise:'📢',stray:'🐕',infra:'🏗️',other:'📋'};
+document.querySelectorAll('.cat-icon-el').forEach(function(el){
+  var v=el.id.replace('ci-','');if(catIcons[v])el.textContent=catIcons[v];
+});
+// pre-select medium
+document.getElementById('sevHidden').value='medium';
+
+function selectCat(el){
+  document.querySelectorAll('.cat-btn').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');
+  document.getElementById('catHidden').value=el.getAttribute('data-val');
+}
+function selectSev(el,sev){
+  document.querySelectorAll('.sev-btn').forEach(function(x){
+    x.classList.remove('selected-low','selected-medium','selected-high');
+  });
+  el.classList.add('selected-'+sev);
+  document.getElementById('sevHidden').value=sev;
+}
+function previewPhoto(input){
+  if(input.files&&input.files[0]){
+    var r=new FileReader();
+    r.onload=function(e){
+      var img=document.getElementById('photoPreview');
+      img.src=e.target.result;img.style.display='block';
+    };r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

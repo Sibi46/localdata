@@ -1,0 +1,195 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Edit — {{ community.name }}{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:700px">
+  <div class="psec-header">
+    <div class="psec-title">✏️ Edit Community</div>
+    <a href="/portal/c/{{ community.page_id }}/" class="pbtn pbtn-outline pbtn-sm">← Back</a>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div class="palert palert-{% if msg.tags == 'error' %}error{% else %}success{% endif %}" style="margin-bottom:14px">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="pcard" style="margin-bottom:16px">
+      <div class="pcard-head"><div class="pcard-title">Basic Info</div></div>
+      <div class="pcard-body">
+        <div class="pform-group">
+          <label class="pform-label">Community Name *</label>
+          <input type="text" name="name" class="pform-input" required value="{{ community.name }}">
+        </div>
+        <div class="pform-group">
+          <label class="pform-label">Purpose / Cause *</label>
+          <input type="text" name="purpose" class="pform-input" required value="{{ community.purpose }}">
+        </div>
+        <div class="pform-group">
+          <label class="pform-label">Description * <span style="font-weight:400;color:#94a3b8">(max 200 words)</span></label>
+          <textarea name="description" id="descInput" class="pform-input" required rows="4" oninput="countWords(this)">{{ community.description }}</textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:4px">
+            <span id="wordCount" style="font-size:11px;font-weight:700;color:#94a3b8">0 / 200 words</span>
+          </div>
+        </div>
+        <div class="p2col">
+          <div class="pform-group">
+            <label class="pform-label">Category</label>
+            <select name="category" class="pform-input">
+              <option value="">-- None --</option>
+              {% for cat in categories %}<option value="{{ cat.pk }}" {% if community.category_id == cat.pk %}selected{% endif %}>{{ cat.icon }} {{ cat.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="pform-group">
+            <label class="pform-label">Join Mode</label>
+            <select name="join_mode" class="pform-input">
+              <option value="open" {% if community.join_mode == 'open' %}selected{% endif %}>Open — Anyone can join</option>
+              <option value="approval" {% if community.join_mode == 'approval' %}selected{% endif %}>Admin Approval Required</option>
+              <option value="private" {% if community.join_mode == 'private' %}selected{% endif %}>Private — Invite Only</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" style="margin-bottom:16px">
+      <div class="pcard-head"><div class="pcard-title">Location & Contact</div></div>
+      <div class="pcard-body">
+        <div class="p2col">
+          <div class="pform-group">
+            <label class="pform-label">Pincode *</label>
+            <input type="text" name="pincode" class="pform-input" required value="{{ community.pincode }}" maxlength="6">
+          </div>
+          <div class="pform-group">
+            <label class="pform-label">Location *</label>
+            <input type="text" name="location" class="pform-input" required value="{{ community.location }}">
+          </div>
+          <div class="pform-group">
+            <label class="pform-label">Community Email</label>
+            <input type="email" name="comm_email" class="pform-input" value="{{ community.email }}">
+          </div>
+          <div class="pform-group">
+            <label class="pform-label">Community Phone</label>
+            <input type="text" name="comm_phone" class="pform-input" value="{{ community.phone }}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" style="margin-bottom:16px">
+      <div class="pcard-head"><div class="pcard-title">Logo & Cover Banner</div></div>
+      <div class="pcard-body">
+
+        <!-- LOGO UPLOAD -->
+        <div class="pform-group" style="margin-bottom:20px">
+          <label class="pform-label">Community Logo <small style="color:#94a3b8">(square, 1:1)</small></label>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+            <div id="logoPreviewWrap" style="width:72px;height:72px;border-radius:16px;border:2px solid #e2e8f0;overflow:hidden;flex-shrink:0;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#4f46e5">
+              {% if community.logo %}<img src="{{ community.logo.url }}" id="logoCurrentImg" style="width:100%;height:100%;object-fit:cover">{% else %}{{ community.name|first|upper }}{% endif %}
+            </div>
+            <label style="cursor:pointer;background:#eff6ff;border:1.5px dashed #93c5fd;color:#1d4ed8;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700">
+              📷 Choose Logo
+              <input type="file" id="logoFileInput" accept="image/*" style="display:none" onchange="openCrop('logo',this,1)">
+            </label>
+          </div>
+          <input type="hidden" name="logo_cropped" id="logo_cropped">
+          <div id="logoCropArea" style="display:none;margin-top:10px">
+            <div style="max-width:300px;max-height:300px;overflow:hidden;border-radius:10px;border:1px solid #e2e8f0">
+              <img id="logoCropImg" style="max-width:100%;display:block">
+            </div>
+            <button type="button" onclick="doCrop('logo')" style="margin-top:8px;background:#0a66c2;color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">✂️ Crop & Set Logo</button>
+          </div>
+        </div>
+
+        <!-- COVER UPLOAD -->
+        <div class="pform-group">
+          <label class="pform-label">Cover Banner <small style="color:#94a3b8">(wide, 4:1 ratio)</small></label>
+          <div style="margin-bottom:10px">
+            <div id="coverPreviewWrap" style="width:100%;height:90px;border-radius:12px;border:2px solid #e2e8f0;overflow:hidden;background:linear-gradient(135deg,#1d4ed8,#7c3aed);display:flex;align-items:center;justify-content:center">
+              {% if community.cover %}<img src="{{ community.cover.url }}" id="coverCurrentImg" style="width:100%;height:100%;object-fit:cover">{% else %}<span style="color:rgba(255,255,255,.5);font-size:13px">No banner uploaded</span>{% endif %}
+            </div>
+          </div>
+          <label style="cursor:pointer;background:#eff6ff;border:1.5px dashed #93c5fd;color:#1d4ed8;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;display:inline-block">
+            🌄 Choose Banner
+            <input type="file" id="coverFileInput" accept="image/*" style="display:none" onchange="openCrop('cover',this,4)">
+          </label>
+          <input type="hidden" name="cover_cropped" id="cover_cropped">
+          <div id="coverCropArea" style="display:none;margin-top:10px">
+            <div style="width:100%;max-height:200px;overflow:hidden;border-radius:10px;border:1px solid #e2e8f0">
+              <img id="coverCropImg" style="max-width:100%;display:block">
+            </div>
+            <button type="button" onclick="doCrop('cover')" style="margin-top:8px;background:#0a66c2;color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">✂️ Crop & Set Banner</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button type="submit" class="pbtn pbtn-primary pbtn-full" style="font-size:15px;padding:13px;margin-bottom:40px">💾 Save Changes</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+var croppers = {};
+
+function openCrop(type, input, ratio) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var imgEl = document.getElementById(type + 'CropImg');
+    imgEl.src = e.target.result;
+    document.getElementById(type + 'CropArea').style.display = 'block';
+    if (croppers[type]) { croppers[type].destroy(); }
+    croppers[type] = new Cropper(imgEl, {
+      aspectRatio: ratio,
+      viewMode: 1,
+      autoCropArea: 1,
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function doCrop(type) {
+  var canvas = croppers[type].getCroppedCanvas(
+    type === 'logo' ? {width:300,height:300} : {width:1200,height:300}
+  );
+  canvas.toBlob(function(blob) {
+    var reader = new FileReader();
+    reader.onloadend = function() {
+      document.getElementById(type + '_cropped').value = reader.result;
+      // show preview
+      var wrap = document.getElementById(type + 'PreviewWrap');
+      var img = wrap.querySelector('img');
+      if (!img) { img = document.createElement('img'); img.style.cssText='width:100%;height:100%;object-fit:cover'; wrap.innerHTML=''; wrap.appendChild(img); }
+      img.src = reader.result;
+      document.getElementById(type + 'CropArea').style.display = 'none';
+    };
+    reader.readAsDataURL(blob);
+  }, 'image/jpeg', 0.92);
+}
+
+function countWords(el) {
+  var words = el.value.trim().split(/\s+/).filter(function(w){ return w.length > 0; });
+  var count = words.length;
+  var counter = document.getElementById('wordCount');
+  if (count > 200) {
+    el.value = words.slice(0, 200).join(' ');
+    count = 100;
+  }
+  counter.textContent = count + ' / 200 words';
+  counter.style.color = count >= 200 ? '#ef4444' : count >= 160 ? '#f59e0b' : '#94a3b8';
+}
+// Init count on load
+document.addEventListener('DOMContentLoaded', function() {
+  var desc = document.getElementById('descInput');
+  if (desc) countWords(desc);
+});
+</script>
+{% endblock %}

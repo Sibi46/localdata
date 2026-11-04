@@ -1,0 +1,12 @@
+<article class="nd-story">
+  <a class="nd-cover {% if not story.photo %}nd-cover-empty{% endif %}" href="{% url 'newsdesk:detail' story.pk %}" tabindex="-1" aria-hidden="true">
+    {% if story.photo %}<img src="{% url 'newsdesk:media' story.pk 'photo' %}" alt="" loading="lazy">{% else %}<span class="nd-cover-symbol">{% if story.kind == 'event' %}✦{% elif story.category == 'sports' %}🏏{% elif story.category == 'birthday' %}🎂{% elif story.category == 'festivals' %}✺{% else %}N<span>•</span>{% endif %}</span><span class="nd-cover-label">Stories from {{ story.pincode.code }}</span>{% endif %}
+    <span class="nd-badge">{{ story.get_category_display }}</span>
+  </a>
+  <div class="nd-story-body"><div class="nd-meta"><span>📍 {{ story.pincode.code }}</span><time datetime="{{ story.published_at|date:'c' }}">{{ story.published_at|date:'d M Y' }}</time></div>
+    <h2><a href="{% url 'newsdesk:detail' story.pk %}">{{ story.title }}</a></h2>
+    <p>{{ story.body|truncatechars:135 }}</p>
+    {% if story.kind == 'event' %}<p class="nd-event">↗ {{ story.event_start|date:'d M · g:i A' }} · {{ story.venue }}</p>{% endif %}
+    <a class="nd-read" href="{% url 'newsdesk:detail' story.pk %}">Read story <span aria-hidden="true">↗</span></a>
+  </div>
+</article>

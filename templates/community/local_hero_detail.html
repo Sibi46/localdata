@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}{{ hero.hero_name }} – Local Hero – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#fff5f5}
+  #lhdTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #fecaca;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #lhdTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #lhdTopBar h2{font-size:15px;font-weight:900;color:#111;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .lhd-wrap{padding:14px 16px 120px;max-width:600px;margin:0 auto}
+  .lhd-card{background:#fff;border-radius:16px;border:1.5px solid #fecaca;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 4px rgba(220,38,38,.07)}
+  .lhd-img{width:100%;max-height:280px;object-fit:cover;display:block}
+  .lhd-hero-banner{background:linear-gradient(135deg,#dc2626,#ef4444);padding:16px;text-align:center;color:#fff}
+  .lhd-hero-name{font-size:20px;font-weight:900}
+  .lhd-hero-sub{font-size:11px;opacity:.85;margin-top:2px}
+  .lhd-body{padding:16px}
+  .lhd-badge{display:inline-block;font-size:11px;font-weight:800;padding:4px 12px;border-radius:8px;background:#fee2e2;color:#dc2626;margin-bottom:10px}
+  .lhd-title{font-size:18px;font-weight:900;color:#111;margin-bottom:8px;line-height:1.3}
+  .lhd-content{font-size:14px;color:#374151;line-height:1.75;white-space:pre-line}
+  .lhd-meta{font-size:11px;color:#9ca3af;margin-top:10px}
+  .lhd-actions{display:flex;border-top:1px solid #fff5f5;margin-top:12px}
+  .lhd-action{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:11px 0;background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:#6b7280;font-family:inherit}
+  .lhd-action.liked{color:#dc2626}
+  .lhd-divider{width:1px;background:#fee2e2;height:36px;flex-shrink:0;align-self:center}
+
+  .lhd-comments{background:#fff;border-radius:16px;border:1.5px solid #fecaca;overflow:hidden;margin-bottom:12px}
+  .lhd-comments h3{font-size:12px;font-weight:800;color:#dc2626;text-transform:uppercase;letter-spacing:.06em;padding:14px 16px 0;margin:0}
+  .lhd-comment{padding:12px 16px;border-top:1px solid #fff5f5}
+  .lhd-comment-head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .lhd-comment-user{font-size:12px;font-weight:800;color:#111}
+  .lhd-comment-time{font-size:10px;color:#9ca3af;margin-left:auto}
+  .lhd-comment-text{font-size:13px;color:#374151;line-height:1.5}
+  .lhd-no-comment{padding:16px;text-align:center;font-size:13px;color:#9ca3af}
+
+  .lhd-comment-form{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #fecaca;padding:10px 16px;display:flex;gap:8px;z-index:100;max-width:600px;margin:0 auto}
+  .lhd-comment-form input{flex:1;padding:10px 14px;border:1.5px solid #fecaca;border-radius:24px;font-size:14px;outline:none;font-family:inherit;background:#fff5f5}
+  .lhd-comment-form input:focus{border-color:#dc2626;background:#fff}
+  .lhd-comment-form button{background:#dc2626;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+</style>
+
+<div id="lhdTopBar">
+  <a href="/community/local-heroes/" class="back">&#8592;</a>
+  <h2>🦸 {{ hero.hero_name }}</h2>
+</div>
+
+<div class="lhd-wrap">
+  <div class="lhd-card">
+    {% if hero.image %}<img class="lhd-img" src="{{ hero.image.url }}" alt="{{ hero.title }}">{% endif %}
+    <div class="lhd-hero-banner">
+      <div class="lhd-hero-name">🦸 {{ hero.hero_name }}</div>
+      <div class="lhd-hero-sub">Local Hero · {{ hero.get_category_display }}{% if hero.pincode %} · 📍 {{ hero.pincode }}{% endif %}</div>
+    </div>
+    <div class="lhd-body">
+      <span class="lhd-badge" id="catBadge">{{ hero.get_category_display }}</span>
+      <div class="lhd-title">{{ hero.title }}</div>
+      <div class="lhd-content">{{ hero.content }}</div>
+      <div class="lhd-meta">Nominated {{ hero.created_at|timesince }} ago by {{ hero.posted_by.get_full_name|default:hero.posted_by.username }}</div>
+    </div>
+    <div class="lhd-actions">
+      <button class="lhd-action {% if liked %}liked{% endif %}" id="likeBtn" onclick="likeHero({{ hero.pk }})">
+        ❤️ <span id="likeCount">{{ hero.like_count }}</span> Salute
+      </button>
+      {% if request.user == hero.posted_by %}
+      <div class="lhd-divider"></div>
+      <a href="/community/local-heroes/{{ hero.pk }}/delete/" class="lhd-action" style="color:#ef4444" onclick="return confirm('Delete?')">🗑️ Delete</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="lhd-comments">
+    <h3>Comments ({{ comments.count }})</h3>
+    {% if comments %}
+    {% for c in comments %}
+    <div class="lhd-comment">
+      <div class="lhd-comment-head">
+        <span class="lhd-comment-user">{{ c.user.get_full_name|default:c.user.username }}</span>
+        <span class="lhd-comment-time">{{ c.created_at|timesince }} ago</span>
+      </div>
+      <div class="lhd-comment-text">{{ c.text }}</div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="lhd-no-comment">Salute this hero with a comment! ❤️</div>
+    {% endif %}
+  </div>
+</div>
+
+{% if request.user.is_authenticated %}
+<div class="lhd-comment-form">
+  <form method="post" style="display:contents">
+    {% csrf_token %}
+    <input type="text" name="comment" placeholder="Say something to honour this hero..." required>
+    <button type="submit">Send</button>
+  </form>
+</div>
+{% endif %}
+
+<script>
+(function(){
+  var icons={social:'🤝',environment:'🌿',education:'📚',health:'🏥',sports:'🏅',arts:'🎨',other:'🦸'};
+  var c='{{ hero.category }}';
+  var el=document.getElementById('catBadge');
+  if(el&&icons[c]) el.textContent=icons[c]+' '+el.textContent.trim();
+})();
+function likeHero(pk){
+  fetch('/community/local-heroes/'+pk+'/like/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    document.getElementById('likeBtn').classList.toggle('liked',d.liked);
+    document.getElementById('likeCount').textContent=d.count;
+  });
+}
+</script>
+{% endblock %}

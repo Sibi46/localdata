@@ -1,0 +1,42 @@
+{% extends "admin_base.html" %}
+{% block title %}Manage Districts{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-map-marker-alt" style="color:#2e7d32"></i> {{ state.name }} — Districts</div>
+<a href="/super-admin/states/" class="ap-btn ap-btn-gray" style="margin-bottom:20px"><i class="fas fa-arrow-left"></i> Back to States</a>
+
+<div class="ap-two-col" style="margin-top:16px">
+  <div class="ap-card">
+    <div class="ap-inline-form">
+      <h4><i class="fas fa-plus" style="color:#2e7d32"></i> Add District</h4>
+      <form method="POST">
+        {% csrf_token %}
+        <div style="display:flex;gap:10px">
+          <input type="text" name="name" placeholder="District name e.g. Coimbatore" required style="flex:1;padding:10px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none">
+          <button type="submit" class="ap-btn ap-btn-primary"><i class="fas fa-plus"></i> Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-card-header"><h3>Districts in {{ state.name }} ({{ districts|length }})</h3></div>
+    <table class="ap-table">
+      <thead><tr><th>District</th><th>Status</th><th>Admin</th></tr></thead>
+      <tbody>
+        {% for d in districts %}
+        <tr>
+          <td><strong>{{ d.name }}</strong></td>
+          <td><span class="status-pill {% if d.is_active %}pill-active{% else %}pill-inactive{% endif %}">{{ d.is_active|yesno:"Active,Inactive" }}</span></td>
+          <td>
+            {% if d.district_admin_profiles.exists %}{{ d.district_admin_profiles.first.user.get_full_name|default:"Admin" }}
+            {% else %}<span style="color:#bbb;font-size:12px">None</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" style="text-align:center;color:#bbb;padding:20px">No districts yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

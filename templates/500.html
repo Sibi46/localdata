@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "includes/ga4.html" %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error — Local From</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f3f2ee;
+            color: #191919;
+            -webkit-font-smoothing: antialiased;
+        }
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 14px rgba(17,24,39,.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+        }
+        .nav-logo img {
+            height: 40px;
+            width: auto;
+            max-width: 140px;
+            object-fit: contain;
+            display: block;
+        }
+        .error-page {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .error-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 28px rgba(17,24,39,.12);
+            padding: 56px 40px 48px;
+            text-align: center;
+            max-width: 480px;
+            width: 100%;
+        }
+        .error-icon {
+            font-size: 52px;
+            margin-bottom: 20px;
+        }
+        .error-code {
+            font-size: 72px;
+            font-weight: 800;
+            color: #e65c00;
+            line-height: 1;
+            margin-bottom: 8px;
+            letter-spacing: -2px;
+        }
+        .error-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #191919;
+            margin-bottom: 12px;
+        }
+        .error-message {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        .btn-home {
+            background: #0a66c2;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            transition: background .15s;
+        }
+        .btn-home:hover { background: #004182; color: #fff; }
+        @media (max-width: 480px) {
+            .error-card { padding: 40px 24px 36px; }
+            .error-code { font-size: 56px; }
+        }
+    </style>
+{% include "includes/site_ui.html" %}
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">
+            <img src="/static/images/local-form.svg" alt="Local From">
+        </a>
+    </div>
+</nav>
+
+<div class="error-page">
+    <div class="error-card">
+        <div class="error-icon">⚙️</div>
+        <div class="error-code">500</div>
+        <div class="error-title">Something Went Wrong</div>
+        <p class="error-message">Something went wrong on our end. Please try again shortly.</p>
+        <a href="/" class="btn-home">Go to Home</a>
+    </div>
+</div>
+
+</body>
+</html>

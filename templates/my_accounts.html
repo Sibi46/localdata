@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}My accounts | Local From{% endblock %}
+{% block content %}
+<main style="max-width:760px;margin:24px auto;padding:16px 16px 90px">
+  <h1>My accounts</h1><h2>{{ request.user.get_full_name|default:request.user.username }}</h2>
+  <p>{{ request.user.email }} · {{ request.user.phone }}</p><p><a href="{% url 'profile_edit' %}">Edit profile</a></p>
+  {% if company %}<h2>Business</h2><p><a href="{% url 'business_profile' company.company_id %}">{{ company.company_name }}</a> · <a href="{% url 'employer_dashboard' %}">Business dashboard</a></p>{% endif %}
+</main>
+{% endblock %}

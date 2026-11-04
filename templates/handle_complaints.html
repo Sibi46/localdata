@@ -1,0 +1,42 @@
+{% extends "admin_base.html" %}
+{% block title %}Handle Complaints{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-exclamation-circle" style="color:#c62828"></i> Complaints — {{ district.name|default:"All Districts" }}</div>
+
+<div class="ap-card">
+  <div class="ap-table-wrap">
+    <table class="ap-table">
+      <thead><tr><th>Type</th><th>Subject</th><th>Submitted By</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for c in complaints %}
+        <tr>
+          <td><span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;background:#fce4ec;color:#c62828">{{ c.get_complaint_type_display }}</span></td>
+          <td>
+            <div style="font-weight:600;font-size:13px">{{ c.subject }}</div>
+            <div style="font-size:11px;color:#888;max-width:260px">{{ c.description|truncatechars:60 }}</div>
+          </td>
+          <td>
+            <div class="ap-user-row">
+              <div class="ap-avatar">{{ c.submitted_by.username|first|upper }}</div>
+              <div>
+                <div class="ap-user-name">{{ c.submitted_by.get_full_name|default:c.submitted_by.username }}</div>
+                <div class="ap-user-meta">{{ c.submitted_by.phone }}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:12px;color:#888;white-space:nowrap">{{ c.created_at|date:"d M Y H:i" }}</td>
+          <td><span class="status-pill pill-{{ c.status }}">{{ c.get_status_display }}</span></td>
+          <td>
+            <a href="/district-admin/complaints/{{ c.pk }}/resolve/" class="ap-btn ap-btn-primary" style="font-size:11px">
+              <i class="fas fa-edit"></i> Resolve
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;color:#bbb;padding:40px">No complaints.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'newsdesk/base.html' %}{% load static %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'newsdesk/public-news.css' %}?v=1">{% endblock %}
+{% block news_content %}
+<section class="nd-share-intro"><p class="nd-eyebrow">YOUR VOICE. YOUR LOCAL NEWS.</p><h1>Share your news</h1><p>Tell us what is happening in your area. Verify your mobile number, add your contributor details and send up to 200 words to our editors.</p><ol class="nd-share-steps"><li>Verify mobile</li><li>Add your details</li><li>Send to editor</li><li>Published after approval</li></ol></section>
+<section class="nd-panel nd-share-panel" aria-labelledby="verify-heading">
+  <h2 id="verify-heading">Verify your mobile number</h2><p class="nd-muted">New contributor? Your permanent Contributor ID is created with your first submission. Returning contributor? Verify the same number to see your submissions.</p>
+  <form id="news-phone-form" data-send-url="{% url 'newsdesk:share_send_otp' %}" data-verify-url="{% url 'newsdesk:share_verify_otp' %}">{% csrf_token %}
+    <label for="news-phone">Mobile number</label><div class="nd-phone-row"><span>+91</span><input id="news-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" pattern="[6-9][0-9]{9}" required placeholder="10-digit mobile number"><button class="nd-btn" type="submit" id="news-send">Send OTP</button></div>
+    <div id="news-otp-fields" hidden><label for="news-otp">Six-digit OTP</label><input id="news-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="Enter OTP"><button class="nd-btn" type="button" id="news-verify">Verify and continue</button></div>
+    <p id="news-otp-status" role="status" aria-live="polite"></p><p id="news-otp-error" role="alert" hidden></p>
+  </form><noscript><p>Enable JavaScript to verify your mobile number and send news.</p></noscript>
+</section>
+{% endblock %}
+{% block extra_js %}{{ block.super }}<script src="{% static 'newsdesk/public-news.js' %}?v=1" defer></script>{% endblock %}

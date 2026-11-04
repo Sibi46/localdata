@@ -1,0 +1,5 @@
+{% load static %}<link rel="stylesheet" href="{% static 'css/account-shell.css' %}?v=1">
+{% include 'includes/brand_rotation_assets.html' %}<header class="account-header" aria-label="Site header">
+  <a class="account-logo" href="/" aria-label="Local From home"><img src="/static/images/logo.png" alt="" width="40" height="34"><span>Local{% include 'includes/brand_word.html' %}</span></a>
+  <div class="account-header-actions">{% include 'includes/notification_bell.html' %}<a class="account-profile-icon" href="{% if request.user.is_employer %}/employer/dashboard/#my-profile{% else %}{% url 'profile_edit' %}{% endif %}" aria-label="My profile and features" title="My profile and features">{% if profile_photo_url %}<img src="{{ profile_photo_url }}" alt="My profile" data-profile-avatar>{% else %}<svg viewBox="0 0 24 24" width="29" height="29" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="9" r="3"></circle><path d="M5 19c1-6 13-6 14 0"></path></svg>{% endif %}</a>
+</div></header>

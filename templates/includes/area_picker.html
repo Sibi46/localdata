@@ -1,0 +1,9 @@
+{% load static %}
+<section class="account-area" aria-label="Your discovery area">
+  <details {% if not active_area %}open{% endif %}>
+    <summary><i class="fas fa-map-marker-alt" aria-hidden="true"></i> {% if active_area %}Exploring <span data-area-name="{{ active_area }}">{{ active_area }}</span> <span>Change area</span>{% else %}Enter your pincode <span>Discover what is near you</span>{% endif %}</summary>
+    <form method="post" action="{% url 'select_area' %}" class="account-area-form">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><label for="account-area-pin">Pincode<input data-area-lookup id="account-area-pin" name="pincode" value="{{ active_area }}" inputmode="numeric" pattern="[1-9][0-9]{5}" maxlength="6" required autocomplete="postal-code" placeholder="6-digit pincode"></label><button type="submit">Explore this area</button></form>
+    {% if saved_areas %}<div class="account-saved-areas"><span>Your saved areas</span>{% for code in saved_areas %}<form method="post" action="{% url 'select_area' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button name="pincode" value="{{ code }}" {% if code == active_area %}aria-current="true"{% endif %}>{{ code }}</button></form>{% endfor %}<a href="{% url 'profile_edit' %}#profile-location">Edit areas</a></div>{% endif %}
+  </details>
+</section>
+<script src="{% static 'js/area-names.js' %}?v=2" defer></script>

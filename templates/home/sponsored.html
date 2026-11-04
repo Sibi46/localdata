@@ -1,0 +1,32 @@
+<!-- PAID HOMEPAGE BANNER ADS -->
+{% if ads_by_type.homepage_banner %}
+<div class="site-ad-bar" id="siteAdBar" style="margin-top:24px">
+  <div class="site-ad-inner">
+    {% for ad in ads_by_type.homepage_banner %}
+    <a class="site-ad-slide {% if forloop.first %}active{% endif %}"
+       href="/ads/click/{{ ad.pk }}/">
+      <img src="{{ ad.image.url }}" alt="{{ ad.title }}">
+      <div class="site-ad-info">
+        <span class="site-ad-label">Sponsored</span>
+        <span class="site-ad-title">{{ ad.title }}</span>
+        <span class="site-ad-biz">{{ ad.advertiser.business_name }}</span>
+      </div>
+    </a>
+    {% endfor %}
+    {% if ads_by_type.homepage_banner|length > 1 %}
+    <button class="site-ad-prev" onclick="siteAdNav(-1)"><i class="fas fa-chevron-left"></i></button>
+    <button class="site-ad-next" onclick="siteAdNav(1)"><i class="fas fa-chevron-right"></i></button>
+    {% endif %}
+  </div>
+  <button class="site-ad-close" onclick="document.getElementById('siteAdBar').style.display='none'"><i class="fas fa-times"></i></button>
+</div>
+<script>
+(function(){
+  var slides = document.querySelectorAll('.site-ad-slide');
+  var cur = 0;
+  function show(n){ slides[cur].classList.remove('active'); cur=(n+slides.length)%slides.length; slides[cur].classList.add('active'); }
+  window.siteAdNav = function(d){ show(cur+d); };
+  if(slides.length > 1) setInterval(function(){ show(cur+1); }, 5000);
+})();
+</script>
+{% endif %}

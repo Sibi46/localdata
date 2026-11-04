@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% block title %}Ad Management — Admin{% endblock %}
+{% block content %}
+<div style="max-width:1000px;margin:32px auto;padding:0 16px 60px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+    <div>
+      <h1 style="font-size:22px;font-weight:900;color:#111;margin:0 0 4px"><i class="fas fa-bullhorn" style="color:#0a66c2"></i> Ad Management</h1>
+      <p style="font-size:13px;color:#888;margin:0">Review advertisements and renewal payments</p>
+    </div>
+    <a href="/super-admin/" style="font-size:13px;color:#0a66c2;text-decoration:none"><i class="fas fa-arrow-left"></i> Dashboard</a>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div style="padding:12px 16px;border-radius:10px;margin-bottom:16px;background:#e8f5e9;border-left:4px solid #2e7d32;color:#1b5e20;font-size:13px;font-weight:700">
+      <i class="fas fa-check-circle"></i> {{ msg }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Settings panel -->
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:20px;margin-bottom:24px">
+    <div style="font-size:14px;font-weight:800;color:#111;margin-bottom:14px"><i class="fas fa-cog" style="color:#0a66c2"></i> Ad Renewal Settings</div>
+    <form method="POST" action="/super-admin/ad-settings/" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
+      {% csrf_token %}
+      <div style="flex:1;min-width:220px">
+        <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px">UPI ID for renewals</label>
+        <input type="text" name="upi_id" value="{{ settings.upi_id }}" placeholder="yourname@upi"
+          style="width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;outline:none">
+      </div>
+      <div style="min-width:140px">
+        <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px">Renewal Price (₹)</label>
+        <input type="number" name="renewal_price" value="{{ settings.renewal_price }}" min="0"
+          style="width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;outline:none">
+      </div>
+      <div style="min-width:140px">
+        <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px">Active Days per Renewal</label>
+        <input type="number" name="renewal_days" value="{{ settings.renewal_days }}" min="1"
+          style="width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;outline:none">
+      </div>
+      <button type="submit" style="padding:9px 20px;background:#0a66c2;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">
+        <i class="fas fa-save"></i> Save Settings
+      </button>
+    </form>
+    {% if settings.upi_id %}
+    <div style="font-size:12px;color:#2e7d32;margin-top:10px;font-weight:700">
+      <i class="fas fa-check-circle"></i> Active UPI: <span style="color:#0a66c2">{{ settings.upi_id }}</span> &nbsp;·&nbsp; ₹{{ settings.renewal_price }} / {{ settings.renewal_days }} days
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+    <a href="?tab=ads" style="padding:8px 18px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;{% if tab != 'renewals' %}background:#0a66c2;color:#fff{% else %}background:#f0f0f0;color:#555{% endif %}">
+      <i class="fas fa-bullhorn"></i> Ads
+      {% if pending_count %}<span style="background:rgba(0,0,0,.15);border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">{{ pending_count }}</span>{% endif %}
+    </a>
+    <a href="?tab=renewals" style="padding:8px 18px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;{% if tab == 'renewals' %}background:#e65100;color:#fff{% else %}background:#fff3e0;color:#e65100{% endif %}">
+      <i class="fas fa-redo"></i> Renewals
+      {% if renewal_count %}<span style="background:rgba(0,0,0,.15);border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">{{ renewal_count }}</span>{% endif %}
+    </a>
+  </div>
+
+  <!-- ═══ RENEWALS TAB ════════════════════════════════════════════════════════ -->
+  {% if tab == 'renewals' %}
+
+  {% if not renewals %}
+  <div style="text-align:center;padding:60px 20px;background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;color:#aaa">
+    <div style="font-size:48px;margin-bottom:12px">✅</div>
+    <p>No pending renewals.</p>
+  </div>
+  {% else %}
+  <div style="display:flex;flex-direction:column;gap:16px">
+    {% for r in renewals %}
+    <div style="background:#fff;border:1.5px solid #fde68a;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+      <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start">
+        <!-- Ad image -->
+        <img src="{{ r.ad.image.url }}" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:1.5px solid #e5e7eb;flex-shrink:0">
+        <!-- Ad info -->
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:15px;font-weight:800;color:#111;margin-bottom:2px">{{ r.ad.company_name }}</div>
+          <div style="font-size:12px;color:#666;margin-bottom:6px">{{ r.ad.description|truncatechars:80 }}</div>
+          <div style="font-size:11px;color:#888;display:flex;flex-wrap:wrap;gap:10px">
+            <span><i class="fas fa-user"></i> {{ r.ad.user.get_full_name|default:r.ad.user.username }} ({{ r.ad.user.phone }})</span>
+            {% if r.ad.expires_at %}<span style="color:#c62828;font-weight:700"><i class="fas fa-calendar-times"></i> Expired {{ r.ad.expires_at|date:"d M Y" }}</span>{% endif %}
+          </div>
+        </div>
+        <!-- Payment info -->
+        <div style="min-width:180px">
+          <div style="font-size:12px;color:#555;font-weight:700;margin-bottom:6px"><i class="fas fa-receipt" style="color:#f3a000"></i> Payment Info</div>
+          <div style="font-size:12px;color:#333;margin-bottom:3px">Amount: <strong style="color:#0a66c2">₹{{ r.amount }}</strong></div>
+          <div style="font-size:12px;color:#333;margin-bottom:3px">UTR / Txn ID: <strong>{{ r.transaction_id }}</strong></div>
+          <div style="font-size:11px;color:#888"><i class="fas fa-clock"></i> Submitted {{ r.created_at|date:"d M Y, H:i" }}</div>
+        </div>
+        <!-- Screenshot -->
+        <div style="flex-shrink:0">
+          <div style="font-size:12px;color:#555;font-weight:700;margin-bottom:6px"><i class="fas fa-image" style="color:#0a66c2"></i> Screenshot</div>
+          <a href="{{ r.screenshot.url }}" target="_blank">
+            <img src="{{ r.screenshot.url }}" style="width:100px;height:80px;object-fit:cover;border-radius:8px;border:1.5px solid #e5e7eb;display:block">
+          </a>
+          <div style="font-size:10px;color:#0a66c2;text-align:center;margin-top:3px">Tap to enlarge</div>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div style="padding:12px 18px;border-top:1px solid #f0f0f0;background:#fafafa;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <form method="POST" style="display:inline">
+          {% csrf_token %}
+          <input type="hidden" name="renewal_id" value="{{ r.pk }}">
+          <input type="hidden" name="action" value="approve_renewal">
+          <button type="submit" style="padding:8px 18px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+            <i class="fas fa-check"></i> Approve — Extend {{ settings.renewal_days }} Days
+          </button>
+        </form>
+
+        <button type="button" onclick="showRenewReject({{ r.pk }})"
+          style="padding:8px 16px;background:#fce4ec;color:#c62828;border:1.5px solid #fca5a5;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+          <i class="fas fa-times"></i> Reject
+        </button>
+      </div>
+
+      <!-- Reject form -->
+      <div id="renewReject-{{ r.pk }}" style="display:none;padding:14px 18px;border-top:1px solid #f0f0f0;background:#fff5f5">
+        <form method="POST" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          {% csrf_token %}
+          <input type="hidden" name="renewal_id" value="{{ r.pk }}">
+          <input type="hidden" name="action" value="reject_renewal">
+          <input type="text" name="reject_note" placeholder="Reason (optional)"
+            style="flex:1;min-width:200px;padding:8px 12px;border:1.5px solid #fca5a5;border-radius:8px;font-size:13px;outline:none">
+          <button type="submit" style="padding:8px 16px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+            Confirm Reject
+          </button>
+          <button type="button" onclick="document.getElementById('renewReject-{{ r.pk }}').style.display='none'"
+            style="padding:8px 14px;background:#f5f5f5;color:#555;border:none;border-radius:8px;font-size:13px;cursor:pointer">
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ═══ ADS TAB ═════════════════════════════════════════════════════════════ -->
+  {% else %}
+
+  <!-- Status filter tabs -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <a href="?tab=ads" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;{% if not status_filter %}background:#0a66c2;color:#fff{% else %}background:#f0f0f0;color:#555{% endif %}">All</a>
+    <a href="?tab=ads&status=pending" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;{% if status_filter == 'pending' %}background:#f59e0b;color:#fff{% else %}background:#fff8e1;color:#92400e{% endif %}">
+      Pending {% if pending_count %}<span style="background:rgba(0,0,0,.15);border-radius:10px;padding:1px 6px;font-size:10px">{{ pending_count }}</span>{% endif %}
+    </a>
+    <a href="?tab=ads&status=approved" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;{% if status_filter == 'approved' %}background:#22c55e;color:#fff{% else %}background:#f0fdf4;color:#166534{% endif %}">
+      Approved {% if approved_count %}<span style="background:rgba(0,0,0,.15);border-radius:10px;padding:1px 6px;font-size:10px">{{ approved_count }}</span>{% endif %}
+    </a>
+    <a href="?tab=ads&status=rejected" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;{% if status_filter == 'rejected' %}background:#ef4444;color:#fff{% else %}background:#fce4ec;color:#c62828{% endif %}">Rejected</a>
+  </div>
+
+  {% if not ads %}
+  <div style="text-align:center;padding:60px 20px;background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;color:#aaa">
+    <div style="font-size:48px;margin-bottom:12px">📢</div>
+    <p>No ads found.</p>
+  </div>
+  {% else %}
+  <div style="display:flex;flex-direction:column;gap:16px">
+    {% for ad in ads %}
+    <div style="background:#fff;border:1.5px solid {% if ad.status == 'pending' %}#fde68a{% elif ad.is_live %}#bbf7d0{% elif ad.is_expired %}#fca5a5{% else %}#fecaca{% endif %};border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+
+      <div style="display:flex;align-items:stretch;flex-wrap:wrap">
+        <a href="{{ ad.image.url }}" target="_blank" style="display:block;width:130px;flex-shrink:0;overflow:hidden;background:#f5f7fa">
+          <img src="{{ ad.image.url }}" style="width:130px;height:100%;min-height:100px;object-fit:cover;display:block">
+        </a>
+        <div style="flex:1;padding:16px 18px;min-width:200px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+            {% if ad.is_live %}
+              <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#e8f5e9;color:#2e7d32"><i class="fas fa-circle" style="font-size:7px"></i> Live</span>
+            {% elif ad.is_expired %}
+              <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#fce4ec;color:#c62828"><i class="fas fa-calendar-times"></i> Expired</span>
+            {% elif ad.status == 'pending' %}
+              <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#fff8e1;color:#f57f17"><i class="fas fa-hourglass-half"></i> Pending</span>
+            {% else %}
+              <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#fce4ec;color:#c62828">Rejected</span>
+            {% endif %}
+            {% if ad.pincode %}
+            <span style="font-size:11px;background:#f0f9ff;color:#0369a1;padding:3px 10px;border-radius:20px;font-weight:700"><i class="fas fa-map-marker-alt"></i> {{ ad.pincode }}</span>
+            {% endif %}
+          </div>
+          <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:4px">{{ ad.company_name }}</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;margin-bottom:8px">{{ ad.description }}</div>
+          <div style="font-size:11px;color:#aaa;display:flex;flex-wrap:wrap;gap:10px">
+            <span><i class="fas fa-user"></i> {{ ad.user.get_full_name|default:ad.user.username }} ({{ ad.user.phone }})</span>
+            <span><i class="fas fa-clock"></i> {{ ad.created_at|date:"d M Y" }}</span>
+            {% if ad.expires_at %}<span {% if ad.is_expired %}style="color:#c62828;font-weight:700"{% elif ad.is_live %}style="color:#166534;font-weight:700"{% endif %}><i class="fas fa-calendar"></i> {% if ad.is_expired %}Expired{% else %}Valid till{% endif %} {{ ad.expires_at|date:"d M Y" }}</span>{% endif %}
+            {% if ad.website %}<span><a href="{{ ad.website }}" target="_blank" style="color:#0a66c2"><i class="fas fa-external-link-alt"></i> Link</a></span>{% endif %}
+            {% if ad.views %}<span><i class="fas fa-eye"></i> {{ ad.views }} views</span>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:12px 18px;border-top:1px solid #f0f0f0;background:#fafafa;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        {% if ad.status == 'pending' %}
+        <form method="POST" style="display:inline">
+          {% csrf_token %}
+          <input type="hidden" name="ad_id" value="{{ ad.pk }}">
+          <input type="hidden" name="action" value="approve">
+          <button type="submit" style="padding:8px 18px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+            <i class="fas fa-check"></i> Approve & Publish (30 days free)
+          </button>
+        </form>
+        <button type="button" onclick="showReject({{ ad.pk }})"
+          style="padding:8px 16px;background:#fce4ec;color:#c62828;border:1.5px solid #fca5a5;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+          <i class="fas fa-times"></i> Reject
+        </button>
+        {% elif ad.is_live %}
+        <span style="font-size:12px;color:#2e7d32;font-weight:700"><i class="fas fa-circle" style="font-size:8px"></i> Live — expires {{ ad.expires_at|date:"d M Y" }}</span>
+        {% elif ad.is_expired %}
+        <span style="font-size:12px;color:#c62828;font-weight:700"><i class="fas fa-calendar-times"></i> Expired — waiting for user renewal payment</span>
+        {% endif %}
+
+        {% if ad.reject_note %}
+        <span style="font-size:12px;color:#c62828;font-style:italic">Reason: {{ ad.reject_note }}</span>
+        {% endif %}
+
+        <form method="POST" style="display:inline;margin-left:auto" onsubmit="return confirm('Delete this ad permanently?')">
+          {% csrf_token %}
+          <input type="hidden" name="ad_id" value="{{ ad.pk }}">
+          <input type="hidden" name="action" value="delete">
+          <button type="submit" style="padding:6px 12px;background:#f5f5f5;color:#888;border:none;border-radius:8px;font-size:12px;cursor:pointer">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </form>
+      </div>
+
+      <div id="rejectBox-{{ ad.pk }}" style="display:none;padding:14px 18px;border-top:1px solid #f0f0f0;background:#fff5f5">
+        <form method="POST" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          {% csrf_token %}
+          <input type="hidden" name="ad_id" value="{{ ad.pk }}">
+          <input type="hidden" name="action" value="reject">
+          <input type="text" name="reject_note" placeholder="Reason for rejection (optional)"
+            style="flex:1;min-width:200px;padding:8px 12px;border:1.5px solid #fca5a5;border-radius:8px;font-size:13px;outline:none">
+          <button type="submit" style="padding:8px 16px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Confirm Reject</button>
+          <button type="button" onclick="document.getElementById('rejectBox-{{ ad.pk }}').style.display='none'"
+            style="padding:8px 14px;background:#f5f5f5;color:#555;border:none;border-radius:8px;font-size:13px;cursor:pointer">Cancel</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endif %}
+
+</div>
+
+<script>
+function showReject(pk) { document.getElementById('rejectBox-' + pk).style.display = 'block'; }
+function showRenewReject(pk) { document.getElementById('renewReject-' + pk).style.display = 'block'; }
+</script>
+{% endblock %}

@@ -1,0 +1,5 @@
+{% if page.has_other_pages %}<nav class="nd-pagination" aria-label="Pages">
+{% if page.has_previous %}<button type="submit" form="nd-filters" name="page" value="{{ page.previous_page_number }}" class="nd-btn nd-secondary">← Previous</button>{% endif %}
+<span>{{ page.number }} / {{ page.paginator.num_pages }}</span>
+{% if page.has_next %}<button type="submit" form="nd-filters" name="page" value="{{ page.next_page_number }}" class="nd-btn nd-secondary">Next →</button>{% endif %}
+</nav>{% endif %}

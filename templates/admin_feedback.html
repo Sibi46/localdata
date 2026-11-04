@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}User Feedback — Admin{% endblock %}
+{% block content %}
+<div style="max-width:1000px;margin:32px auto;padding:0 16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+    <div>
+      <h1 style="font-size:24px;font-weight:900;color:#111;margin:0 0 4px"><i class="fas fa-comment-dots" style="color:#0a66c2"></i> User Feedback</h1>
+      <p style="font-size:13px;color:#888;margin:0">Complaints and feedback submitted by users</p>
+    </div>
+    <a href="/super-admin/" style="font-size:13px;color:#0a66c2;text-decoration:none"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div style="padding:12px 16px;border-radius:10px;margin-bottom:16px;background:#e8f5e9;border-left:4px solid #2e7d32;color:#1b5e20;font-size:13px;font-weight:700">
+      <i class="fas fa-check-circle"></i> {{ msg }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Stats -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+    <a href="?" style="flex:1;min-width:120px;padding:14px 18px;background:#fff;border:1.5px solid {% if not status_filter %}#0a66c2{% else %}#e5e7eb{% endif %};border-radius:12px;text-decoration:none;text-align:center">
+      <div style="font-size:20px;font-weight:900;color:#111">{{ open_count }}</div>
+      <div style="font-size:12px;color:#888;margin-top:2px">Open</div>
+    </a>
+    <a href="?status=in_review" style="flex:1;min-width:120px;padding:14px 18px;background:#fff;border:1.5px solid {% if status_filter == 'in_review' %}#f59e0b{% else %}#e5e7eb{% endif %};border-radius:12px;text-decoration:none;text-align:center">
+      <div style="font-size:20px;font-weight:900;color:#f59e0b">{{ in_review_count }}</div>
+      <div style="font-size:12px;color:#888;margin-top:2px">In Review</div>
+    </a>
+    <a href="?status=resolved" style="flex:1;min-width:120px;padding:14px 18px;background:#fff;border:1.5px solid {% if status_filter == 'resolved' %}#22c55e{% else %}#e5e7eb{% endif %};border-radius:12px;text-decoration:none;text-align:center">
+      <div style="font-size:20px;font-weight:900;color:#22c55e">{{ resolved_count }}</div>
+      <div style="font-size:12px;color:#888;margin-top:2px">Resolved</div>
+    </a>
+    <a href="?status=open" style="flex:1;min-width:120px;padding:14px 18px;background:#fff;border:1.5px solid {% if status_filter == 'open' %}#c62828{% else %}#e5e7eb{% endif %};border-radius:12px;text-decoration:none;text-align:center">
+      <div style="font-size:20px;font-weight:900;color:#c62828">{{ open_count }}</div>
+      <div style="font-size:12px;color:#888;margin-top:2px">Filter: Open</div>
+    </a>
+  </div>
+
+  {% if not complaints %}
+  <div style="text-align:center;padding:60px 20px;color:#bbb;background:#fff;border:1.5px solid #e5e7eb;border-radius:14px">
+    <div style="font-size:48px;margin-bottom:12px">💬</div>
+    <p>No feedback submitted yet.</p>
+  </div>
+  {% else %}
+  <div style="display:grid;gap:14px">
+    {% for c in complaints %}
+    <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:18px;
+      {% if c.status == 'open' %}border-left:4px solid #c62828{% elif c.status == 'in_review' %}border-left:4px solid #f59e0b{% elif c.status == 'resolved' %}border-left:4px solid #22c55e{% endif %}">
+
+      <!-- Header -->
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-bottom:12px">
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:14px;font-weight:800;color:#111;margin-bottom:3px">{{ c.subject }}</div>
+          <div style="font-size:12px;color:#888">
+            <strong>{{ c.submitted_by.get_full_name|default:c.submitted_by.username }}</strong>
+            ({{ c.submitted_by.phone }}) &nbsp;·&nbsp;
+            {{ c.get_complaint_type_display }} &nbsp;·&nbsp;
+            {{ c.created_at|date:"d M Y, H:i" }}
+          </div>
+        </div>
+        <span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;
+          {% if c.status == 'open' %}background:#fce4ec;color:#c62828
+          {% elif c.status == 'in_review' %}background:#fff8e1;color:#f57f17
+          {% elif c.status == 'resolved' %}background:#e8f5e9;color:#2e7d32
+          {% else %}background:#f5f5f5;color:#666{% endif %}">
+          {{ c.get_status_display }}
+        </span>
+      </div>
+
+      <!-- Description -->
+      <div style="font-size:13px;color:#444;line-height:1.6;background:#f8faff;border-radius:8px;padding:12px;margin-bottom:12px">
+        {{ c.description }}
+      </div>
+
+      {% if c.resolution %}
+      <div style="font-size:12px;color:#2e7d32;background:#e8f5e9;border-radius:8px;padding:10px;margin-bottom:12px">
+        <strong>Resolution:</strong> {{ c.resolution }}
+      </div>
+      {% endif %}
+
+      <!-- Update form -->
+      <form method="POST" style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end">
+        {% csrf_token %}
+        <input type="hidden" name="complaint_id" value="{{ c.pk }}">
+        <div style="flex:1;min-width:160px">
+          <label style="display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:4px">Status</label>
+          <select name="status" style="width:100%;padding:7px 10px;border:1.5px solid #dde1ea;border-radius:8px;font-size:12px;font-weight:700;background:#fff">
+            <option value="open"      {% if c.status == 'open'      %}selected{% endif %}>Open</option>
+            <option value="in_review" {% if c.status == 'in_review' %}selected{% endif %}>In Review</option>
+            <option value="resolved"  {% if c.status == 'resolved'  %}selected{% endif %}>Resolved</option>
+            <option value="closed"    {% if c.status == 'closed'    %}selected{% endif %}>Closed</option>
+          </select>
+        </div>
+        <div style="flex:2;min-width:200px">
+          <label style="display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:4px">Resolution note (optional)</label>
+          <input type="text" name="resolution" value="{{ c.resolution }}" placeholder="Add a note..."
+            style="width:100%;padding:7px 10px;border:1.5px solid #dde1ea;border-radius:8px;font-size:12px;box-sizing:border-box">
+        </div>
+        <button type="submit" style="padding:7px 16px;background:#0a66c2;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">
+          Update
+        </button>
+      </form>
+
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

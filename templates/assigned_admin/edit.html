@@ -1,0 +1,4 @@
+{% extends 'admin_base.html' %}
+{% block title %}Edit Admin Access{% endblock %}
+{% block extra_css %}{% include 'assigned_admin/styles.html' %}{% endblock %}
+{% block content %}<div class="team-wrap"><header class="team-hero"><div><span class="team-kicker">Admin permissions</span><h1>{{ profile.user.get_full_name }}</h1><p>{{ profile.user.username }} · Changes take effect immediately.</p></div><a class="team-button light" href="{% url 'manage_assigned_admins' %}">Back to team</a></header><section class="team-card"><form method="post">{% csrf_token %}{% include 'assigned_admin/scope_fields.html' %}<button class="team-button" type="submit">Save permissions</button></form></section></div>{% endblock %}

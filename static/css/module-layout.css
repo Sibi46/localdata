@@ -1,0 +1,80 @@
+/* Poster dimensions must never control the sponsor carousel's geometry. */
+.hp-sponsored-section #heroSlider2 {
+  width:100%; max-width:920px!important; aspect-ratio:16/9; background:#172033;
+}
+#heroSlider2 .hero-ad-slide2 {width:100%; height:100%!important; margin:0;}
+#heroSlider2 .hero-ad-slide2 img {
+  display:block; width:100%; height:100%!important; max-height:none!important;
+  object-fit:contain!important; background:#172033;
+}
+.offers-page {max-width:1200px; margin:0 auto; padding:0 20px 24px;}
+.offers-page .gal-section {max-width:none; margin:24px 0 0; padding:0;}
+.offers-page .adv-hero {border-radius:16px; margin-bottom:20px;}
+.offers-page .offers-section {background:var(--opc-surface); border-radius:16px; padding:20px; margin:20px 0;}
+.offers-page .offers-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:20px;}
+.offers-page .offer-card {min-width:0; display:flex; flex-direction:column; border:1px solid var(--opc-line); border-radius:14px; overflow:hidden; background:var(--opc-surface); color:var(--opc-text);}
+.offer-card .offer-open {border:0; padding:0; background:none; color:inherit; text-align:left; font:inherit; cursor:pointer; flex:1; display:flex; flex-direction:column; width:100%;}
+.offer-card .offer-image {width:100%; aspect-ratio:16/10; position:relative; display:grid; place-items:center; font-size:48px; background:#eef1f7; overflow:hidden;}
+.offer-card .offer-image img {width:100%; height:100%; position:absolute; inset:0; object-fit:cover;}
+.offer-card .offer-discount {position:absolute; left:10px; top:10px; font-size:13px; font-weight:800; background:#c63d12; color:#fff; border-radius:7px; padding:6px 10px; max-width:calc(100% - 20px); overflow-wrap:anywhere;}
+.offer-card .offer-copy {padding:16px; display:flex; flex-direction:column; gap:7px; width:100%; box-sizing:border-box;}
+.offer-card .offer-business {font-size:16px; line-height:1.4; font-weight:800; overflow-wrap:anywhere;}
+.offer-card .offer-title {font-size:14px; line-height:1.5; color:var(--opc-muted); min-height:3em; overflow-wrap:anywhere;}
+.offer-card .offer-valid {font-size:12px; line-height:1.4; color:var(--opc-muted);}
+.offer-card .offer-actions {display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px 16px; border-top:1px solid var(--opc-line);}
+.offer-card .offer-actions :is(a,button) {font:inherit; font-size:13px; font-weight:700; padding:9px 10px; border:0; border-radius:8px; color:var(--opc-accent); background:#6829dc0d; text-decoration:none; cursor:pointer;}
+.offers-page .offer-filters {display:flex; gap:8px; flex-wrap:wrap; margin:16px 0;}
+.offers-page .offer-filters a {padding:9px 14px; border:1px solid var(--opc-line); border-radius:24px; color:var(--opc-text); background:var(--opc-surface); text-decoration:none; font-size:14px;}
+.offers-page .offer-filters a[aria-current] {background:#6829dc; color:#fff;}
+.offers-page .offers-heading {display:flex; align-items:baseline; flex-wrap:wrap; gap:10px; justify-content:space-between; margin-bottom:16px;}
+.offers-page .offers-heading h2 {font-size:22px; margin:0;}
+.offers-empty {padding:20px; background:var(--opc-surface); border:1px dashed var(--opc-line); border-radius:12px; line-height:1.6;}
+.registration-back {display:inline-flex; align-items:center; gap:8px; padding:12px 16px; margin:12px 0 0; color:var(--opc-accent); font-weight:700; text-decoration:none;}
+@media(max-width:600px) {
+  .offers-page {padding:0 12px 12px;}
+  .offers-page .offers-section {padding:14px; margin:14px 0;}
+  .offers-page .offers-grid {gap:14px;}
+  .offers-page .offers-heading h2 {font-size:19px;}
+}
+/* Health's Nutrition and section controls must remain visible without horizontal swiping. */
+.gi-tabs-bar .gi-tabs-inner {flex-wrap:wrap; overflow:visible; padding:4px 8px; gap:2px;}
+.gi-tabs-bar .gtab-btn {flex:0 1 auto; padding:10px 12px; white-space:normal; margin:0;}
+.gi-body {min-width:0;}
+.gi-body .reel-feed {min-width:0; height:calc(100svh - 240px); min-height:300px;}
+.gi-body .reel-slide {height:calc(100svh - 240px); min-height:300px; box-sizing:border-box;}
+.health-empty {padding:20px; margin:12px 0; border:1px dashed #86bda3; border-radius:12px; background:var(--opc-surface); color:var(--opc-muted); line-height:1.6;}
+.gi-body .gi-sidebar {display:flex; position:static; min-width:0;}
+.gi-sidebar .info-card {position:static;}
+html[data-theme=dark] :is(.gi-tabs-bar,.gi-sidebar .info-card,.hc-box,.hc-box-red,.hc-nav) {background:var(--opc-surface); color:var(--opc-text); border-color:var(--opc-line);}
+@media(max-width:840px){.gi-body .gi-sidebar{display:none;}.gi-tabs-bar .gtab-btn{font-size:12px;}}
+
+.gi-hero-inner .gi-hero-info{flex:1;min-width:0}.gi-hero-inner .opc-theme-toggle{margin-left:auto}
+
+/* Keep a portrait reel proportional instead of stretching it across a desktop column. */
+.gi-body.gi-balanced {max-width:940px; grid-template-columns:minmax(0,460px) minmax(220px,300px); justify-content:center;}
+.gi-body .reel-feed {width:100%; max-width:calc((100svh - 240px) * 9 / 16); justify-self:center;}
+.gi-breadcrumb {max-width:940px; margin:0 auto; padding:12px 16px 0; color:var(--opc-muted); font-size:13px; line-height:1.6; overflow-wrap:anywhere;}
+.gi-breadcrumb a {color:var(--opc-accent);}
+@media(max-width:840px){.gi-body.gi-balanced{grid-template-columns:minmax(0,1fr);}.gi-body .reel-feed{max-width:460px;}}
+
+.gi-body.gi-single{grid-template-columns:minmax(0,460px);max-width:520px}
+
+/* Consistent navigation and controls for local discovery. */
+.navbar .hamburger{border:0;background:transparent;color:var(--opc-text,#263238);min-width:44px;min-height:44px;padding:10px;cursor:pointer;font:inherit}
+.navbar .nav-avatar-btn{min-width:44px;min-height:44px;justify-content:center}
+.navbar .nav-profile-drop{max-width:calc(100vw - 32px)}
+.navbar .nav-profile-drop a,.navbar .mobile-menu a{min-height:44px;box-sizing:border-box}
+.navbar :is(button,a):focus-visible{outline:3px solid #7c3aed;outline-offset:3px}
+.mobile-menu.open{max-height:calc(100dvh - 130px);overflow-y:auto;overscroll-behavior:contain}
+.offers-page .offer-filters a{min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
+.offers-page .offer-actions :is(a,button){min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;flex:1}
+.offers-page .offers-heading{gap:12px;flex-wrap:wrap}
+.offers-page [hidden]{display:none!important}
+.offers-page .offer-filter-status{font-size:13px;color:var(--opc-muted,#64748b);margin:6px 0;min-height:20px}
+.offers-page #offer-filter-error{font-size:14px;color:#9a3412;background:#fff7ed;padding:12px;border-radius:10px;margin-bottom:14px}
+.offers-page #offer-results[aria-busy=true]{opacity:.65}
+.network .nw-utilities{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+.network .nw-utilities a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border:1px solid #d8e4dd;border-radius:12px;background:var(--opc-surface,#fff);color:var(--opc-text,#24463b);font-size:13px;font-weight:650;text-decoration:none;box-sizing:border-box}
+.network .nw-utilities a:hover{border-color:#19735b}
+.network .nw-unread{background:#19735b;color:#fff;padding:2px 6px;border-radius:20px;font-size:11px;min-width:18px;text-align:center}
+@media(max-width:600px){.network .nw-utilities{gap:6px}.network .nw-utilities a{padding:10px;font-size:12px;flex:1}.navbar .nav-container{padding-left:12px;padding-right:12px}}

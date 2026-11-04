@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block title %}{{ listing.title }} – Marketplace{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#faf5ff}
+  #mpdTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #e9d5ff;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #mpdTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #mpdTopBar h2{font-size:15px;font-weight:900;color:#111;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .mpd-wrap{padding:14px 16px 120px;max-width:600px;margin:0 auto}
+  .mpd-card{background:#fff;border-radius:16px;border:1.5px solid #e9d5ff;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 4px rgba(124,58,237,.08)}
+
+  .mpd-img{width:100%;max-height:280px;object-fit:cover;display:block}
+  .mpd-img-placeholder{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:4rem;background:#f3e8ff}
+
+  .mpd-header{padding:16px}
+  .mpd-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .mpd-tag{font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px}
+  .mpd-type{color:#fff}
+  .mpd-type-sell{background:#7c3aed}
+  .mpd-type-rent{background:#0891b2}
+  .mpd-type-free{background:#16a34a}
+  .mpd-type-wanted{background:#ea580c}
+  .mpd-cat-tag{background:#f3e8ff;color:#6b21a8}
+  .mpd-cond-tag{background:#f3f4f6;color:#374151}
+  .mpd-sold-tag{background:#374151;color:#fff}
+  .mpd-title{font-size:18px;font-weight:900;color:#111;margin-bottom:6px;line-height:1.3}
+  .mpd-price{font-size:22px;font-weight:900;color:#7c3aed;margin-bottom:10px}
+  .mpd-price.free{color:#16a34a}
+  .mpd-price.wanted{color:#ea580c;font-size:16px}
+  .mpd-desc{font-size:14px;color:#374151;line-height:1.75;white-space:pre-line;margin-bottom:10px}
+  .mpd-meta{font-size:11px;color:#9ca3af}
+
+  .mpd-contact-box{background:#f3e8ff;border-radius:12px;padding:12px 14px;margin-top:10px;display:flex;align-items:center;gap:10px}
+  .mpd-contact-icon{font-size:1.4rem}
+  .mpd-contact-label{font-size:11px;font-weight:700;color:#6b21a8;margin-bottom:2px}
+  .mpd-contact-val{font-size:14px;font-weight:900;color:#4c1d95}
+
+  .mpd-actions{display:flex;border-top:1px solid #f3e8ff;margin-top:12px}
+  .mpd-action{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:12px 0;background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:#6b7280;font-family:inherit;text-decoration:none}
+  .mpd-action.interested{color:#7c3aed}
+  .mpd-action.danger{color:#ef4444}
+  .mpd-divider{width:1px;background:#f3e8ff;height:36px;flex-shrink:0;align-self:center}
+
+  .mpd-comments{background:#fff;border-radius:16px;border:1.5px solid #e9d5ff;overflow:hidden;margin-bottom:12px}
+  .mpd-comments-head{font-size:12px;font-weight:800;color:#7c3aed;text-transform:uppercase;letter-spacing:.06em;padding:14px 16px 0;margin:0}
+  .mpd-comment{padding:12px 16px;border-top:1px solid #faf5ff}
+  .mpd-comment-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .mpd-comment-user{font-size:12px;font-weight:800;color:#111}
+  .mpd-comment-time{font-size:10px;color:#9ca3af;margin-left:auto}
+  .mpd-comment-text{font-size:13px;color:#374151;line-height:1.5}
+  .mpd-no-comment{padding:16px;text-align:center;font-size:13px;color:#9ca3af}
+
+  .mpd-comment-form{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e9d5ff;padding:10px 16px;display:flex;gap:8px;z-index:100;max-width:600px;margin:0 auto}
+  .mpd-comment-form input{flex:1;padding:10px 14px;border:1.5px solid #e9d5ff;border-radius:24px;font-size:14px;outline:none;font-family:inherit;background:#faf5ff}
+  .mpd-comment-form input:focus{border-color:#7c3aed;background:#fff}
+  .mpd-comment-form button{background:#7c3aed;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+</style>
+
+<div id="mpdTopBar">
+  <a href="/community/marketplace/" class="back">&#8592;</a>
+  <h2>{{ listing.title }}</h2>
+</div>
+
+<div class="mpd-wrap">
+  <div class="mpd-card">
+    {% if listing.image %}
+    <img class="mpd-img" src="{{ listing.image.url }}" alt="{{ listing.title }}">
+    {% else %}
+    <div class="mpd-img-placeholder" id="catEmoji">🛒</div>
+    {% endif %}
+
+    <div class="mpd-header">
+      <div class="mpd-tags">
+        <span class="mpd-tag mpd-type mpd-type-{{ listing.listing_type }}" id="typeTag">{{ listing.get_listing_type_display }}</span>
+        <span class="mpd-tag mpd-cat-tag" id="catTag">{{ listing.get_category_display }}</span>
+        {% if listing.condition and listing.listing_type != 'wanted' %}
+        <span class="mpd-tag mpd-cond-tag">{{ listing.get_condition_display }}</span>
+        {% endif %}
+        {% if listing.is_sold %}<span class="mpd-tag mpd-sold-tag">SOLD</span>{% endif %}
+      </div>
+      <div class="mpd-title">{{ listing.title }}</div>
+      {% if listing.listing_type == 'free' %}
+      <div class="mpd-price free">🎁 Free Giveaway</div>
+      {% elif listing.listing_type == 'wanted' %}
+      <div class="mpd-price wanted">🔍 Wanted — Contact to quote price</div>
+      {% elif listing.price %}
+      <div class="mpd-price">₹{{ listing.price|floatformat:0 }}</div>
+      {% else %}
+      <div class="mpd-price" style="font-size:15px;color:#9ca3af">Price on request</div>
+      {% endif %}
+      <div class="mpd-desc">{{ listing.description }}</div>
+      <div class="mpd-meta">Posted {{ listing.created_at|timesince }} ago by {{ listing.user.get_full_name|default:listing.user.username }}{% if listing.pincode %} · 📍 {{ listing.pincode }}{% endif %}</div>
+
+      {% if listing.contact %}
+      <div class="mpd-contact-box">
+        <span class="mpd-contact-icon">📞</span>
+        <div>
+          <div class="mpd-contact-label">Contact Seller</div>
+          <div class="mpd-contact-val">{{ listing.contact }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="mpd-actions">
+      <button class="mpd-action {% if interested %}interested{% endif %}" id="intBtn" onclick="doInterest({{ listing.pk }})">
+        🤝 <span id="intCount">{{ interest_count }}</span> Interested
+      </button>
+      {% if request.user == listing.user %}
+      <div class="mpd-divider"></div>
+      <button class="mpd-action" id="soldBtn" onclick="toggleSold({{ listing.pk }})">
+        {% if listing.is_sold %}✅ Mark Available{% else %}✔️ Mark Sold{% endif %}
+      </button>
+      <div class="mpd-divider"></div>
+      <a href="/community/marketplace/{{ listing.pk }}/delete/" class="mpd-action danger" onclick="return confirm('Remove listing?')">🗑️</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mpd-comments">
+    <div class="mpd-comments-head">Questions & Comments</div>
+    {% if comments %}
+    {% for c in comments %}
+    <div class="mpd-comment">
+      <div class="mpd-comment-row">
+        <span class="mpd-comment-user">{{ c.user.get_full_name|default:c.user.username }}</span>
+        <span class="mpd-comment-time">{{ c.created_at|timesince }} ago</span>
+      </div>
+      <div class="mpd-comment-text">{{ c.text }}</div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="mpd-no-comment">Ask the seller a question! 💬</div>
+    {% endif %}
+  </div>
+</div>
+
+{% if request.user.is_authenticated %}
+<div class="mpd-comment-form">
+  <form method="post" style="display:contents">
+    {% csrf_token %}
+    <input type="text" name="comment" placeholder="Ask about condition, price, delivery..." required>
+    <button type="submit">Send</button>
+  </form>
+</div>
+{% endif %}
+
+<script>
+(function(){
+  var catIcons={electronics:'📱',furniture:'🛋️',clothing:'👗',books:'📚',vehicles:'🚗',appliances:'🏠',sports:'⚽',toys:'🧸',food:'🥗',services:'🔧',other:'🛒'};
+  var typeIcons={sell:'🏷️',rent:'🔑',free:'🎁',wanted:'🔍'};
+  var cat='{{ listing.category }}';
+  var ltype='{{ listing.listing_type }}';
+  var ce=document.getElementById('catEmoji');
+  if(ce&&catIcons[cat])ce.textContent=catIcons[cat];
+  var ct=document.getElementById('catTag');
+  if(ct&&catIcons[cat])ct.textContent=catIcons[cat]+' '+ct.textContent.trim();
+  var tt=document.getElementById('typeTag');
+  if(tt&&typeIcons[ltype])tt.textContent=typeIcons[ltype]+' '+tt.textContent.trim();
+})();
+function doInterest(pk){
+  fetch('/community/marketplace/'+pk+'/interest/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    var btn=document.getElementById('intBtn');
+    btn.classList.toggle('interested',d.interested);
+    document.getElementById('intCount').textContent=d.count;
+  });
+}
+function toggleSold(pk){
+  fetch('/community/marketplace/'+pk+'/sold/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    var btn=document.getElementById('soldBtn');
+    btn.textContent=d.sold?'✅ Mark Available':'✔️ Mark Sold';
+  });
+}
+</script>
+{% endblock %}

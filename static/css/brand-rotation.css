@@ -1,0 +1,7 @@
+.brand-rotation{display:inline-block;min-width:7.5ch;margin-left:3px;white-space:nowrap;text-align:left;vertical-align:baseline}
+.brand-rotation [data-brand-word]{display:inline-block;margin:0;font-weight:400}
+.auth-brand .brand-rotation,.account-logo .brand-rotation{color:inherit}
+.auth-brand .brand-rotation [data-brand-word]{color:inherit}
+.brand-rotation .brand-dot{color:#dc8650}
+@media(max-width:640px){.studio-home .brand,.market-page .brand{font-size:19px;gap:5px}.studio-home .brand .site-brand-logo,.market-page .brand .site-brand-logo{width:31px;height:30px}.auth-header .auth-brand{font-size:18px;gap:5px}.brand-rotation{min-width:7.2ch;margin-left:2px}}
+@media(max-width:370px){.studio-home .brand,.market-page .brand{font-size:17px;gap:4px}.studio-home .brand .site-brand-logo,.market-page .brand .site-brand-logo{width:28px;height:28px}.auth-header .auth-brand{font-size:16px;gap:4px}.auth-header .auth-brand img{width:30px;height:28px}}

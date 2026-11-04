@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Offer Submitted – Local From{% endblock %}
+{% block content %}
+<style>
+nav.navbar{display:none!important}
+body{background:#F8FAFC;font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.scard{background:#fff;border-radius:24px;padding:36px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.08)}
+.scard-icon{font-size:4rem;margin-bottom:16px}
+.scard-title{font-size:22px;font-weight:900;color:#0F172A;margin-bottom:8px}
+.scard-sub{font-size:14px;color:#64748B;line-height:1.6;margin-bottom:28px}
+.scard-btn{display:block;background:linear-gradient(135deg,#FF5722,#FF9800);color:#fff;border-radius:14px;padding:14px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:10px}
+.scard-btn2{display:block;background:#F1F5F9;color:#64748B;border-radius:14px;padding:13px;font-size:14px;font-weight:700;text-decoration:none}
+</style>
+<div class="scard">
+  <div class="scard-icon">🎉</div>
+  <div class="scard-title">Offer Submitted!</div>
+  <div class="scard-sub">
+    Your offer has been received and is pending review.<br>
+    We'll publish it within a few hours after approval.
+  </div>
+  <a href="/offers/post/" class="scard-btn">🔥 Post Another Offer</a>
+  <a href="/advertise/" class="scard-btn2">← View All Offers</a>
+</div>
+{% endblock %}

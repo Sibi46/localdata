@@ -1,0 +1,38 @@
+{% extends "admin_base.html" %}
+{% block title %}Create State Admin{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-user-shield" style="color:#0a66c2"></i> Create State Admin</div>
+
+<div style="max-width:680px">
+  <div class="ap-card">
+    <form method="POST">
+      {% csrf_token %}
+      <div class="ap-form-grid">
+        <div class="ap-field full">
+          <label>Assign to State *</label>
+          <select name="state_id" required>
+            <option value="">-- Select State --</option>
+            {% for s in states %}<option value="{{ s.pk }}">{{ s.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ap-field">
+          <label>Full Name *</label>
+          <input type="text" name="fullname" placeholder="First Last" required>
+        </div>
+        <div class="ap-field">
+          <label>Mobile Number *</label>
+          <input type="tel" name="phone" placeholder="9876543210" pattern="[0-9]{10}" maxlength="10" required>
+          <small style="color:#888;font-size:11px">This number is used to log in.</small>
+        </div>
+        <div class="ap-field full">
+          <label>Password *</label>
+          <input type="password" name="password" placeholder="Set a strong password" required>
+        </div>
+      </div>
+      <button type="submit" class="ap-btn ap-btn-primary" style="margin-top:16px;padding:12px 28px">
+        <i class="fas fa-user-plus"></i> Create State Admin
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

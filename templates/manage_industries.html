@@ -1,0 +1,64 @@
+{% extends "admin_base.html" %}
+{% block title %}Manage Industries{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-industry" style="color:#e65100"></i> Manage Industries</div>
+<div class="ap-page-subtitle">Configure which industries appear in job postings</div>
+
+<div class="ap-two-col">
+  <div class="ap-card">
+    <div class="ap-inline-form">
+      <h4><i class="fas fa-plus" style="color:#e65100"></i> Add Industry</h4>
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
+        <div class="ap-form-grid">
+          <div class="ap-field full">
+            <label>Industry Name *</label>
+            <input type="text" name="name" placeholder="e.g. Information Technology" required>
+          </div>
+          <div class="ap-field">
+            <label>Collar Type</label>
+            <select name="collar">
+              <option value="white">White Collar</option>
+              <option value="blue">Blue Collar</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+          <div class="ap-field">
+            <label>FA Icon class</label>
+            <input type="text" name="icon" placeholder="fas fa-laptop-code" value="fas fa-industry">
+          </div>
+        </div>
+        <button type="submit" class="ap-btn ap-btn-primary" style="margin-top:12px"><i class="fas fa-plus"></i> Add</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-card-header"><h3>Industries ({{ industries|length }})</h3></div>
+    <table class="ap-table">
+      <thead><tr><th>Icon</th><th>Industry</th><th>Collar</th><th>Roles</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for ind in industries %}
+        <tr>
+          <td><i class="{{ ind.icon }}" style="font-size:18px;color:#e65100"></i></td>
+          <td><strong>{{ ind.name }}</strong></td>
+          <td><span style="font-size:11px;color:{% if ind.collar == 'white' %}#0a66c2{% elif ind.collar == 'blue' %}#e65100{% else %}#6a1b9a{% endif %}">{{ ind.get_collar_display }}</span></td>
+          <td></td>
+          <td><span class="status-pill {% if ind.is_active %}pill-active{% else %}pill-inactive{% endif %}">{{ ind.is_active|yesno:"Active,Hidden" }}</span></td>
+          <td>
+            <form method="POST" style="display:inline">{% csrf_token %}
+              <input type="hidden" name="action" value="toggle">
+              <input type="hidden" name="pk" value="{{ ind.pk }}">
+              <button type="submit" class="ap-btn {% if ind.is_active %}ap-btn-danger{% else %}ap-btn-success{% endif %}" style="font-size:11px">{{ ind.is_active|yesno:"Hide,Show" }}</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;color:#bbb;padding:30px">No industries yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

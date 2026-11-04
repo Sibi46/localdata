@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Admin — Ad Approvals{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/advertiser.css' %}?v=2">{% endblock %}
+
+{% block content %}
+<div class="adm-page">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 style="font-size:22px;font-weight:800;color:#191919"><i class="fas fa-ad" style="color:#0a66c2"></i> Advertisement Approvals</h1>
+      <p style="font-size:13px;color:#888;margin-top:3px">Review creatives and activate ads</p>
+    </div>
+    <a href="/admin-panel/advertisers/" style="padding:10px 20px;background:#f0f0f0;color:#444;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none">
+      <i class="fas fa-users"></i> Advertisers
+    </a>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="adm-tabs">
+    <a href="?status=pending_review"  class="adm-tab {% if status_filter == 'pending_review' %}active{% endif %}">
+      <i class="fas fa-hourglass-half"></i> Pending Review
+    </a>
+    <a href="?status=active"  class="adm-tab {% if status_filter == 'active' %}active{% endif %}">
+      <i class="fas fa-broadcast-tower"></i> Active
+    </a>
+    <a href="?status=rejected" class="adm-tab {% if status_filter == 'rejected' %}active{% endif %}">
+      <i class="fas fa-ban"></i> Rejected
+    </a>
+    <a href="?status=expired"  class="adm-tab {% if status_filter == 'expired' %}active{% endif %}">
+      <i class="fas fa-clock"></i> Expired
+    </a>
+  </div>
+
+  <div class="adm-table-card">
+    {% if ads %}
+    <div style="overflow-x:auto">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>Ad</th>
+            <th>Advertiser</th>
+            <th>Type</th>
+            <th>Payment</th>
+            <th>Duration</th>
+            <th>Stats</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ad in ads %}
+          <tr>
+            <td>
+              {% if ad.image %}
+              <img src="{{ ad.image.url }}" alt="" style="width:80px;height:54px;object-fit:cover;border-radius:6px;margin-bottom:4px;display:block">
+              {% else %}
+              <div style="width:80px;height:54px;background:#fff3e0;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#e65100;font-size:12px;margin-bottom:4px;flex-direction:column;gap:2px;border:1.5px dashed #ffb74d">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span style="font-size:10px">No image</span>
+              </div>
+              {% endif %}
+              <div class="adm-biz-name">{{ ad.title }}</div>
+              {% if ad.link_url %}
+              <a href="{{ ad.link_url }}" target="_blank" style="font-size:11px;color:#0a66c2">{{ ad.link_url|truncatechars:30 }}</a>
+              {% endif %}
+            </td>
+            <td>
+              <div style="font-weight:600;font-size:13px">{{ ad.advertiser.business_name }}</div>
+              <div style="font-size:11px;color:#888">{{ ad.advertiser.phone }}</div>
+            </td>
+            <td>
+              <span class="adv-ad-type-badge badge-{{ ad.package.ad_type }}">
+                {{ ad.package.get_ad_type_display }}
+              </span>
+              <div style="font-size:11px;color:#888;margin-top:4px">{{ ad.package.duration_days }}d</div>
+            </td>
+            <td>
+              {% if ad.payment %}
+              <div style="font-size:13px;font-weight:700;color:#0a66c2">₹{{ ad.payment.total_amount }}</div>
+              <span class="ad-status-pill pill-{% if ad.payment.status == 'paid' %}active{% else %}pending_payment{% endif %}"
+                style="font-size:10px">{{ ad.payment.status }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td style="font-size:12px;color:#666">
+              {% if ad.start_date %}{{ ad.start_date }}<br>to {{ ad.end_date }}
+              {% else %}Not started{% endif %}
+            </td>
+            <td style="text-align:center">
+              <div style="font-size:13px;font-weight:700">{{ ad.views }}</div>
+              <div style="font-size:10px;color:#888">views</div>
+              <div style="font-size:13px;font-weight:700;margin-top:4px">{{ ad.clicks }}</div>
+              <div style="font-size:10px;color:#888">clicks</div>
+            </td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                {% if status_filter == 'pending_review' %}
+                <form method="post" action="/admin-panel/ads/{{ ad.pk }}/activate/" style="display:inline">{% csrf_token %}<button type="submit" class="adm-btn adm-activate">
+                  <i class="fas fa-rocket"></i> Activate
+                </button></form>
+                <a href="/admin-panel/ads/{{ ad.pk }}/reject/" class="adm-btn adm-reject"
+                   onclick="return confirm('Reject this ad?')">
+                  <i class="fas fa-times"></i> Reject
+                </a>
+                {% elif status_filter == 'active' %}
+                <span style="color:#2e7d32;font-size:12px;font-weight:700">
+                  <i class="fas fa-circle" style="font-size:8px"></i> Live
+                </span>
+                <div style="font-size:11px;color:#888">{{ ad.days_remaining }} days left</div>
+                {% endif %}
+                {% if ad.wa_link %}
+                <a href="{{ ad.wa_link }}" target="_blank" class="adm-btn" style="background:#e7f9ed;color:#1b8a3d">
+                  <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                {% endif %}
+                <a href="/advertiser/performance/{{ ad.pk }}/" class="adm-btn adm-view">
+                  <i class="fas fa-chart-bar"></i> Stats
+                </a>
+                <form method="POST" action="/admin-panel/ads/{{ ad.pk }}/delete/" style="display:inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="status_filter" value="{{ status_filter }}">
+                  <button type="submit" class="adm-btn adm-reject"
+                          onclick="return confirm('Delete this ad permanently?')"
+                          style="background:#fce4ec;color:#c62828;border:none;cursor:pointer">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:60px;color:#888">
+      <i class="fas fa-ad" style="font-size:48px;color:#ddd;display:block;margin-bottom:16px"></i>
+      <p>No ads with status <strong>{{ status_filter }}</strong>.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}{{ cause.name }}{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <div style="margin-bottom:14px"><a href="/portal/c/{{ cause.community.page_id }}/" style="font-size:12px;color:#1d4ed8;font-weight:700">← {{ cause.community.name }}</a></div>
+
+  <div class="pgrid">
+    <div>
+      {% if cause.image %}
+      <img src="{{ cause.image.url }}" alt="{{ cause.name }}" style="width:100%;border-radius:14px;max-height:300px;object-fit:cover;margin-bottom:16px">
+      {% endif %}
+      <div class="pcard" style="margin-bottom:14px">
+        <div class="pcard-body">
+          <h1 style="font-size:20px;font-weight:900;color:#0f172a;margin-bottom:6px">{{ cause.name }}</h1>
+          <div style="font-size:12px;color:#64748b;margin-bottom:12px">
+            {{ cause.community.name }} · Started {{ cause.start_date|date:"d M Y" }}
+            {% if cause.end_date %} · Ends {{ cause.end_date|date:"d M Y" }}{% endif %}
+            {% if cause.location %} · {{ cause.location }}{% endif %}
+          </div>
+          <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:14px">{{ cause.description }}</p>
+          <div style="background:#eff6ff;border-radius:10px;padding:12px 16px;margin-bottom:14px">
+            <div style="font-size:11px;font-weight:700;color:#1d4ed8;margin-bottom:4px">OBJECTIVE</div>
+            <p style="font-size:13px;color:#1e3a8a">{{ cause.objective }}</p>
+          </div>
+          {% if cause.target_goal %}
+          <div style="background:#f0fdf4;border-radius:10px;padding:10px 14px;font-size:13px;color:#065f46;font-weight:700">
+            🎯 Goal: {{ cause.target_goal }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- RELATED EVENTS -->
+
+    </div>
+
+    <div>
+      <div class="pcard" style="margin-bottom:14px">
+        <div class="pcard-body" style="text-align:center;padding:24px">
+          <div style="font-size:36px;font-weight:900;color:#1d4ed8;margin-bottom:4px" id="support-count">{{ cause.support_count }}</div>
+          <div style="font-size:13px;color:#64748b;margin-bottom:16px">supporters</div>
+          {% if user.is_authenticated %}
+          <button onclick="supportCause({{ cause.pk }}, this)" class="pbtn pbtn-full {% if supported %}pbtn-red{% else %}pbtn-primary{% endif %}" id="support-btn">
+            {% if supported %}✗ Unsupport{% else %}❤️ SUPPORT CAUSE{% endif %}
+          </button>
+          {% else %}
+          <a href="/login/?next=/portal/cause/{{ cause.pk }}/" class="pbtn pbtn-primary pbtn-full">❤️ SUPPORT CAUSE</a>
+          {% endif %}
+          <a href="/portal/c/{{ cause.community.page_id }}/volunteer/" class="pbtn pbtn-green pbtn-full" style="margin-top:8px">🙋 VOLUNTEER</a>
+        </div>
+      </div>
+
+      <div class="pcard">
+        <div class="pcard-head"><div class="pcard-title">About the Community</div></div>
+        <div class="pcard-body">
+          <a href="/portal/c/{{ cause.community.page_id }}/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+            <div style="width:40px;height:40px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#1d4ed8">{{ cause.community.name|first }}</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:#0f172a">{{ cause.community.name }}</div>
+              <div style="font-size:11px;color:#1d4ed8;font-family:monospace">{{ cause.community.page_id }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function supportCause(pk, btn) {
+  fetch('/portal/cause/' + pk + '/support/', {method:'POST', headers:{'X-CSRFToken':'{{ csrf_token }}'}})
+    .then(r=>r.json()).then(d=>{
+      document.getElementById('support-count').textContent = d.count;
+      if(d.status=='supported'){btn.textContent='✗ Unsupport';btn.className='pbtn pbtn-full pbtn-red';}
+      else{btn.textContent='❤️ SUPPORT CAUSE';btn.className='pbtn pbtn-full pbtn-primary';}
+    });
+}
+</script>
+{% endblock %}

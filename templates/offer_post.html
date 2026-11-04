@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+{% block title %}Post an Offer – Local From{% endblock %}
+{% block content %}
+<style>
+nav.navbar{display:none!important}
+*{box-sizing:border-box}
+body{background:#F8FAFC;font-family:'Inter',system-ui,sans-serif;color:#0F172A}
+
+/* TOP BAR */
+.op-topbar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #E2E8F0;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.op-topbar a.back{width:36px;height:36px;border-radius:10px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;color:#374151;text-decoration:none;font-size:16px;flex-shrink:0}
+.op-topbar h2{font-size:16px;font-weight:800;color:#0F172A;margin:0;flex:1}
+
+.op-wrap{padding:20px 20px 40px;max-width:600px;margin:0 auto}
+
+/* CARD */
+.op-card{background:#fff;border-radius:20px;border:1px solid #E2E8F0;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.op-card-title{font-size:11px;font-weight:700;color:#FF5722;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+
+/* FIELDS */
+.op-field{margin-bottom:16px}
+.op-field:last-child{margin-bottom:0}
+.op-label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px}
+.op-input{width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:#F8FAFC;color:#0F172A;transition:border-color .2s}
+.op-input:focus{border-color:#FF5722;background:#fff;box-shadow:0 0 0 3px rgba(255,87,34,.08)}
+select.op-input{cursor:pointer}
+textarea.op-input{min-height:90px;resize:vertical}
+.op-hint{font-size:10px;color:#94A3B8;margin-top:4px}
+.op-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* CATEGORY CHIPS */
+.op-cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.valid-chip{border:2px solid #E2E8F0;border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer;font-size:13px;font-weight:700;color:#374151;background:#F8FAFC;transition:.2s;display:block}
+.valid-chip.selected{border-color:#FF5722;background:#FFF3F0;color:#FF5722}
+.day-chip{border:2px solid #E2E8F0;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:700;color:#94A3B8;background:#F8FAFC;cursor:pointer;transition:.2s;user-select:none;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:46px}
+.day-chip .day-label{font-size:13px;font-weight:800;color:inherit}
+.day-chip .day-state{font-size:9px;font-weight:800;letter-spacing:.05em;color:#CBD5E1}
+.day-chip.on{border-color:#FF5722;background:#FF5722;color:#fff}
+.day-chip.on .day-state{color:rgba(255,255,255,.8)}
+.op-cat-chip{border:2px solid #E2E8F0;border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer;transition:.2s;background:#F8FAFC}
+.op-cat-chip input{display:none}
+.op-cat-chip.selected{border-color:#FF5722;background:#FFF3F0}
+.op-cat-chip-icon{font-size:1.4rem;display:block;margin-bottom:4px}
+.op-cat-chip-label{font-size:11px;font-weight:700;color:#374151}
+
+/* FLASH TOGGLE */
+.op-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:#FFF3F0;border-radius:14px;border:1.5px solid #FFCCBC}
+.op-toggle-label{font-size:13px;font-weight:700;color:#BF360C}
+.op-toggle-sub{font-size:11px;color:#EF6C00;margin-top:2px}
+.op-toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.op-toggle input{opacity:0;width:0;height:0}
+.op-toggle-slider{position:absolute;inset:0;background:#E2E8F0;border-radius:24px;cursor:pointer;transition:.3s}
+.op-toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.op-toggle input:checked+.op-toggle-slider{background:#FF5722}
+.op-toggle input:checked+.op-toggle-slider:before{transform:translateX(20px)}
+
+/* PHOTO */
+.op-photo-area{border:2px dashed #FFCCBC;border-radius:16px;padding:24px;text-align:center;cursor:pointer;transition:.2s;position:relative;background:#FFF8F6}
+.op-photo-area:hover{border-color:#FF5722;background:#FFF3F0}
+.op-photo-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+#photoPreview{width:100%;height:200px;object-fit:cover;border-radius:12px}
+/* Flash blink */
+@keyframes flashBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.15)}}
+.flash-blink{animation:flashBlink .8s infinite}
+/* Image crop */
+#photoPreview{width:100%;height:200px;object-fit:cover;border-radius:12px;display:block}
+
+/* SUBMIT */
+.op-submit{width:100%;padding:15px;background:linear-gradient(135deg,#FF5722,#FF9800);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(255,87,34,.35)}
+.op-submit:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,87,34,.45)}
+
+/* NOTICE */
+.op-notice{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:14px;padding:14px;font-size:12px;color:#92400E;line-height:1.6;margin-bottom:16px}
+</style>
+
+
+
+<div class="op-wrap">
+
+<div class="op-notice">
+  ⏳ Your offer will be reviewed by our team before it goes live. Usually approved within a few hours.
+</div>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<!-- Business Info -->
+<div class="op-card">
+  <div class="op-card-title">🏪 Business Details</div>
+  <div class="op-field">
+    <label class="op-label">Business Name *</label>
+    <input class="op-input" type="text" name="business_name" placeholder="e.g. Sri Murugan Hotel" required style="text-transform:uppercase" oninput="var s=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(s,s)">
+  </div>
+  <div class="op-field">
+    <label class="op-label">WhatsApp / Contact Number <span style="color:#94A3B8;font-weight:400">(optional)</span></label>
+    <input class="op-input" type="tel" name="contact_phone" placeholder="e.g. 9876543210" maxlength="15" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+    <div class="op-hint">Customers will be connected via WhatsApp when they tap "Grab Deal"</div>
+  </div>
+</div>
+
+<!-- Offer Details -->
+<div class="op-card">
+  <div class="op-card-title">🏷️ Offer Details</div>
+  <div class="op-field">
+    <label class="op-label">Offer Title * <span style="color:#94A3B8;font-weight:400">(max 50 chars)</span></label>
+    <input class="op-input" type="text" name="title" placeholder="e.g. Special Lunch Combo, Weekend Sale" required maxlength="50" style="text-transform:uppercase" oninput="var s=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(s,s);document.getElementById('titleCount').textContent=this.value.length+'/50'">
+    <div class="op-hint"><span id="titleCount">0/50</span> characters</div>
+  </div>
+  <div class="op-field">
+    <label class="op-label">Discount Text * <span style="color:#94A3B8;font-weight:400">(shown as badge)</span></label>
+    <input class="op-input" type="text" name="discount_text" placeholder="e.g. 20% OFF, Buy 1 Get 1, Free Delivery" maxlength="60" required>
+    <div class="op-hint">Keep it short — max 60 characters</div>
+  </div>
+  <div class="op-row">
+    <div class="op-field">
+      <label class="op-label">📅 Offer Valid</label>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="validChips">
+          <label class="valid-chip" onclick="setValid(this,'week')">
+            <input type="radio" name="valid_type" value="week" style="display:none">
+            📅 This Week
+          </label>
+          <label class="valid-chip" onclick="setValid(this,'month')">
+            <input type="radio" name="valid_type" value="month" style="display:none">
+            🗓 This Month
+          </label>
+          <label class="valid-chip" onclick="setValid(this,'weekdays')">
+            <input type="radio" name="valid_type" value="weekdays" style="display:none">
+            💼 Mon – Fri Only
+          </label>
+          <label class="valid-chip" onclick="setValid(this,'specific')">
+            <input type="radio" name="valid_type" value="specific" style="display:none">
+            📌 Specific Date
+          </label>
+          <label class="valid-chip" onclick="setValid(this,'repeat')" style="grid-column:1/-1">
+            <input type="radio" name="valid_type" value="repeat" style="display:none">
+            🔁 Repeat Weekly (choose days)
+          </label>
+        </div>
+        <input class="op-input" type="date" name="valid_until" id="specificDate" style="display:none;margin-top:4px">
+        <div id="dayPicker" style="display:none;margin-top:8px">
+          <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">Select days this offer repeats every week:</div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px" id="dayBtns"></div>
+        </div>
+      </div>
+    </div>
+    <div class="op-field">
+      <label class="op-label">Description</label>
+      <input class="op-input" type="text" name="description" placeholder="Extra details (optional)">
+    </div>
+  </div>
+</div>
+
+<!-- Category -->
+<div class="op-card">
+  <div class="op-card-title">📂 Category</div>
+  <div style="position:relative">
+    <input class="op-input" id="catSearch" autocomplete="off" placeholder="🔍 Search category e.g. Pizza, Salon, Gym..." oninput="filterCats(this.value)" onfocus="showCatDrop()" style="padding-right:36px">
+    <input type="hidden" name="category" id="catValue" value="other">
+    <div id="catSelected" style="margin-top:8px;font-size:13px;font-weight:700;color:#FF5722;display:none"></div>
+    <div id="catDrop" style="display:none;position:absolute;z-index:300;left:0;right:0;top:calc(100% + 2px);background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-height:240px;overflow-y:auto;border:1px solid #F1F5F9"></div>
+  </div>
+</div>
+
+<!-- Photo -->
+<div class="op-card">
+  <div class="op-card-title">📸 Offer Photo <span style="color:#94A3B8;font-weight:400;text-transform:none">(optional)</span></div>
+  <div class="op-photo-area" id="photoArea">
+    <input type="file" name="image" accept="image/*" onchange="previewPhoto(this)">
+    <div id="photoPlaceholder">
+      <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
+      <div style="font-size:13px;font-weight:700;color:#FF7043">Upload offer image</div>
+      <div style="font-size:11px;color:#94A3B8;margin-top:4px">JPG, PNG up to 10MB</div>
+    </div>
+    <img id="photoPreview" style="display:none;width:100%;max-height:180px;object-fit:cover;border-radius:10px" alt="">
+  </div>
+</div>
+
+<!-- Flash Deal toggle -->
+<div class="op-card">
+  <div class="op-card-title">⚡ Flash Deal</div>
+  <div class="op-toggle-row">
+    <div>
+      <div class="op-toggle-label"><span class="flash-blink">⚡</span> Mark as Flash Deal</div>
+      <div class="op-toggle-sub">Shows in the Flash Deals section with countdown timer</div>
+    </div>
+    <label class="op-toggle">
+      <input type="checkbox" name="is_flash" value="1">
+      <span class="op-toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<input type="hidden" name="valid_days" id="validDaysHidden">
+<button type="submit" class="op-submit" onclick="collectDays()">🔥 Submit Offer</button>
+</form>
+</div>
+
+<script>
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+document.addEventListener('DOMContentLoaded', function() {
+  const c = document.getElementById('dayBtns');
+  if (!c) return;
+  DAYS.forEach(d => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'day-chip';
+    btn.innerHTML = '<span class="day-label">' + d + '</span><span class="day-state">OFF</span>';
+    btn.dataset.day = d;
+    btn.onclick = function() {
+      this.classList.toggle('on');
+      this.querySelector('.day-state').textContent = this.classList.contains('on') ? 'ON' : 'OFF';
+    };
+    c.appendChild(btn);
+  });
+});
+
+function setValid(el, val) {
+  document.querySelectorAll('.valid-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const sd = document.getElementById('specificDate');
+  const dp = document.getElementById('dayPicker');
+  sd.style.display = 'none'; sd.required = false;
+  dp.style.display = 'none';
+  if (val === 'specific') {
+    sd.style.display = 'block'; sd.required = true;
+  } else if (val === 'repeat') {
+    dp.style.display = 'block';
+  } else {
+    const today = new Date(); let d;
+    if (val === 'week') {
+      const diff = (7 - today.getDay()) % 7 || 7;
+      d = new Date(today); d.setDate(today.getDate() + diff);
+    } else if (val === 'month') {
+      d = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    } else if (val === 'weekdays') {
+      const day = today.getDay();
+      const daysToFri = day <= 5 ? 5 - day : 6;
+      d = new Date(today); d.setDate(today.getDate() + daysToFri);
+    }
+    if (d) { sd.value = d.toISOString().split('T')[0]; }
+  }
+}
+function collectDays() {
+  const selected = [...document.querySelectorAll('#dayBtns .day-chip.on')].map(b => b.dataset.day);
+  document.getElementById('validDaysHidden').value = selected.join(',');
+}
+const ALL_CATS = [
+  // Food & Drinks
+  {v:'food_restaurant',l:'🍽️ Restaurant'},
+  {v:'food_pizza',l:'🍕 Pizza'},
+  {v:'food_biryani',l:'🍛 Biryani'},
+  {v:'food_sweets',l:'🍮 Sweets & Mithai'},
+  {v:'food_bakery',l:'🥐 Bakery & Breads'},
+  {v:'food_juice',l:'🥤 Juice & Beverages'},
+  {v:'food_icecream',l:'🍦 Ice Cream'},
+  {v:'food_cafe',l:'☕ Café & Coffee'},
+  {v:'food_tiffin',l:'🥡 Tiffin Service'},
+  {v:'food_catering',l:'🍱 Catering'},
+  {v:'food_chicken',l:'🍗 Chicken & Meat'},
+  {v:'food_fish',l:'🐟 Fish & Seafood'},
+  {v:'food_veg',l:'🥦 Veg & Organic'},
+  {v:'food_snacks',l:'🍿 Snacks & Fast Food'},
+  {v:'food_hotel',l:'🏨 Hotel & Dining'},
+  // Salon & Beauty
+  {v:'salon_hair',l:'✂️ Hair Salon'},
+  {v:'salon_ladies',l:'💅 Ladies Parlour'},
+  {v:'salon_spa',l:'🧖 Spa & Massage'},
+  {v:'salon_makeup',l:'💄 Makeup Artist'},
+  {v:'salon_nail',l:'💅 Nail Art'},
+  {v:'salon_skin',l:'🧴 Skin Care & Facial'},
+  {v:'salon_threading',l:'🪡 Threading & Waxing'},
+  {v:'salon_tattoo',l:'🖋️ Tattoo Studio'},
+  // Health & Wellness
+  {v:'health_pharmacy',l:'💊 Pharmacy & Medical'},
+  {v:'health_clinic',l:'🏥 Clinic & Hospital'},
+  {v:'health_dental',l:'🦷 Dental Care'},
+  {v:'health_eye',l:'👁️ Eye Care / Optical'},
+  {v:'health_lab',l:'🧪 Diagnostic Lab'},
+  {v:'health_gym',l:'🏋️ Gym & Fitness'},
+  {v:'health_yoga',l:'🧘 Yoga & Meditation'},
+  {v:'health_ayurveda',l:'🌿 Ayurveda & Herbal'},
+  {v:'health_physio',l:'🩺 Physiotherapy'},
+  {v:'health_homeo',l:'🌱 Homeopathy'},
+  // Shopping
+  {v:'shop_clothing',l:'👗 Clothing & Fashion'},
+  {v:'shop_footwear',l:'👟 Footwear & Shoes'},
+  {v:'shop_jewellery',l:'💍 Jewellery & Gold'},
+  {v:'shop_electronics',l:'📱 Electronics & Mobiles'},
+  {v:'shop_grocery',l:'🛒 Grocery & Supermarket'},
+  {v:'shop_furniture',l:'🪑 Furniture & Home'},
+  {v:'shop_stationery',l:'📚 Books & Stationery'},
+  {v:'shop_toys',l:'🧸 Toys & Baby Products'},
+  {v:'shop_sports',l:'⚽ Sports & Outdoors'},
+  {v:'shop_gifts',l:'🎁 Gifts & Novelties'},
+  {v:'shop_hardware',l:'🔩 Hardware & Tools'},
+  {v:'shop_opticals',l:'👓 Opticals & Eyewear'},
+  {v:'shop_luggage',l:'🧳 Bags & Luggage'},
+  {v:'shop_cosmetics',l:'🧴 Cosmetics & Perfumes'},
+  {v:'shop_flowers',l:'💐 Flowers & Plants'},
+  // Education
+  {v:'edu_tuition',l:'📖 Tuition & Coaching'},
+  {v:'edu_computer',l:'💻 Computer Training'},
+  {v:'edu_music',l:'🎸 Music & Dance Classes'},
+  {v:'edu_art',l:'🎨 Art & Craft Classes'},
+  {v:'edu_language',l:'🗣️ Language Classes'},
+  {v:'edu_sports',l:'🏸 Sports Coaching'},
+  {v:'edu_driving',l:'🚗 Driving School'},
+  {v:'edu_preschool',l:'🧒 Preschool & Daycare'},
+  // Services
+  {v:'srv_plumber',l:'🔧 Plumber'},
+  {v:'srv_electrician',l:'⚡ Electrician'},
+  {v:'srv_carpenter',l:'🪚 Carpenter'},
+  {v:'srv_painter',l:'🖌️ Painter & Waterproof'},
+  {v:'srv_cleaning',l:'🧹 Home Cleaning'},
+  {v:'srv_pest',l:'🐛 Pest Control'},
+  {v:'srv_ac',l:'❄️ AC Service & Repair'},
+  {v:'srv_appliance',l:'🔨 Appliance Repair'},
+  {v:'srv_interior',l:'🛋️ Interior Design'},
+  {v:'srv_security',l:'🔐 Security & CCTV'},
+  {v:'srv_laundry',l:'👔 Laundry & Dry Clean'},
+  {v:'srv_packers',l:'📦 Packers & Movers'},
+  {v:'srv_event',l:'🎉 Event & Decoration'},
+  {v:'srv_catering',l:'🍽️ Catering Service'},
+  {v:'srv_photo',l:'📷 Photography & Video'},
+  {v:'srv_printing',l:'🖨️ Printing & Banners'},
+  {v:'srv_travel',l:'✈️ Travel & Tours'},
+  {v:'srv_taxi',l:'🚕 Taxi & Auto'},
+  {v:'srv_courier',l:'📮 Courier & Delivery'},
+  {v:'srv_mobile',l:'📱 Mobile Repair'},
+  {v:'srv_computer',l:'🖥️ Computer Repair'},
+  // Real Estate
+  {v:'re_rentals',l:'🏠 Room & House Rent'},
+  {v:'re_pg',l:'🏡 PG & Hostel'},
+  {v:'re_property',l:'🏗️ Property & Plots'},
+  // Automotive
+  {v:'auto_service',l:'🚗 Car Service & Wash'},
+  {v:'auto_bike',l:'🏍️ Bike Service'},
+  {v:'auto_tyres',l:'🔄 Tyres & Accessories'},
+  {v:'auto_spare',l:'🔧 Spare Parts'},
+  // Finance
+  {v:'fin_insurance',l:'📋 Insurance'},
+  {v:'fin_loan',l:'💰 Loans & Finance'},
+  {v:'fin_tax',l:'📊 Tax & Accounting'},
+  // Others
+  {v:'pet_care',l:'🐾 Pet Care & Vet'},
+  {v:'agri',l:'🌾 Agriculture & Seeds'},
+  {v:'other',l:'🎁 Other'},
+];
+
+function showCatDrop() {
+  filterCats('');
+  document.getElementById('catDrop').style.display = 'block';
+}
+function filterCats(q) {
+  const drop = document.getElementById('catDrop');
+  const list = q ? ALL_CATS.filter(c => c.l.toLowerCase().includes(q.toLowerCase())) : ALL_CATS;
+  drop.innerHTML = list.map(c =>
+    '<div class="dditem" onclick="pickCat(\'' + c.v + '\',\'' + c.l.replace(/'/g,"&#39;") + '\')">' + c.l + '</div>'
+  ).join('');
+  drop.style.display = 'block';
+}
+function pickCat(val, label) {
+  document.getElementById('catValue').value = val;
+  document.getElementById('catSearch').value = label;
+  document.getElementById('catDrop').style.display = 'none';
+  const sel = document.getElementById('catSelected');
+  sel.textContent = '✅ ' + label;
+  sel.style.display = 'block';
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#catSearch') && !e.target.closest('#catDrop')) {
+    document.getElementById('catDrop').style.display = 'none';
+  }
+});
+function selectCat(el, val) {}
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('photoPreview').src = e.target.result;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

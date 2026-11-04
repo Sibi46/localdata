@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Nominate a Hero – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#fff5f5}
+  #lhpTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #fecaca;padding:12px 16px;display:flex;align-items:center;gap:10px}
+  #lhpTopBar a{color:#374151;text-decoration:none;font-size:20px}
+  #lhpTopBar h2{font-size:15px;font-weight:900;color:#111;margin:0;flex:1}
+  .lhp-form{padding:16px 16px 100px;max-width:600px;margin:0 auto}
+  .form-card{background:#fff;border-radius:16px;padding:20px;border:1.5px solid #fecaca;margin-bottom:14px}
+  .form-card h3{font-size:11px;font-weight:800;color:#dc2626;text-transform:uppercase;letter-spacing:.06em;margin:0 0 14px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:5px}
+  .field input,.field textarea{width:100%;padding:11px 13px;border:1.5px solid #fecaca;border-radius:10px;font-size:14px;box-sizing:border-box;outline:none;font-family:inherit;background:#fff5f5}
+  .field input:focus,.field textarea:focus{border-color:#dc2626;background:#fff}
+  .field textarea{min-height:100px;resize:vertical}
+
+  .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .cat-opt{position:relative}
+  .cat-opt input[type=radio]{position:absolute;opacity:0;width:0;height:0}
+  .cat-opt label{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:12px;border:1.5px solid #fecaca;cursor:pointer;font-size:10px;font-weight:700;color:#991b1b;text-align:center;line-height:1.2;transition:all .15s;background:#fff5f5}
+  .cat-opt label .icon{font-size:22px}
+  .cat-opt input:checked + label{border-color:#dc2626;background:#fee2e2;color:#7f1d1d}
+
+  .img-upload{width:100%;height:110px;border:2px dashed #fecaca;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:#fff5f5;position:relative;overflow:hidden;transition:border-color .15s}
+  .img-upload:hover{border-color:#dc2626}
+  .img-upload span{font-size:12px;color:#dc2626;position:relative}
+  .img-upload .preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit}
+</style>
+
+<div id="lhpTopBar">
+  <a href="/community/local-heroes/">&#8592;</a>
+  <h2>🦸 Nominate a Local Hero</h2>
+</div>
+
+<div class="lhp-form">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-card">
+      <h3>Category</h3>
+      <div class="cat-grid">
+        <div class="cat-opt"><input type="radio" name="category" id="cat_social" value="social" checked><label for="cat_social"><span class="icon">🤝</span>Social</label></div>
+        <div class="cat-opt"><input type="radio" name="category" id="cat_env" value="environment"><label for="cat_env"><span class="icon">🌿</span>Env</label></div>
+        <div class="cat-opt"><input type="radio" name="category" id="cat_edu" value="education"><label for="cat_edu"><span class="icon">📚</span>Education</label></div>
+        <div class="cat-opt"><input type="radio" name="category" id="cat_health" value="health"><label for="cat_health"><span class="icon">🏥</span>Health</label></div>
+        <div class="cat-opt"><input type="radio" name="category" id="cat_sports" value="sports"><label for="cat_sports"><span class="icon">🏅</span>Sports</label></div>
+        <div class="cat-opt"><input type="radio" name="category" id="cat_arts" value="arts"><label for="cat_arts"><span class="icon">🎨</span>Arts</label></div>
+        <div class="cat-opt"><input type="radio" name="category" id="cat_other" value="other"><label for="cat_other"><span class="icon">🦸</span>Other</label></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>About the Hero</h3>
+      <div class="field">
+        <label>Hero's Name *</label>
+        <input type="text" name="hero_name" placeholder="e.g. Mr. Rajan Kumar" required>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>Their Story</h3>
+      <div class="field">
+        <label>Title *</label>
+        <input type="text" name="title" placeholder="e.g. The man who planted 500 trees in our colony" required>
+      </div>
+      <div class="field">
+        <label>Full Story *</label>
+        <textarea name="content" placeholder="Describe what this person did, why it matters, and how they made a difference..." required></textarea>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>Photo (optional)</h3>
+      <div class="img-upload" onclick="document.getElementById('lhImg').click()">
+        <span style="font-size:2rem">📷</span>
+        <span>Add a photo of the hero or their work</span>
+        <input type="file" id="lhImg" name="image" accept="image/*" style="display:none" onchange="previewImg(this)">
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Nominate This Hero 🦸</button>
+  </form>
+</div>
+
+<script>
+function previewImg(input){
+  if(input.files&&input.files[0]){
+    var r=new FileReader();
+    r.onload=function(e){
+      var box=input.closest('.img-upload');
+      var img=box.querySelector('.preview')||document.createElement('img');
+      img.className='preview';img.src=e.target.result;
+      box.appendChild(img);
+      box.querySelectorAll('span').forEach(function(s){s.style.display='none'});
+    };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

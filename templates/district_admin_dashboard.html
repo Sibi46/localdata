@@ -1,0 +1,114 @@
+{% extends 'admin_base.html' %}
+{% block title %}District Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="ap-breadcrumb"><i class="fas fa-map-marker-alt"></i> District Admin — {{ district.name|default:"Unassigned" }}</div>
+<div class="ap-page-title"><i class="fas fa-map-marker-alt" style="color:#2e7d32"></i> {{ district.name|default:"District" }} Dashboard</div>
+<div class="ap-page-subtitle">Approve employers, moderate jobs, and resolve local complaints</div>
+
+{% if not district %}
+<div class="ap-card" style="border-left:4px solid #f57f17;background:#fff8e1">
+  <p style="color:#f57f17;font-weight:600"><i class="fas fa-exclamation-triangle"></i> Your account is not assigned to a district. Contact the State Admin.</p>
+</div>
+{% endif %}
+
+<!-- Stats -->
+<div class="ap-stats">
+  <div class="ap-stat orange">
+    <div class="ap-stat-icon"><i class="fas fa-building"></i></div>
+    <h3>{{ pending_employers }}</h3>
+    <p>Pending Employers</p>
+  </div>
+  <div class="ap-stat blue">
+    <div class="ap-stat-icon"><i class="fas fa-ad"></i></div>
+    <h3>{{ pending_ads }}</h3>
+    <p>Pending Ads</p>
+  </div>
+  <div class="ap-stat red">
+    <div class="ap-stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+    <h3>{{ open_complaints }}</h3>
+    <p>Open Complaints</p>
+  </div>
+  <div class="ap-stat green">
+    <div class="ap-stat-icon"><i class="fas fa-briefcase"></i></div>
+    <h3>{{ recent_jobs|length }}</h3>
+    <p>Business activity</p>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="ap-card">
+  <div class="ap-card-header"><h3><i class="fas fa-bolt" style="color:#f3a000"></i> Quick Actions</h3></div>
+  <div class="ap-quick-grid">
+    <a href="/district-admin/employers/" class="ap-quick-card">
+      <i class="fas fa-building" style="color:#0a66c2"></i>
+      <span>Approve Employers
+        {% if pending_employers %}<br><small style="color:#e65100">{{ pending_employers }} pending</small>{% endif %}
+      </span>
+    </a>
+    <a href="/admin-panel/advertisers/?status=pending" class="ap-quick-card">
+      <i class="fas fa-bullhorn" style="color:#2e7d32"></i>
+      <span>Approve Advertisers
+        {% if pending_ads %}<br><small style="color:#e65100">{{ pending_ads }} pending</small>{% endif %}
+      </span>
+    </a>
+
+    <a href="/district-admin/complaints/" class="ap-quick-card">
+      <i class="fas fa-exclamation-circle" style="color:#c62828"></i>
+      <span>Complaints
+        {% if open_complaints %}<br><small style="color:#e65100">{{ open_complaints }} open</small>{% endif %}
+      </span>
+    </a>
+    <a href="/district-admin/reports/" class="ap-quick-card">
+      <i class="fas fa-chart-bar" style="color:#6a1b9a"></i>
+      <span>Reports</span>
+    </a>
+    <a href="/admin-panel/ads/" class="ap-quick-card">
+      <i class="fas fa-ad" style="color:#f3a000"></i>
+      <span>Ad Review</span>
+    </a>
+  </div>
+</div>
+
+<div class="ap-two-col">
+
+  <!-- Business activity to Moderate -->
+  <div class="ap-card">
+    <div class="ap-card-header">
+      <h3><i class="fas fa-briefcase" style="color:#e65100"></i> Business activity</h3>
+
+    </div>
+
+  </div>
+
+  <!-- Recent Complaints -->
+  <div class="ap-card">
+    <div class="ap-card-header">
+      <h3><i class="fas fa-exclamation-circle" style="color:#c62828"></i> Recent Complaints</h3>
+      <a href="/district-admin/complaints/" class="ap-btn ap-btn-gray">View All</a>
+    </div>
+    {% for c in recent_complaints %}
+    <div style="padding:10px 0;border-bottom:1px solid #f5f5f5">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:700;color:#191919">{{ c.subject|truncatechars:40 }}</span>
+        <span class="status-pill pill-{{ c.status }}" style="font-size:10px;flex-shrink:0;margin-left:8px">{{ c.get_status_display }}</span>
+      </div>
+      <div style="font-size:11px;color:#888;display:flex;gap:10px">
+        <span><i class="fas fa-tag"></i> {{ c.get_complaint_type_display }}</span>
+        <span><i class="fas fa-user"></i> {{ c.submitted_by.username }}</span>
+        <span><i class="fas fa-clock"></i> {{ c.created_at|date:"d M" }}</span>
+      </div>
+      {% if c.status == 'open' %}
+      <a href="/district-admin/complaints/{{ c.pk }}/resolve/" class="ap-btn ap-btn-primary" style="font-size:11px;margin-top:6px;display:inline-flex">
+        <i class="fas fa-check"></i> Resolve
+      </a>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="ap-empty"><i class="fas fa-exclamation-circle"></i><p>No complaints.</p></div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

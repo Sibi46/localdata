@@ -1,0 +1,37 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Volunteer — {{ community.name }}{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:620px">
+  <div class="psec-header">
+    <div class="psec-title">🙋 I Want to Volunteer</div>
+    <a href="/portal/c/{{ community.page_id }}/" class="pbtn pbtn-outline pbtn-sm">← Back</a>
+  </div>
+
+  <div style="background:#eff6ff;border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
+    <div style="font-size:28px">🏘️</div>
+    <div>
+      <div style="font-size:14px;font-weight:800;color:#0f172a">{{ community.name }}</div>
+      <div style="font-size:12px;color:#1d4ed8;font-family:monospace">{{ community.page_id }} · {{ community.location }}</div>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="pcard">
+      <div class="pcard-body">
+        <div class="p2col">
+          <div class="pform-group"><label class="pform-label">Full Name *</label><input type="text" name="name" class="pform-input" required value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}"></div>
+          <div class="pform-group"><label class="pform-label">Mobile Number *</label><input type="text" name="mobile" class="pform-input" required placeholder="+91 99999 99999"></div>
+          <div class="pform-group" style="grid-column:1/-1"><label class="pform-label">Email *</label><input type="email" name="email" class="pform-input" required value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"></div>
+        </div>
+
+        <div class="pform-group"><label class="pform-label">Volunteer Interest *</label><input type="text" name="volunteer_interest" class="pform-input" required placeholder="e.g. Waste collection, Awareness campaigns, Food distribution"></div>
+        <div class="pform-group"><label class="pform-label">Availability *</label><input type="text" name="availability" class="pform-input" required placeholder="e.g. Weekends, Sunday mornings, Flexible"></div>
+        <div class="pform-group"><label class="pform-label">Short Message</label><textarea name="message" class="pform-input" placeholder="Tell us more about yourself and why you want to volunteer..."></textarea></div>
+        <button type="submit" class="pbtn pbtn-green pbtn-full" style="font-size:15px;padding:13px">SUBMIT VOLUNTEER REQUEST</button>
+        <p style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px">Community admin will review your request and notify you.</p>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Performance Report — {{ ad.title }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/advertiser.css' %}?v=2">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="perf-page">
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+    <a href="/advertiser/dashboard/" style="color:#0a66c2;font-size:13px;text-decoration:none"><i class="fas fa-arrow-left"></i> Back</a>
+    <span style="color:#ddd">|</span>
+    <span style="font-size:13px;color:#888">Performance Report</span>
+  </div>
+
+  <!-- Header -->
+  <div class="perf-header-card">
+    <div class="perf-thumb">
+      {% if ad.image %}<img src="{{ ad.image.url }}" alt="">
+      {% else %}<i class="fas fa-ad"></i>{% endif %}
+    </div>
+    <div class="perf-header-info">
+      <h2>{{ ad.title }}</h2>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px">
+        <span class="adv-ad-type-badge badge-{{ ad.package.ad_type }}">
+          {{ ad.package.get_ad_type_display }}
+        </span>
+        <span class="ad-status-pill pill-{{ ad.status }}">{{ ad.get_status_display }}</span>
+        {% if ad.start_date %}
+        <span style="font-size:12px;color:#888">
+          <i class="fas fa-calendar"></i>
+          {{ ad.start_date }} — {{ ad.end_date }}
+        </span>
+        {% endif %}
+      </div>
+    </div>
+    {% if ad.status == 'active' or ad.status == 'expired' %}
+    <a href="/advertiser/renew/{{ ad.pk }}/" class="adv-btn adv-btn-renew" style="padding:10px 20px;font-size:13px">
+      <i class="fas fa-redo"></i> Renew
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- KPIs -->
+  <div class="perf-kpi-row">
+    <div class="perf-kpi-card views">
+      <i class="fas fa-eye"></i>
+      <h3>{{ ad.views }}</h3>
+      <p>Total Views</p>
+    </div>
+    <div class="perf-kpi-card clicks">
+      <i class="fas fa-mouse-pointer"></i>
+      <h3>{{ ad.clicks }}</h3>
+      <p>Total Clicks</p>
+    </div>
+    <div class="perf-kpi-card ctr">
+      <i class="fas fa-percent"></i>
+      <h3>{{ ad.ctr }}%</h3>
+      <p>Click-Through Rate</p>
+    </div>
+    <div class="perf-kpi-card days">
+      <i class="fas fa-hourglass-half"></i>
+      <h3>{{ ad.days_remaining }}</h3>
+      <p>Days Remaining</p>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="perf-chart-card">
+    <h3><i class="fas fa-chart-bar" style="color:#0a66c2"></i> Views vs Clicks Overview</h3>
+    <canvas id="perfChart" height="90"></canvas>
+  </div>
+
+  <!-- Ad Details -->
+  <div class="perf-chart-card">
+    <h3><i class="fas fa-info-circle" style="color:#0a66c2"></i> Ad Details</h3>
+    <table style="width:100%;font-size:13px;border-collapse:collapse">
+      <tr style="border-bottom:1px solid #f0f0f0">
+        <td style="padding:10px 0;color:#888;width:160px">Package</td>
+        <td style="padding:10px 0;font-weight:600">{{ ad.package.name }}</td>
+      </tr>
+      <tr style="border-bottom:1px solid #f0f0f0">
+        <td style="padding:10px 0;color:#888">Amount Paid</td>
+        <td style="padding:10px 0;font-weight:600">₹{{ ad.payment.total_amount }}</td>
+      </tr>
+      {% if ad.link_url %}
+      <tr style="border-bottom:1px solid #f0f0f0">
+        <td style="padding:10px 0;color:#888">Destination URL</td>
+        <td style="padding:10px 0"><a href="{{ ad.link_url }}" target="_blank" style="color:#0a66c2">{{ ad.link_url }}</a></td>
+      </tr>
+      {% endif %}
+      {% if ad.district %}
+      <tr style="border-bottom:1px solid #f0f0f0">
+        <td style="padding:10px 0;color:#888">District</td>
+        <td style="padding:10px 0">{{ ad.district }}</td>
+      </tr>
+      {% endif %}
+      {% if ad.state %}
+      <tr>
+        <td style="padding:10px 0;color:#888">State</td>
+        <td style="padding:10px 0">{{ ad.state }}</td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+
+</div>
+
+<script>
+const ctx = document.getElementById('perfChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Your Ad'],
+    datasets: [
+      {
+        label: 'Views',
+        data: [{{ ad.views }}],
+        backgroundColor: 'rgba(10, 102, 194, 0.7)',
+        borderColor: '#0a66c2',
+        borderWidth: 1.5,
+        borderRadius: 8,
+      },
+      {
+        label: 'Clicks',
+        data: [{{ ad.clicks }}],
+        backgroundColor: 'rgba(46, 125, 50, 0.7)',
+        borderColor: '#2e7d32',
+        borderWidth: 1.5,
+        borderRadius: 8,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+  }
+});
+</script>
+{% endblock %}

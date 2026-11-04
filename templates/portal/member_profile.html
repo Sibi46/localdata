@@ -1,0 +1,88 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}{{ target.get_full_name|default:target.username }}{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:480px">
+  <div class="psec-header">
+    <div class="psec-title">👤 Member Profile</div>
+    <a href="javascript:history.back()" class="pbtn pbtn-outline pbtn-sm">← Back</a>
+  </div>
+
+  <div style="background:#fff;border-radius:20px;border:1.5px solid #e5e7eb;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+    <!-- Cover strip -->
+    <div style="height:90px;background:linear-gradient(135deg,#1d4ed8,#7c3aed)"></div>
+
+    <!-- Avatar -->
+    <div style="display:flex;flex-direction:column;align-items:center;margin-top:-44px;padding:0 24px 24px">
+      <div style="width:88px;height:88px;border-radius:50%;border:4px solid #fff;overflow:hidden;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,.15)">
+        {% if profile and profile.photo %}
+          <img src="{{ profile.photo.url }}" style="width:100%;height:100%;object-fit:cover">
+        {% else %}
+          {{ target.get_full_name|default:target.username|first|upper }}
+        {% endif %}
+      </div>
+
+      <div style="text-align:center;margin-top:12px">
+        <div style="font-size:20px;font-weight:900;color:#0f172a;margin-bottom:2px">
+          {{ target.get_full_name|default:target.username }}
+        </div>
+        {% if target.username %}
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:16px">@{{ target.username }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Action buttons -->
+      {% if request.user != target %}
+      <div style="display:flex;gap:10px;width:100%;margin-top:4px;margin-bottom:4px">
+        <a href="/messages/start/{{ target.pk }}/" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:11px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 3px 12px rgba(79,70,229,.3)">
+          <i class="fas fa-comment-dots"></i> Message
+        </a>
+        {% if target.phone %}
+        <a href="https://wa.me/91{{ target.phone|cut:' '|cut:'-'|cut:'+'|cut:'91' }}" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;padding:11px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 3px 12px rgba(37,211,102,.3)">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Info cards -->
+      <div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-top:8px">
+        {% if target.phone %}
+        <div style="display:flex;align-items:center;gap:12px;background:#f8fafc;border-radius:12px;padding:12px 16px">
+          <div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fas fa-phone" style="color:#1d4ed8;font-size:14px"></i>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Phone</div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a">{{ target.phone }}</div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if profile and profile.pincode or target.pincode %}
+        <div style="display:flex;align-items:center;gap:12px;background:#f8fafc;border-radius:12px;padding:12px 16px">
+          <div style="width:36px;height:36px;border-radius:10px;background:#fff7ed;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fas fa-map-marker-alt" style="color:#f97316;font-size:14px"></i>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Pincode</div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a">{{ profile.pincode|default:target.pincode|default:"—" }}</div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if target.email %}
+        <div style="display:flex;align-items:center;gap:12px;background:#f8fafc;border-radius:12px;padding:12px 16px">
+          <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fas fa-envelope" style="color:#059669;font-size:14px"></i>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Email</div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a">{{ target.email }}</div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

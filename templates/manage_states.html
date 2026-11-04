@@ -1,0 +1,58 @@
+{% extends "admin_base.html" %}
+{% block title %}Manage States{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-flag" style="color:#0a66c2"></i> Manage States</div>
+
+<div class="ap-two-col">
+  <!-- Add State Form -->
+  <div class="ap-card">
+    <div class="ap-inline-form">
+      <h4><i class="fas fa-plus" style="color:#0a66c2"></i> Add New State</h4>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="ap-form-grid">
+          <div class="ap-field">
+            <label>State Name *</label>
+            <input type="text" name="name" placeholder="e.g. Tamil Nadu" required>
+          </div>
+          <div class="ap-field">
+            <label>State Code *</label>
+            <input type="text" name="code" placeholder="e.g. TN" maxlength="5" required>
+          </div>
+        </div>
+        <button type="submit" class="ap-btn ap-btn-primary" style="margin-top:12px">
+          <i class="fas fa-plus"></i> Create State
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- State List -->
+  <div class="ap-card">
+    <div class="ap-card-header"><h3><i class="fas fa-flag"></i> All States ({{ states|length }})</h3></div>
+    <div class="ap-table-wrap">
+      <table class="ap-table">
+        <thead><tr><th>State</th><th>Code</th><th>Districts</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for s in states %}
+          <tr>
+            <td><strong>{{ s.name }}</strong></td>
+            <td><code style="background:#f0f0f0;padding:2px 8px;border-radius:5px">{{ s.code }}</code></td>
+            <td>{{ s.d_count }}</td>
+            <td><span class="status-pill {% if s.is_active %}pill-active{% else %}pill-inactive{% endif %}">{{ s.is_active|yesno:"Active,Inactive" }}</span></td>
+            <td style="display:flex;gap:6px">
+              <a href="/super-admin/states/{{ s.pk }}/districts/" class="ap-btn ap-btn-primary" style="font-size:11px">Districts</a>
+              <a href="/super-admin/states/{{ s.pk }}/toggle/" class="ap-btn {% if s.is_active %}ap-btn-danger{% else %}ap-btn-success{% endif %}" style="font-size:11px">
+                {{ s.is_active|yesno:"Deactivate,Activate" }}
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center;color:#bbb;padding:30px">No states added yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payment Successful!{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/advertiser.css' %}?v=2">{% endblock %}
+
+{% block content %}
+<div class="success-page" style="padding-top:50px">
+  <div class="success-icon">
+    <i class="fas fa-check"></i>
+  </div>
+  <h2>Payment Successful!</h2>
+  <p>Your advertisement <strong>"{{ ad.title }}"</strong> has been submitted for review. Our team will activate it within a few hours.</p>
+
+  <div class="success-steps">
+    <div class="success-step step-done">
+      <div class="step-num"><i class="fas fa-check" style="font-size:11px"></i></div>
+      <div class="step-info">
+        <h4>Registration Approved</h4>
+        <p>Your advertiser account is verified</p>
+      </div>
+    </div>
+    <div class="success-step step-done">
+      <div class="step-num"><i class="fas fa-check" style="font-size:11px"></i></div>
+      <div class="step-info">
+        <h4>Payment Received</h4>
+        <p>Invoice #{{ ad.payment.invoice_number }} — ₹{{ ad.payment.total_amount }}</p>
+      </div>
+    </div>
+    <div class="success-step">
+      <div class="step-num">3</div>
+      <div class="step-info">
+        <h4>Under Review</h4>
+        <p>Admin is reviewing your ad creative</p>
+      </div>
+    </div>
+    <div class="success-step">
+      <div class="step-num">4</div>
+      <div class="step-info">
+        <h4>Goes Live</h4>
+        <p>Your ad starts running — visible to all users</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="/advertiser/dashboard/" class="success-home-btn">
+      <i class="fas fa-tachometer-alt"></i> My Ads Dashboard
+    </a>
+    <a href="/advertiser/performance/{{ ad.pk }}/" style="padding:13px 24px;border:2px solid #0a66c2;color:#0a66c2;border-radius:25px;font-weight:700;font-size:14px;text-decoration:none">
+      <i class="fas fa-chart-bar"></i> View Performance
+    </a>
+  </div>
+</div>
+{% endblock %}

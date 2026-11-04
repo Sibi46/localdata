@@ -1,0 +1,144 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Communities Portal{% endblock %}
+{% block content %}
+
+<!-- HERO — full width -->
+<style>
+.portal-hero{position:relative;overflow:hidden;margin-bottom:0}
+.portal-hero img{width:100%;height:420px;object-fit:cover;object-position:center;display:block}
+.portal-hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(5,5,20,0.88) 40%,rgba(5,5,20,0.15) 100%)}
+.portal-hero-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:40px 48px}
+.portal-hero-label{font-size:10px;font-weight:800;letter-spacing:.14em;color:#f97316;text-transform:uppercase;margin-bottom:10px}
+.portal-hero-title{font-size:clamp(24px,4.5vw,42px);font-weight:900;color:#fff;line-height:1.2;margin:0 0 12px;max-width:420px}
+.portal-hero-desc{font-size:14px;color:rgba(255,255,255,.85);line-height:1.7;margin:0 0 24px;max-width:380px}
+.portal-hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.portal-hero-browse{font-size:13px;padding:12px 26px;border-radius:10px;border:1.5px solid rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.1);font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+@media(max-width:600px){
+  .portal-hero-desc-hide{display:none}
+  .portal-hero img{height:280px}
+  .portal-hero-overlay{background:linear-gradient(to bottom,rgba(5,5,20,0.5) 0%,rgba(5,5,20,0.85) 100%)}
+  .portal-hero-content{padding:16px 18px;justify-content:flex-start;padding-top:16px}
+  .portal-hero-title{font-size:22px;max-width:100%}
+  .portal-hero-desc{font-size:12px;margin-bottom:16px;max-width:100%}
+  .portal-hero-btns{flex-direction:column;gap:8px;align-items:flex-start}
+  .portal-hero-btns a{font-size:11px;padding:7px 18px;justify-content:center;text-align:center}
+  .portal-hero-browse{font-size:11px;padding:7px 18px;justify-content:center}
+}
+</style>
+<div class="portal-hero">
+  <img src="/static/images/community.jpg" alt="">
+  <div class="portal-hero-overlay"></div>
+  <div class="portal-hero-content">
+    <div class="portal-hero-label">🏘️ Communities Near You</div>
+    <h1 class="portal-hero-title">Don't just post.<br><span style="color:#f97316">Participate.</span></h1>
+    <p class="portal-hero-desc portal-hero-desc-hide">Join communities around your Pincode. Support causes, attend events & create real-world impact.</p>
+    <div class="portal-hero-btns">
+      <a href="/portal/create/" class="pbtn pbtn-orange" style="font-size:13px;padding:12px 26px"><i class="fas fa-plus"></i> Create Community</a>
+      <a href="/portal/communities/" class="portal-hero-browse">Browse Communities</a>
+    </div>
+  </div>
+</div>
+
+<div class="pcontent">
+
+  <!-- SEARCH BAR -->
+  <form method="get" class="portal-search-form">
+    <div class="portal-search-row">
+      <input type="text" name="q" value="{{ q }}" placeholder="🔍 Search communities or Page ID..." class="pform-input">
+      <input type="text" name="pincode" value="{{ pincode }}" placeholder="📍 Pincode" class="pform-input" style="max-width:140px">
+    </div>
+    <div class="portal-search-row">
+      <select name="category" class="pform-input" style="flex:1">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.slug }}" {% if category == cat.slug %}selected{% endif %}>{{ cat.icon }} {{ cat.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="pbtn pbtn-primary" style="white-space:nowrap">Search</button>
+    </div>
+  </form>
+
+  <!-- STATS BAR -->
+  <div class="stat-grid" style="margin-bottom:24px">
+    <div class="stat-card">
+      <div class="stat-num">{{ communities.count }}</div>
+      <div class="stat-label">Communities</div>
+    </div>
+
+  </div>
+
+  <!-- COMMUNITIES GRID -->
+  <div class="psec-header">
+    <div class="psec-title">Communities Near You</div>
+    <a href="/portal/communities/" style="font-size:12px;color:#1d4ed8;font-weight:700">View all →</a>
+  </div>
+
+  {% if communities %}
+  <div class="comm-grid">
+    {% for c in communities|slice:":12" %}
+    <a href="/portal/c/{{ c.page_id }}/" class="comm-card">
+      <div class="comm-card-cover">
+        {% if c.cover %}
+          <img src="{{ c.cover.url }}" alt="" class="comm-card-cover-img">
+        {% endif %}
+        <div class="comm-card-cover-overlay"></div>
+        {% if c.logo %}<img src="{{ c.logo.url }}" alt="{{ c.name }}" class="comm-card-logo">
+        {% else %}<div class="comm-card-logo-wrap" style="background:{{ c.name|length|divisibleby:5|yesno:'linear-gradient(135deg,#6366f1,#8b5cf6),linear-gradient(135deg,#0ea5e9,#6366f1)' }}"><span class="logo-initials">{{ c.name|slice:":2"|upper }}</span><span class="logo-dot"></span></div>{% endif %}
+        {% if c.category %}<span class="comm-card-cat-badge">{{ c.category.icon }} {{ c.category.name }}</span>{% endif %}
+      </div>
+      <div class="comm-card-body">
+        <div class="comm-card-id">{{ c.page_id }}</div>
+        <div class="comm-card-name">{{ c.name }}</div>
+        <div class="comm-card-purpose">{{ c.purpose }}</div>
+        <div class="comm-card-meta">
+          <span><i class="fas fa-users" style="color:#1d4ed8"></i> {{ c.member_count }}</span>
+          <span><i class="fas fa-map-marker-alt" style="color:#f97316"></i> {{ c.pincode }}</span>
+          {% if c.is_verified %}<span class="pbadge pbadge-green">✓</span>{% endif %}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="pempty">
+    <div class="pempty-icon">🏘️</div>
+    <div class="pempty-text">No communities found</div>
+    <div class="pempty-sub">Be the first to create one!</div>
+    <a href="/portal/create/" class="pbtn pbtn-primary" style="margin-top:14px">Create Community</a>
+  </div>
+  {% endif %}
+
+
+
+  </div>
+
+
+</div>
+
+<!-- FOOTER BANNER — full width, outside pcontent -->
+<style>
+.footer-banner-wrap{overflow:hidden;margin-top:24px;width:100%;height:220px}
+.footer-banner-wrap img{display:block;width:140%;height:220px;object-fit:cover;object-position:top center;animation:bannerPan 10s ease-in-out infinite alternate}
+@media(max-width:600px){.footer-banner-wrap{height:150px}.footer-banner-wrap img{height:150px}}
+@keyframes bannerPan{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-28.57%)}
+}
+</style>
+<div class="footer-banner-wrap">
+  <img src="/static/images/communityfooter.png" alt="">
+</div>
+
+{% endblock %}
+
+{% block portal_footer %}
+<div class="pfooter">
+  <p>
+    <a href="/">Local From</a>
+    <a href="/portal/">Communities</a>
+
+    <a href="/about/">About</a>
+  </p>
+  <p style="margin-top:6px">© EVOXU Pvt Ltd — Don't just post. Participate.</p>
+</div>
+{% endblock %}

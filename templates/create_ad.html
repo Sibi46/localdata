@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Create Advertisement — Local From{% endblock %}
+
+{% block content %}
+<style>
+.ca-pkg-radio { display:none }
+.ca-pkg { border:2px solid #e5e7eb; border-radius:14px; padding:18px 16px; cursor:pointer; transition:.2s; position:relative; background:#fff }
+.ca-pkg:hover { border-color:#0a66c2; background:#f8fbff }
+.ca-pkg.sel   { border-color:#0a66c2; background:#e8f0fe }
+.ca-pkg .ca-check { position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;color:transparent;font-size:11px;transition:.2s }
+.ca-pkg.sel .ca-check { background:#0a66c2;border-color:#0a66c2;color:#fff }
+.ca-upload { border:2px dashed #c9d6e8; border-radius:12px; padding:32px 20px; text-align:center; cursor:pointer; transition:.2s; background:#f8faff }
+.ca-upload:hover { border-color:#0a66c2; background:#f0f6ff }
+.ca-inp { padding:11px 14px; border:1.5px solid #dde1ea; border-radius:10px; font-size:14px; font-family:inherit; outline:none; transition:border-color .2s; width:100%; box-sizing:border-box; background:#fafbfc }
+.ca-inp:focus { border-color:#0a66c2; box-shadow:0 0 0 3px rgba(10,102,194,.08) }
+.ca-step-num { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#0a66c2;color:#fff;font-size:12px;font-weight:800;flex-shrink:0 }
+@media(max-width:600px){
+  .ca-pkg-grid { grid-template-columns:1fr !important }
+  .ca-form-row { grid-template-columns:1fr !important }
+}
+</style>
+
+<div style="max-width:820px;margin:0 auto;padding:28px 16px 60px">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#0a66c2,#004182);border-radius:16px;padding:28px 28px 24px;color:#fff;margin-bottom:28px">
+    <div style="font-size:12px;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">
+      <a href="/advertiser/dashboard/" style="color:#fff;text-decoration:none;opacity:.75"><i class="fas fa-arrow-left"></i> My Ads</a>
+    </div>
+    <h1 style="font-size:22px;font-weight:900;margin:0 0 6px"><i class="fas fa-bullhorn"></i> Create New Advertisement</h1>
+    <p style="font-size:13px;opacity:.8;margin:0">Choose a package, fill details, upload your image — then proceed to payment.</p>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div style="padding:12px 16px;border-radius:10px;margin-bottom:16px;background:#fce4ec;border-left:4px solid #c62828;color:#c62828;font-size:13px;font-weight:700">
+      <i class="fas fa-exclamation-circle"></i> {{ msg }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" id="caForm">
+    {% csrf_token %}
+
+    <!-- Step 1: Package -->
+    <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <span class="ca-step-num">1</span>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#111">Choose Package</div>
+          <div style="font-size:12px;color:#888">Select the ad placement that suits your goal</div>
+        </div>
+      </div>
+
+      {% if not packages %}
+      <div style="background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:14px 16px;color:#b8780a;font-size:13px">
+        <i class="fas fa-exclamation-triangle"></i> No packages available. Contact admin to add ad packages.
+      </div>
+      {% else %}
+      <div class="ca-pkg-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+        {% for pkg in packages %}
+        <label class="ca-pkg" id="pkg-lbl-{{ pkg.pk }}">
+          <input class="ca-pkg-radio" type="radio" name="package" value="{{ pkg.pk }}" required onchange="caSelectPkg(this)">
+          <div class="ca-check"><i class="fas fa-check"></i></div>
+          <div style="width:40px;height:40px;border-radius:10px;background:#e8f0fe;color:#0a66c2;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px">
+            {% if pkg.ad_type == 'homepage_banner' %}<i class="fas fa-image"></i>
+            {% elif pkg.ad_type == 'district_banner' %}<i class="fas fa-map-marker-alt"></i>
+            {% elif pkg.ad_type == 'state_banner' %}<i class="fas fa-flag"></i>
+            {% elif pkg.ad_type == 'featured_employer' %}<i class="fas fa-building"></i>
+            {% elif pkg.ad_type == 'featured_job' %}<i class="fas fa-star"></i>
+            {% elif pkg.ad_type == 'sidebar' %}<i class="fas fa-columns"></i>
+            {% elif pkg.ad_type == 'dashboard_banner' %}<i class="fas fa-tachometer-alt"></i>
+            {% elif pkg.ad_type == 'popup' %}<i class="fas fa-bell"></i>
+            {% elif pkg.ad_type == 'sponsored_job' %}<i class="fas fa-briefcase"></i>
+            {% elif pkg.ad_type == 'sponsored_employer' %}<i class="fas fa-user-tie"></i>
+            {% else %}<i class="fas fa-ad"></i>{% endif %}
+          </div>
+          <div style="font-size:14px;font-weight:800;color:#111;margin-bottom:2px">{{ pkg.name }}</div>
+          <div style="font-size:11px;color:#888;margin-bottom:8px">{{ pkg.get_ad_type_display }}</div>
+          <div style="font-size:20px;font-weight:900;color:#0a66c2;margin-bottom:2px">₹{{ pkg.price }}</div>
+          <div style="font-size:11px;color:#aaa"><i class="fas fa-calendar" style="margin-right:3px"></i>{{ pkg.duration_days }} days</div>
+          {% if pkg.size_specs %}<div style="font-size:10px;color:#bbb;margin-top:2px"><i class="fas fa-expand" style="margin-right:3px"></i>{{ pkg.size_specs }}</div>{% endif %}
+          {% if pkg.description %}<div style="font-size:11px;color:#777;margin-top:6px;line-height:1.5">{{ pkg.description }}</div>{% endif %}
+        </label>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Step 2: Details -->
+    <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <span class="ca-step-num">2</span>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#111">Ad Details</div>
+          <div style="font-size:12px;color:#888">Title, destination URL and description</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">Ad Title / Headline <span style="color:#ef4444">*</span></label>
+        <input class="ca-inp" type="text" name="title" required maxlength="200" placeholder="Catchy headline for your ad">
+      </div>
+
+      <div class="ca-form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">Destination URL</label>
+          <input class="ca-inp" type="url" name="link_url" value="{{ prefill_website }}" placeholder="https://yourwebsite.com">
+          <div style="font-size:11px;color:#aaa;margin-top:4px">Where users go when they click your ad</div>
+        </div>
+        <div id="districtField" style="display:none">
+          <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">Target District</label>
+          <input class="ca-inp" type="text" name="district" placeholder="e.g. Chennai">
+        </div>
+        <div id="stateField" style="display:none">
+          <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">Target State</label>
+          <input class="ca-inp" type="text" name="state" placeholder="e.g. Tamil Nadu">
+        </div>
+      </div>
+
+      <div>
+        <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">
+          Ad Description <span style="color:#ef4444">*</span>
+          <span style="font-weight:400;color:#aaa"> — shown below your image</span>
+        </label>
+        <textarea class="ca-inp" name="content" id="adContent" rows="4" maxlength="500" required
+          placeholder="Write a short, catchy description — what you offer, why people should click…"
+          style="resize:vertical" oninput="caCountChars(this)"></textarea>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span style="font-size:11px;color:#aaa">Keep it short & clear — 1–2 sentences work best</span>
+          <span id="caCharCount" style="font-size:11px;color:#aaa;font-weight:700">0 / 500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Image Upload -->
+    <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <span class="ca-step-num">3</span>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#111">Upload Ad Image <span style="color:#ef4444">*</span></div>
+          <div style="font-size:12px;color:#888">JPG, PNG, GIF — Max 2MB</div>
+        </div>
+      </div>
+
+      <div class="ca-upload" id="caUploadArea" onclick="document.getElementById('caImageInput').click()">
+        <i class="fas fa-cloud-upload-alt" style="font-size:32px;color:#93c5fd;margin-bottom:10px;display:block"></i>
+        <div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:4px">Click to upload your ad image</div>
+        <div style="font-size:12px;color:#aaa" id="caFileName">JPG, PNG, GIF · Max 2MB</div>
+      </div>
+      <input type="file" id="caImageInput" name="image" accept="image/*" required style="display:none" onchange="caPreviewImg(this)">
+      <img id="caImgPreview" style="display:none;width:100%;max-height:220px;object-fit:contain;margin-top:12px;border-radius:10px;border:1.5px solid #e5e7eb">
+      <div id="caImgError" style="display:none;color:#c62828;font-size:12px;margin-top:8px;font-weight:700">
+        <i class="fas fa-exclamation-circle"></i> Please upload an image before submitting.
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div id="caOrderSummary" style="display:none;background:#f8f9ff;border:1.5px solid #c9d9f0;border-radius:14px;padding:20px;margin-bottom:20px">
+      <div style="font-size:14px;font-weight:800;color:#111;margin-bottom:14px"><i class="fas fa-receipt" style="color:#0a66c2;margin-right:6px"></i>Order Summary</div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 0;border-bottom:1px solid #e0e8f0">
+        <span id="caOrdName" style="color:#555">—</span><span id="caOrdBase" style="font-weight:700">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid #e0e8f0;color:#888">
+        <span>GST (18%)</span><span id="caOrdGst">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;padding:10px 0 0">
+        <span>Total</span><span id="caOrdTotal" style="color:#0a66c2">—</span>
+      </div>
+    </div>
+
+    <div style="background:#e8f0fe;border:1px solid #c8ddf8;border-radius:10px;padding:12px 16px;font-size:13px;color:#0a66c2;margin-bottom:20px;display:flex;gap:10px">
+      <i class="fas fa-info-circle" style="margin-top:1px;flex-shrink:0"></i>
+      <span>After submission you'll be redirected to the payment page. Your ad goes live after payment is confirmed.</span>
+    </div>
+
+    <button type="submit" id="caSubmitBtn" disabled
+      style="width:100%;padding:15px;background:#0a66c2;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;opacity:.5;transition:.2s">
+      <i class="fas fa-arrow-right"></i> Proceed to Payment
+    </button>
+
+  </form>
+</div>
+
+<script>
+const caPkgData = {
+  {% for pkg in packages %}
+  "{{ pkg.pk }}": { name:"{{ pkg.name }}", type:"{{ pkg.ad_type }}", price:{{ pkg.price }}, days:{{ pkg.duration_days }} },
+  {% endfor %}
+};
+let caPkgSel = false, caImgSel = false;
+
+function caUpdateSubmit() {
+  const ok = caPkgSel && caImgSel && document.getElementById('adContent').value.trim().length > 0;
+  const btn = document.getElementById('caSubmitBtn');
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '.5';
+}
+
+function caSelectPkg(radio) {
+  document.querySelectorAll('.ca-pkg').forEach(c => c.classList.remove('sel'));
+  radio.closest('.ca-pkg').classList.add('sel');
+  caPkgSel = true;
+  const d = caPkgData[radio.value];
+  const gst = +(d.price * 0.18).toFixed(2);
+  const total = +(d.price + gst).toFixed(2);
+  document.getElementById('caOrderSummary').style.display = 'block';
+  document.getElementById('caOrdName').textContent  = d.name + ' (' + d.days + ' days)';
+  document.getElementById('caOrdBase').textContent  = '₹' + d.price;
+  document.getElementById('caOrdGst').textContent   = '₹' + gst;
+  document.getElementById('caOrdTotal').textContent = '₹' + total;
+  document.getElementById('districtField').style.display = d.type === 'district_banner' ? 'block' : 'none';
+  document.getElementById('stateField').style.display    = d.type === 'state_banner'    ? 'block' : 'none';
+  caUpdateSubmit();
+}
+
+function caPreviewImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  caImgSel = true;
+  document.getElementById('caImgError').style.display = 'none';
+  document.getElementById('caFileName').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('caImgPreview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('caUploadArea').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  caUpdateSubmit();
+}
+
+function caCountChars(ta) {
+  const len = ta.value.length;
+  const el = document.getElementById('caCharCount');
+  el.textContent = len + ' / 500';
+  el.style.color = len > 450 ? '#e65100' : len > 300 ? '#f3a000' : '#aaa';
+  caUpdateSubmit();
+}
+
+document.getElementById('caForm').addEventListener('submit', function(e) {
+  if (!caImgSel) {
+    e.preventDefault();
+    document.getElementById('caImgError').style.display = 'block';
+    document.getElementById('caUploadArea').scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+});
+</script>
+{% endblock %}

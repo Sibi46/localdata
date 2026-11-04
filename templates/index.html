@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f2">
+  <title>{{ seo.title }}</title>
+  {% include 'includes/ga4.html' %}
+  {% include 'includes/seo.html' %}
+  {% include 'includes/favicon.html' %}
+  <link rel="stylesheet" href="{% static 'fonts/poppins/poppins.css' %}">
+  <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/home-local.css' %}?v=1">
+  <link rel="stylesheet" href="{% static 'css/shop.css' %}?v=1">
+  <link rel="stylesheet" href="{% static 'css/home-studio.css' %}?v=3">
+  <link rel="stylesheet" href="{% static 'css/home-showcase.css' %}?v=2">
+  <script src="{% static 'js/home-showcase.js' %}?v=3" defer></script>
+  {% if not request.user.is_authenticated %}<script src="{% static 'js/home-registration.js' %}?v=3" defer></script>{% endif %}
+  <script src="{% static 'js/home-local.js' %}?v=1" defer></script>
+<link rel="stylesheet" href="{% static 'css/account-onboarding.css' %}?v=2"><script src="{% static 'js/area-names.js' %}?v=2" defer></script><link rel="stylesheet" href="{% static 'css/home-greeting.css' %}?v=2">{% include 'includes/brand_rotation_assets.html' %}</head>
+<body class="studio-home">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner shell">
+    <a class="brand" href="/" aria-label="Local From home"><img class="site-brand-logo" src="/static/images/logo.png" alt="" width="44" height="36"><span>Local{% include 'includes/brand_word.html' %}</span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="/products/">Products</a><a href="/businesses/">Shops</a><a href="/advertise/">Offers</a><a href="/news/">News</a><a href="/flicks/">Flicks</a>
+    </nav>
+    <div class="header-actions">{% include 'includes/notification_bell.html' %}
+      <button class="area-button" type="button" data-area-open aria-haspopup="dialog"><i class="fas fa-map-marker-alt" aria-hidden="true"></i><span>{% if active_area %}{{ active_area }}{% else %}Set your area{% endif %}</span><i class="fas fa-chevron-down" aria-hidden="true"></i></button>
+      {% if request.user.is_authenticated %}<a class="icon-button header-messages" href="/messages/" aria-label="Messages"><i class="far fa-comment-dots" aria-hidden="true"></i></a><a class="account-button" href="/account/"><i class="far fa-user" aria-hidden="true"></i><span>My account</span></a>{% else %}<a class="account-button" href="/login/"><i class="far fa-user" aria-hidden="true"></i><span>Sign in</span></a>{% endif %}
+    </div>
+  </div>
+</header>
+
+<main id="main" class="shell">
+  {% if messages %}<div class="notices" role="status">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+  <section class="home-greeting" aria-label="Welcome">
+    <h2>{% if request.user.is_authenticated %}Hello, {% firstof request.user.first_name request.user.username %}{% else %}Hello, neighbour{% endif %}</h2>
+    {% if request.user.is_authenticated and not request.user.company %}<a class="greeting-shop-link" href="{% url 'business_create' %}">Register your shop <i class="fas fa-arrow-right" aria-hidden="true"></i></a>{% endif %}
+  </section>
+  {% include 'includes/local_from_follow_prompt.html' %}
+  <section class="hero catalog-hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <div class="daily-banner"><div class="daily-banner-copy"><p class="eyebrow">A LITTLE MORE LOCAL</p><h1 id="hero-title" class="hometown-heading">I <span role="img" aria-label="love">&#x2764;&#xFE0F;</span><br>Vandavasi</h1><p class="hero-description">Discover shops, products &amp; everyday offers.</p><a href="{% url 'product_list' %}" class="banner-link">Explore nearby <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>{% include 'includes/home_showcase.html' %}</div>
+      <form class="discovery-search" action="{% url 'product_list' %}" method="get" role="search">
+        <label class="sr-only" for="business-search">Search products or shops</label>
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <input id="business-search" type="search" name="q" placeholder="Search products or shops…" autocomplete="off">
+        {% if active_area %}<input type="hidden" name="pincode" value="{{ active_area }}">{% endif %}
+        <button type="submit" aria-label="Search products or shops"><span>Search</span><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+      </form>
+      <div class="search-utility-row">
+        <p class="search-note"><i class="fas fa-map-marker-alt" aria-hidden="true"></i>{% if active_area %}Made local to {{ active_area }}. <button type="button" data-area-open>Change area</button>{% else %}<button type="button" data-area-open>Choose your pincode</button>{% endif %}</p>
+        <a class="post-ad-button" href="{% url 'advertiser_register' %}"><i class="fas fa-plus" aria-hidden="true"></i> Post an Ad</a>
+      </div>
+      <nav class="primary-shortcuts" aria-label="Explore nearby">
+        <a class="primary-products" href="{% url 'product_list' %}"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span>Products</span><span class="shortcut-arrow" aria-hidden="true">↗</span></a>
+        <a class="primary-shop" href="{% url 'business_list' %}"><i class="fas fa-store" aria-hidden="true"></i><span>Shops</span><span class="shortcut-arrow" aria-hidden="true">↗</span></a>
+        <a class="primary-offers" href="{% url 'ads_gallery' %}"><i class="fas fa-tags" aria-hidden="true"></i><span>Offers</span><span class="shortcut-arrow" aria-hidden="true">↗</span></a>
+        <a class="primary-news" href="{% url 'newsdesk:feed' %}"><i class="far fa-newspaper" aria-hidden="true"></i><span>News</span><span class="shortcut-arrow" aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+
+  </section>
+
+  <section class="home-product-section" id="products" aria-labelledby="home-products-title">
+    <div class="section-heading"><div><p class="eyebrow">FROM THE SHOPS AROUND YOU</p><h2 id="home-products-title">Discover local products</h2></div><a class="text-link" href="{% url 'product_list' %}">All products <span aria-hidden="true">↗</span></a></div>
+    {% if home_products %}<div class="product-grid">{% for product in home_products %}{% include 'shop/product_card.html' %}{% endfor %}</div>{% else %}<div class="market-empty"><i class="fas fa-shopping-bag" aria-hidden="true"></i><h2>Your next local find starts here.</h2><p>{% if active_area %}No products listed in {{ active_area }} yet. Browse all areas or add your shop's first product.{% else %}Products, prices, and discounts from local shops will appear here as shop owners add them.{% endif %}</p><a class="button button-green" href="{% if request.user.company %}{% url 'product_add' %}{% else %}/register/?type=shop{% endif %}">Add your shop's products +</a>{% if active_area %}<a class="button button-white" href="/products/?pincode=">Browse all areas ↗</a>{% endif %}</div>{% endif %}
+  </section>
+
+  <section class="explore-section pilot-section" aria-labelledby="explore-title">
+    <div class="pilot-story"><span class="pilot-badge"><span aria-hidden="true"></span> PILOT VERSION &middot; VANDAVASI</span><h2 id="explore-title">Starting small.<br>Starting in <em>Vandavasi.</em></h2><p>Local From is a pilot project bringing Vandavasi's shops, products, offers, and local news together in one place.</p><p class="pilot-story-note">We're starting with our town and building this with the people who call it home. Explore nearby, support a local shop, or bring your business on board.</p><a href="/register/?type=shop" class="pilot-join">Be one of our first shops <i class="fas fa-arrow-right" aria-hidden="true"></i></a><span class="pilot-location"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Made for Vandavasi, Tamil Nadu</span></div>
+    <div class="pilot-discover"><a href="/businesses/" class="pilot-link pilot-link-shops"><span class="pilot-link-icon"><i class="fas fa-store" aria-hidden="true"></i></span><div><small>MEET THE NEIGHBOURHOOD</small><h3>Discover Vandavasi shops</h3><p>Find local businesses and see what they have in store.</p></div><span aria-hidden="true">&rarr;</span></a><a href="/advertise/" class="pilot-link pilot-link-offers"><span class="pilot-link-icon"><i class="fas fa-tags" aria-hidden="true"></i></span><div><small>A LITTLE MORE FOR LESS</small><h3>Offers around you</h3><p>Browse deals and updates shared by nearby shops.</p></div><span aria-hidden="true">&rarr;</span></a><a href="/news/" class="pilot-link pilot-link-news"><span class="pilot-link-icon"><i class="far fa-newspaper" aria-hidden="true"></i></span><div><small>FROM OUR TOWN</small><h3>Stay close to local news</h3><p>Follow the stories and updates from Vandavasi.</p></div><span aria-hidden="true">&rarr;</span></a></div>
+  </section>
+
+  {% if feature_query %}<section class="shortcut-results" aria-labelledby="shortcut-title"><h2 id="shortcut-title">Shortcuts for “{{ feature_query }}”</h2><div>{% for feature in feature_matches %}<a href="{{ feature.url }}">{{ feature.name }} <span aria-hidden="true">↗</span></a>{% empty %}<p>No matching shortcuts. Try shops, offers, or news.</p>{% endfor %}</div></section>{% endif %}
+
+  <section class="business-section" aria-labelledby="business-title">
+    <div class="section-heading"><div><p class="eyebrow">IN THE NEIGHBOURHOOD</p><h2 id="business-title">Local names. New favourites.</h2></div><a class="text-link" href="{% url 'business_list' %}{% if active_area %}?pincode={{ active_area|urlencode }}{% endif %}">All businesses <span aria-hidden="true">↗</span></a></div>
+    {% if business_logos %}<div class="business-grid">{% for business in business_logos|slice:':6' %}<a class="business-card" href="{% url 'business_profile' business.company_id %}"><span class="business-monogram" aria-hidden="true">{{ business.company_name|first|upper }}</span><div><p>{{ business.industry|default:'Local business' }}</p><h3>{{ business.company_name }}</h3><span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> {{ business.user.city|default:business.user.pincode|default:'Explore this business' }}</span></div><span class="business-arrow" aria-hidden="true">↗</span></a>{% endfor %}</div>
+    {% else %}<div class="directory-empty"><span class="empty-symbol" aria-hidden="true"><i class="fas fa-store"></i></span><div><h3>Every local favourite starts somewhere.</h3><p>{% if active_area %}No business listings in {{ active_area }} yet. Explore other areas, or put your business on the map.{% else %}Be among the first businesses people discover here. Your neighbourhood is a good place to grow.{% endif %}</p></div><a href="/register/?type=company" class="button button-white">List your business <span aria-hidden="true">↗</span></a></div>{% endif %}
+  </section>
+
+  {% if live_ads or advertiser_banners %}<section class="sponsored-section" aria-labelledby="sponsored-title"><div class="section-heading"><div><p class="eyebrow">SPONSORED</p><h2 id="sponsored-title">A little local spotlight.</h2></div></div><div class="spotlight-grid">{% for ad in live_ads|slice:':3' %}<a class="spotlight-card" href="/ads/adpost-click/{{ ad.pk }}/"><span class="sponsor-label">Advertisement</span><h3>{{ ad.title|default:ad.company_name }}</h3><p>{{ ad.company_name }}</p><p>{{ ad.description|truncatechars:95 }}</p><span class="text-link">Take a closer look ↗</span></a>{% endfor %}{% if not live_ads %}{% for advertiser in advertiser_banners|slice:':3' %}<a class="spotlight-card" href="/advertise/business/{{ advertiser.pk }}/"><span class="sponsor-label">Advertisement</span><h3>{{ advertiser.business_name }}</h3><p>{{ advertiser.description|truncatechars:95 }}</p><span class="text-link">Take a closer look ↗</span></a>{% endfor %}{% endif %}</div></section>{% endif %}
+
+  <section class="business-invite" aria-labelledby="invite-title"><div class="invite-copy"><p class="eyebrow">MADE FOR THE BUSINESS NEXT DOOR</p><h2 id="invite-title">Your next customer<br>could be <em>next door.</em></h2><p>Give your business a place in the neighbourhood. Get discovered by people looking a little closer to home.</p><a class="button button-lime" href="/register/?type=company">Bring your business here <span aria-hidden="true">↗</span></a><a class="invite-secondary" href="/advertise/register/">Already here? Advertise with us <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div><div class="invite-art" aria-hidden="true"><span class="invite-orbit"></span><span class="invite-store"><i class="fas fa-store"></i></span><span class="invite-stamp">HELLO,<br>NEIGHBOUR!<span>✦</span></span><span class="invite-caption">A local business.<br>A world of possibility.</span></div></section>
+  <div class="local-signoff"><span class="signoff-line"></span><span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> A little more local. A little more you.</span><span class="signoff-line"></span></div>
+</main>
+
+{% include 'includes/site_footer.html' %}
+
+<nav class="mobile-nav" aria-label="Mobile navigation"><a href="/" aria-current="page"><i class="fas fa-home" aria-hidden="true"></i><span>Home</span></a><a href="/businesses/"><i class="fas fa-store" aria-hidden="true"></i><span>Shops</span></a><a href="/advertise/"><i class="fas fa-tags" aria-hidden="true"></i><span>Offers</span></a><a href="/news/"><i class="far fa-newspaper" aria-hidden="true"></i><span>News</span></a><a href="{% if request.user.is_authenticated %}/account/{% else %}/login/{% endif %}"><i class="far fa-user" aria-hidden="true"></i><span>Account</span></a></nav>
+
+<dialog id="area-dialog" class="area-dialog" aria-labelledby="area-title"><div class="area-dialog-inner"><button class="dialog-close icon-button" data-area-close type="button" aria-label="Close area selector"><i class="fas fa-times" aria-hidden="true"></i></button><span class="dialog-pin" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span><p class="eyebrow">LET'S MAKE IT LOCAL</p><h2 id="area-title">Where's your little<br>corner of the world?</h2><p>Enter your pincode to find businesses and offers around you.</p><form action="{% url 'select_area' %}" method="post">{% csrf_token %}<input type="hidden" name="next" value="/"><label for="local-pincode">Your pincode</label><div class="pin-input-row"><input id="local-pincode" name="pincode" type="text" inputmode="numeric" pattern="[1-9][0-9]{5}" minlength="6" maxlength="6" placeholder="e.g. 600001" value="{{ active_area }}" autocomplete="postal-code" required><button class="button button-green" type="submit">Explore <span aria-hidden="true">↗</span></button></div></form>{% if saved_areas %}<div class="saved-areas"><p>Your saved areas</p>{% for code in saved_areas %}<form method="post" action="{% url 'select_area' %}">{% csrf_token %}<input type="hidden" name="next" value="/"><button name="pincode" value="{{ code }}">{{ code }}</button></form>{% endfor %}</div>{% endif %}<a class="all-areas" href="/businesses/?pincode=">Just looking? Explore all businesses ↗</a></div></dialog>
+</body>
+</html>

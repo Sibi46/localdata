@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Advertise Your Flick — Local From{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:32px auto;padding:0 16px">
+
+  <a href="/flicks/" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#0a66c2;text-decoration:none;margin-bottom:20px">
+    <i class="fas fa-arrow-left"></i> Back to Flicks
+  </a>
+
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;padding:24px">
+
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:8px">⚡</div>
+      <h2 style="font-size:20px;font-weight:900;color:#111;margin:0 0 4px">Promote Your Flick</h2>
+      <p style="font-size:13px;color:#888;margin:0">Your flick appears at the top of the feed with a Sponsored badge</p>
+    </div>
+
+    <!-- Flick preview -->
+    <div style="background:#f8faff;border:1.5px solid #dbe8ff;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:20px">
+      <div style="width:56px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#000;display:flex;align-items:center;justify-content:center">
+        {% if flick.image %}
+          <img src="{{ flick.image.url }}" style="width:100%;height:100%;object-fit:cover">
+        {% elif flick.video %}
+          <i class="fas fa-play-circle" style="font-size:22px;color:#fff"></i>
+        {% else %}
+          <i class="fas fa-bolt" style="font-size:22px;color:#7c3aed"></i>
+        {% endif %}
+      </div>
+      <div style="flex:1;min-width:0">
+        {% if flick.title %}<div style="font-size:14px;font-weight:800;color:#111;margin-bottom:2px">{{ flick.title }}</div>{% endif %}
+        {% if flick.caption %}<div style="font-size:12px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ flick.caption }}</div>{% endif %}
+        <div style="font-size:11px;color:#aaa;margin-top:2px">{{ flick.created_at|date:"d M Y" }}</div>
+      </div>
+    </div>
+
+    <!-- Plan card -->
+    <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:2px solid #c4b5fd;border-radius:12px;padding:16px;text-align:center;margin-bottom:20px">
+      <div style="font-size:13px;font-weight:700;color:#7c3aed;margin-bottom:4px">ADVERTISE PLAN</div>
+      <div style="font-size:32px;font-weight:900;color:#111">₹{{ settings.price }}</div>
+      <div style="font-size:13px;color:#666;margin-top:2px">for {{ settings.duration_days }} days</div>
+      <div style="margin-top:10px;font-size:12px;color:#555;line-height:1.7">
+        ✅ Top of feed placement<br>
+        ✅ Sponsored badge on your flick<br>
+        ✅ More views & engagement
+      </div>
+    </div>
+
+    {% if pending %}
+    <div style="background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:14px;text-align:center;color:#f57f17;font-size:13px;font-weight:700">
+      <i class="fas fa-clock"></i> Your payment is under review. Admin will activate your promotion shortly.
+    </div>
+
+    {% else %}
+
+    <!-- How to pay -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:13px;font-weight:800;color:#111;margin-bottom:10px">How to pay:</div>
+      <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:14px">
+        <div style="font-size:13px;color:#166534;line-height:1.8">
+          <b>1.</b> Open GPay / PhonePe / Paytm or any UPI app<br>
+          <b>2.</b> Pay <strong>₹{{ settings.price }}</strong> to UPI ID below<br>
+          <b>3.</b> Copy the <strong>Transaction ID</strong> and paste below
+        </div>
+        <div style="margin-top:12px;background:#fff;border:1.5px solid #bbf7d0;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:10px;color:#888;margin-bottom:2px">UPI ID</div>
+            <div style="font-size:16px;font-weight:900;color:#0a66c2;letter-spacing:0.5px" id="upi-id">{{ settings.upi_id }}</div>
+          </div>
+          <button onclick="navigator.clipboard.writeText('{{ settings.upi_id }}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)"
+            style="padding:6px 14px;background:#0a66c2;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">
+            Copy
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    {% if messages %}
+      {% for msg in messages %}
+      <div style="background:#fce4ec;border-left:4px solid #c62828;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#c62828;font-weight:700">
+        {{ msg }}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:13px;font-weight:700;color:#111;margin-bottom:6px">UPI Transaction ID *</label>
+        <input type="text" name="transaction_id" placeholder="e.g. 407812345678"
+          required
+          style="width:100%;padding:12px 14px;border:1.5px solid #dde1ea;border-radius:10px;font-size:14px;box-sizing:border-box;outline:none"
+          onfocus="this.style.borderColor='#0a66c2'" onblur="this.style.borderColor='#dde1ea'">
+        <div style="font-size:11px;color:#888;margin-top:4px">Enter the 12-digit transaction ID from your UPI app after payment</div>
+      </div>
+      <button type="submit"
+        style="width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#0a66c2);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:0.3px">
+        <i class="fas fa-bolt"></i> Submit Payment — ₹{{ settings.price }}
+      </button>
+    </form>
+
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

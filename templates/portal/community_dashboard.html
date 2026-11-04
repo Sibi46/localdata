@@ -1,0 +1,158 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Dashboard — {{ community.name }}{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <div class="psec-header" style="margin-bottom:16px">
+    <div>
+      <div class="psec-title">⚙️ Community Dashboard</div>
+      <div class="psec-sub" style="font-family:monospace;color:#1d4ed8">{{ community.name }} · {{ community.page_id }}</div>
+    </div>
+    <a href="/portal/c/{{ community.page_id }}/" class="pbtn pbtn-outline pbtn-sm">← View Page</a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-grid" style="margin-bottom:20px">
+    <div class="stat-card">
+      <div class="stat-num">{{ members_approved }}</div>
+      <div class="stat-label">Members</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:{% if members_pending > 0 %}#f97316{% else %}#1d4ed8{% endif %}">{{ members_pending }}</div>
+      <div class="stat-label">Pending Joins</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ volunteers_approved }}</div>
+      <div class="stat-label">Volunteers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:{% if volunteers_pending > 0 %}#f97316{% else %}#1d4ed8{% endif %}">{{ volunteers_pending }}</div>
+      <div class="stat-label">Pending Vol.</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-num">{{ videos_count }}</div>
+      <div class="stat-label">Videos</div>
+    </div>
+  </div>
+
+  <div class="pgrid">
+    <div>
+
+      <!-- PENDING EVENT REQUESTS -->
+
+
+      <!-- PENDING FLICK REQUESTS -->
+      {% if pending_flicks %}
+      <div class="pcard" style="margin-bottom:14px;border-color:#e9d5ff">
+        <div class="pcard-head" style="background:#faf5ff">
+          <div class="pcard-title" style="color:#6b21a8">🎬 Pending Flick Requests ({{ pending_flicks|length }})</div>
+        </div>
+        <div class="pcard-body" style="padding:0">
+          {% for flick in pending_flicks %}
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f3e8ff;flex-wrap:wrap">
+            <div style="width:52px;height:52px;border-radius:8px;overflow:hidden;background:#0f172a;flex-shrink:0">
+              {% if flick.media_type == 'video' %}
+                <video src="{{ flick.media.url }}" style="width:100%;height:100%;object-fit:cover" muted preload="none"></video>
+              {% else %}
+                <img src="{{ flick.media.url }}" style="width:100%;height:100%;object-fit:cover">
+              {% endif %}
+            </div>
+            <div style="flex:1;min-width:120px">
+              <div style="font-size:13px;font-weight:700;color:#0f172a">{{ flick.caption|default:"No caption"|truncatechars:40 }}</div>
+              <div style="font-size:11px;color:#94a3b8">By {{ flick.posted_by.get_full_name|default:flick.posted_by.username }} · {{ flick.created_at|date:"d M Y" }}</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <form method="post" action="/portal/flick/{{ flick.pk }}/approve/">{% csrf_token %}<button type="submit" class="pbtn pbtn-green pbtn-sm">✓ Approve</button></form>
+              <form method="post" action="/portal/flick/{{ flick.pk }}/reject/" onsubmit="return confirm('Reject this flick?')">{% csrf_token %}<button type="submit" class="pbtn pbtn-sm" style="background:#fee2e2;color:#dc2626;border:none">✗ Reject</button></form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- PENDING JOIN REQUESTS (president/creator only) -->
+      {% if can_manage_members and recent_requests %}
+      <div class="pcard" style="margin-bottom:14px">
+        <div class="pcard-head">
+          <div class="pcard-title">🔔 Pending Join Requests ({{ members_pending }})</div>
+          <a href="/portal/c/{{ community.page_id }}/members/?status=pending" class="pbtn pbtn-outline pbtn-sm">See all</a>
+        </div>
+        <div class="pcard-body" style="padding:0">
+          {% for m in recent_requests %}
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f1f5f9">
+            <div style="width:36px;height:36px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-weight:900;color:#1d4ed8;font-size:14px">{{ m.user.get_full_name|first }}</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:700;color:#0f172a">{{ m.user.get_full_name }}</div>
+              <div style="font-size:11px;color:#94a3b8">{{ m.joined_at|date:"d M Y" }}</div>
+            </div>
+            <form method="post" action="/portal/c/{{ community.page_id }}/members/" style="display:flex;gap:6px">
+              {% csrf_token %}
+              <input type="hidden" name="member_id" value="{{ m.pk }}">
+              <button name="action" value="approve" class="pbtn pbtn-green pbtn-sm">Approve</button>
+              <button name="action" value="reject" class="pbtn pbtn-red pbtn-sm">Reject</button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- PENDING VOLUNTEERS -->
+      {% if recent_volunteers %}
+      <div class="pcard" style="margin-bottom:14px">
+        <div class="pcard-head">
+          <div class="pcard-title">🙋 Pending Volunteers ({{ volunteers_pending }})</div>
+          <a href="/portal/c/{{ community.page_id }}/volunteers/?status=pending" class="pbtn pbtn-outline pbtn-sm">See all</a>
+        </div>
+        <div class="pcard-body" style="padding:0">
+          {% for vr in recent_volunteers %}
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f1f5f9">
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:700;color:#0f172a">{{ vr.name }}</div>
+              <div style="font-size:11px;color:#64748b">{{ vr.volunteer_interest }}</div>
+              <div style="font-size:11px;color:#94a3b8">{{ vr.availability }} · {{ vr.mobile }}</div>
+            </div>
+            <form method="post" action="/portal/c/{{ community.page_id }}/volunteers/" style="display:flex;gap:6px">
+              {% csrf_token %}
+              <input type="hidden" name="vr_id" value="{{ vr.pk }}">
+              <button name="action" value="approve" class="pbtn pbtn-green pbtn-sm">Approve</button>
+              <button name="action" value="reject" class="pbtn pbtn-red pbtn-sm">Reject</button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- UPCOMING EVENTS -->
+
+
+    </div>
+
+    <!-- ACTIONS SIDEBAR -->
+    <div>
+      <div class="pcard" style="margin-bottom:14px">
+        <div class="pcard-head"><div class="pcard-title">Quick Actions</div></div>
+        <div class="pcard-body" style="display:flex;flex-direction:column;gap:8px">
+
+          {% if can_manage_members %}<a href="/portal/c/{{ community.page_id }}/members/" class="pbtn pbtn-outline pbtn-full"><i class="fas fa-users"></i> Manage Members</a>{% endif %}
+          <a href="/portal/c/{{ community.page_id }}/volunteers/" class="pbtn pbtn-outline pbtn-full"><i class="fas fa-hand-holding-heart"></i> Manage Volunteers</a>
+          <a href="/portal/c/{{ community.page_id }}/leaders/add/" class="pbtn pbtn-outline pbtn-full"><i class="fas fa-user-tie"></i> Add Office Bearer</a>
+          <a href="/portal/c/{{ community.page_id }}/video/upload/" class="pbtn pbtn-outline pbtn-full"><i class="fas fa-video"></i> Upload Video</a>
+        </div>
+      </div>
+
+      <div class="pcard">
+        <div class="pcard-head"><div class="pcard-title">Community Info</div></div>
+        <div class="pcard-body" style="font-size:12px;display:flex;flex-direction:column;gap:8px">
+          <div><span style="color:#94a3b8">Page ID:</span> <strong style="font-family:monospace;color:#1d4ed8">{{ community.page_id }}</strong></div>
+          <div><span style="color:#94a3b8">Join Mode:</span> <span class="pbadge {% if community.join_mode == 'open' %}pbadge-green{% else %}pbadge-orange{% endif %}">{{ community.get_join_mode_display }}</span></div>
+          <div><span style="color:#94a3b8">Status:</span> {% if community.is_verified %}<span class="pbadge pbadge-green">Verified</span>{% else %}<span class="pbadge pbadge-gray">Pending Verification</span>{% endif %}</div>
+          <div><span style="color:#94a3b8">Location:</span> {{ community.location }} {{ community.pincode }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

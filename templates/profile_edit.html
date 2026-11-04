@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}My profile | Local From{% endblock %}
+{% block content %}
+<main style="max-width:760px;margin:24px auto;padding:16px 16px 90px">
+  <h1>My profile</h1>{% include 'includes/profile_features.html' %}
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <fieldset><legend>Personal details</legend>{{ personal_form.as_p }}</fieldset>
+    <fieldset><legend>Main and preferred areas</legend>{{ location_form.as_p }}</fieldset>
+    <button type="submit">Save profile</button>
+  </form>
+</main>
+{% endblock %}

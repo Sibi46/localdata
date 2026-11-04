@@ -1,0 +1,20 @@
+.studio-home .product-showcase{position:absolute;right:6%;top:12px;width:260px;bottom:12px;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.showcase-definitions{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.showcase-slides{width:100%;min-height:0}
+.showcase-slide{display:flex;flex-direction:column;align-items:center;gap:0;color:#302047}
+.showcase-slide[hidden]{display:none}
+.showcase-slide.is-active{animation:showcase-enter .25s ease both}
+.showcase-slide svg{display:block;width:100%;height:180px;overflow:visible}
+.showcase-slide>span{font-size:13px;font-weight:500;text-align:center;line-height:1.5}
+.showcase-controls{display:flex;align-items:center;gap:10px;margin-top:7px;color:#3c2865}
+.showcase-controls button{display:grid;place-items:center;width:25px;height:25px;border:0;border-radius:50%;background:#ffffff70;color:#39285b;font:20px/1 var(--sans);padding:0}
+.showcase-controls button:hover{background:#fff}
+.showcase-controls>span{font-size:9px;font-variant-numeric:tabular-nums}
+@keyframes showcase-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:1000px){.studio-home .product-showcase{right:13%;width:280px}.showcase-slide svg{height:185px}}
+@media(max-width:800px){.studio-home .product-showcase{right:15px;width:210px}.showcase-slide svg{height:155px}.showcase-slide>span{font-size:11px}.showcase-controls{gap:8px}}
+@media(max-width:640px){.studio-home .product-showcase{right:6px;top:9px;bottom:8px;width:135px}.showcase-slide svg{height:119px}.showcase-slide>span{font-size:9px;line-height:1.4}.showcase-controls{gap:6px;margin-top:8px}.showcase-controls button{width:23px;height:23px;font-size:17px}.showcase-controls button:last-child{font-size:8px;margin-left:0}.showcase-controls>span{font-size:8px}.studio-home .daily-banner-copy{max-width:calc(100% - 122px)}}
+@media(max-width:370px){.studio-home .product-showcase{right:3px;width:119px}.showcase-slide svg{height:109px}.showcase-slide>span{font-size:8px}.showcase-controls{gap:4px}.showcase-controls button{width:22px;height:22px}.studio-home .daily-banner-copy{max-width:calc(100% - 105px)}.studio-home .catalog-hero h1{font-size:26px!important}}
+@media(prefers-reduced-motion:reduce){.showcase-slide.is-active{animation:none}}
+.showcase-controls button[data-showcase-next]{font-size:20px;margin-left:0}
+@media(max-width:640px){.showcase-controls button[data-showcase-next]{font-size:17px}}

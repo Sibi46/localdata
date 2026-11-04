@@ -1,0 +1,1 @@
+{% extends 'newsdesk/base.html' %}{% block news_content %}<section class="nd-empty"><h1>We couldn’t complete that.</h1>{% for error in errors %}<p>{{ error }}</p>{% endfor %}<a class="nd-btn" href="{% url 'newsdesk:feed' %}">Back to News Desk</a></section>{% endblock %}

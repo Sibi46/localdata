@@ -1,0 +1,38 @@
+{% load tz %}{% with mine=msg.sender_id|stringformat:"d" %}
+<div class="bubble-wrap {% if msg.sender == me %}mine{% else %}theirs{% endif %}" data-id="{{ msg.pk }}">
+  {% if msg.msg_type == 'text' %}
+    <div class="bubble">{{ msg.content }}</div>
+
+  {% elif msg.msg_type == 'image' %}
+    <div class="bubble bubble-img">
+      <a href="{% url 'chat_attachment' msg.pk %}" target="_blank">
+        <img src="{% url 'chat_attachment' msg.pk %}" alt="Image" class="chat-img">
+      </a>
+      {% if msg.content %}<p class="img-caption">{{ msg.content }}</p>{% endif %}
+    </div>
+
+  {% elif msg.msg_type == 'file' or msg.msg_type == 'resume' %}
+    <div class="bubble bubble-file">
+      <i class="fa-solid fa-file-pdf"></i>
+      <div>
+        <span class="file-label">{{ msg.file_name|default:"Attachment" }}</span>
+        <a href="{% url 'chat_attachment' msg.pk %}" target="_blank" download class="file-dl">
+          Download <i class="fa-solid fa-download"></i>
+        </a>
+      </div>
+    </div>
+
+  {% endif %}
+
+  <div class="bubble-meta">
+    <span class="btime">{{ msg.sent_at|date:"g:i A" }}</span>
+    {% if msg.sender == me %}
+      {% if msg.is_read %}
+        <span class="read-tick read"><i class="fa-solid fa-check-double"></i></span>
+      {% else %}
+        <span class="read-tick sent"><i class="fa-solid fa-check"></i></span>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endwith %}

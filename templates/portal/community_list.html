@@ -1,0 +1,70 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Browse Communities{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <!-- HERO -->
+  <div class="phero">
+    <h1>Don't just post. <span>Participate.</span></h1>
+    <p>Join communities around your Pincode. Support causes. Volunteer. Create real-world impact together.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a href="/portal/my/communities/" class="pbtn pbtn-orange"><i class="fas fa-layer-group"></i> My Community</a>
+      <a href="/portal/communities/" class="pbtn pbtn-outline" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff">Browse Communities</a>
+    </div>
+  </div>
+
+  <div class="psec-header" style="margin-bottom:16px">
+    <div>
+      <div class="psec-title">🏘️ All Communities</div>
+      <div class="psec-sub">{{ communities.count }} communities found</div>
+    </div>
+  </div>
+
+  <form method="get" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search by name or Page ID..." class="pform-input" style="flex:2;min-width:180px">
+    <input type="text" name="pincode" value="{{ pincode }}" placeholder="Pincode..." class="pform-input" style="flex:1;min-width:110px">
+    <select name="category" class="pform-input" style="flex:1;min-width:140px">
+      <option value="">All Categories</option>
+      {% for cat in categories %}<option value="{{ cat.slug }}" {% if selected_cat == cat.slug %}selected{% endif %}>{{ cat.icon }} {{ cat.name }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="pbtn pbtn-primary">Search</button>
+  </form>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px">
+    {% for c in communities %}
+    <a href="/portal/c/{{ c.page_id }}/" class="comm-card">
+      <div class="comm-card-cover">
+        {% if c.cover %}
+          <img src="{{ c.cover.url }}" alt="" class="comm-card-cover-img">
+        {% endif %}
+        <div class="comm-card-cover-overlay"></div>
+        {% if c.logo %}
+          <img src="{{ c.logo.url }}" alt="{{ c.name }}" class="comm-card-logo">
+        {% else %}
+          <div class="comm-card-logo-wrap" style="background:{{ c.name|length|divisibleby:5|yesno:'linear-gradient(135deg,#6366f1,#8b5cf6),linear-gradient(135deg,#0ea5e9,#6366f1)' }}">
+            <span class="logo-initials">{{ c.name|slice:":2"|upper }}</span>
+            <span class="logo-dot"></span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="comm-card-body">
+        <div class="comm-card-id">{{ c.page_id }}</div>
+        <div class="comm-card-name">{{ c.name }}</div>
+        <div class="comm-card-purpose">{{ c.purpose }}</div>
+        <div class="comm-card-meta">
+          <span><i class="fas fa-users" style="color:#1d4ed8"></i> {{ c.member_count }} members</span>
+          <span><i class="fas fa-map-marker-alt" style="color:#f97316"></i> {{ c.pincode }}</span>
+          {% if c.is_verified %}<span class="pbadge pbadge-green">✓ Verified</span>{% endif %}
+          {% if c.category %}<span class="pbadge pbadge-blue">{{ c.category.icon }} {{ c.category.name }}</span>{% endif %}
+        </div>
+      </div>
+    </a>
+    {% empty %}
+    <div class="pempty" style="grid-column:1/-1">
+      <div class="pempty-icon">🔍</div>
+      <div class="pempty-text">No communities found</div>
+      <div class="pempty-sub">Try different search terms</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

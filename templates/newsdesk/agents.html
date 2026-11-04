@@ -1,0 +1,4 @@
+{% extends 'newsdesk/base.html' %}
+{% block news_content %}<div class="nd-section-title"><div><p class="nd-eyebrow">ADMIN</p><h1>News Agent assignments</h1><p class="nd-muted">Each agent manages one pincode. Deactivate an assignment to remove desk access.</p></div><a href="{% url 'newsdesk:manage' %}">← Back to desk</a></div>
+<form class="nd-form nd-panel nd-form-page" method="post">{% csrf_token %}{{ form.as_p }}<button class="nd-btn" type="submit">Save assignment</button></form>
+<div class="nd-desk-list">{% for agent in page %}<article class="nd-panel"><h2>{{ agent.user.get_full_name|default:agent.user.username }}</h2><p>{{ agent.pincode.code }} · {% if agent.is_active %}Active{% else %}Inactive{% endif %}</p><a href="{% url 'newsdesk:agent_edit' agent.pk %}">Edit assignment →</a></article>{% empty %}<p>No News Agents assigned yet.</p>{% endfor %}</div><form id="nd-filters" method="get"></form>{% include 'newsdesk/components/pagination.html' %}{% endblock %}

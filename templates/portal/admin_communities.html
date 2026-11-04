@@ -1,0 +1,78 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Admin — Communities{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <div class="psec-header">
+    <div class="psec-title">⚙️ Platform Admin — Communities</div>
+  </div>
+
+  <div class="stat-grid" style="margin-bottom:20px">
+    <div class="stat-card"><div class="stat-num">{{ total }}</div><div class="stat-label">Total</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#f97316">{{ unverified }}</div><div class="stat-label">Pending</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#059669">{{ verified }}</div><div class="stat-label">Approved</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#dc2626">{{ rejected }}</div><div class="stat-label">Rejected</div></div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <a href="?" class="pbtn {% if not status %}pbtn-primary{% else %}pbtn-outline{% endif %} pbtn-sm">All</a>
+    <a href="?status=pending" class="pbtn {% if status == 'pending' %}pbtn-orange{% else %}pbtn-outline{% endif %} pbtn-sm">Pending</a>
+    <a href="?status=verified" class="pbtn {% if status == 'verified' %}pbtn-green{% else %}pbtn-outline{% endif %} pbtn-sm">Approved</a>
+    <a href="?status=rejected" class="pbtn {% if status == 'rejected' %}pbtn-red{% else %}pbtn-outline{% endif %} pbtn-sm">Rejected</a>
+    <a href="?status=suspended" class="pbtn {% if status == 'suspended' %}pbtn-red{% else %}pbtn-outline{% endif %} pbtn-sm">Suspended</a>
+  </div>
+
+  {% if messages %}
+  {% for m in messages %}
+  <div style="background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:12px">{{ m }}</div>
+  {% endfor %}
+  {% endif %}
+
+  <div class="pcard">
+    <div style="overflow-x:auto">
+      <table class="ptable">
+        <thead>
+          <tr><th>Community</th><th>Page ID</th><th>Created By</th><th>Location</th><th>Members</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for c in communities %}
+          <tr>
+            <td>
+              <div style="font-size:13px;font-weight:800;color:#0f172a">{{ c.name }}</div>
+              {% if c.category %}<div style="font-size:11px;color:#64748b">{{ c.category.name }}</div>{% endif %}
+            </td>
+            <td><span style="font-family:monospace;font-size:12px;font-weight:700;color:#1d4ed8">{{ c.page_id }}</span></td>
+            <td style="font-size:12px;color:#374151">{{ c.created_by.get_full_name }}</td>
+            <td style="font-size:12px;color:#64748b">{{ c.location }}, {{ c.pincode }}</td>
+            <td style="font-size:13px;font-weight:700;color:#1d4ed8;text-align:center">{{ c.member_count }}</td>
+            <td>
+              {% if not c.is_active and not c.is_verified %}<span class="pbadge pbadge-red">Rejected</span>
+              {% elif not c.is_active %}<span class="pbadge" style="background:#fee2e2;color:#7f1d1d">Suspended</span>
+              {% elif c.is_verified %}<span class="pbadge pbadge-green">Approved</span>
+              {% else %}<span class="pbadge pbadge-orange">Pending</span>{% endif %}
+            </td>
+            <td>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <a href="/portal/c/{{ c.page_id }}/" class="pbtn pbtn-outline pbtn-sm">View</a>
+                {% if not c.is_verified and c.is_active %}
+                  <a href="/portal/admin/communities/{{ c.pk }}/verify/" class="pbtn pbtn-green pbtn-sm" onclick="return confirm('Approve this community?')">✓ Approve</a>
+                  <a href="/portal/admin/communities/{{ c.pk }}/reject/" class="pbtn pbtn-red pbtn-sm" onclick="return confirm('Reject this community? The creator will be notified.')">✗ Reject</a>
+                {% endif %}
+                {% if c.is_verified and c.is_active %}
+                  <a href="/portal/admin/communities/{{ c.pk }}/suspend/" class="pbtn pbtn-sm" style="background:#fee2e2;color:#b91c1c" onclick="return confirm('Suspend this community?')">Suspend</a>
+                {% endif %}
+                {% if not c.is_active %}
+                  <a href="/portal/admin/communities/{{ c.pk }}/suspend/" class="pbtn pbtn-primary pbtn-sm" onclick="return confirm('Restore this community?')">Restore</a>
+                {% endif %}
+                <a href="/portal/admin/communities/{{ c.pk }}/delete/" class="pbtn pbtn-sm" style="background:#fee2e2;color:#dc2626">🗑 Delete</a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px">No communities.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

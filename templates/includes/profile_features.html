@@ -1,0 +1,7 @@
+<section class="account-hub dsec-card" aria-labelledby="account-hub-title">
+  <p class="account-eyebrow">MY ACCOUNT</p><h1 id="account-hub-title">Your profile. All your features.</h1>
+  <p>Manage your details, explore your saved areas and open every service from here.</p>
+  <div class="account-social-stats"><a href="/businesses/?following=1&amp;pincode="><strong>{{ following_count }}</strong> Following</a>{% if company %}<a href="{% url 'business_profile' company.company_id %}"><strong>{{ business_follower_count }}</strong> Business followers</a>{% endif %}</div>
+  <details open><summary>All features</summary><div class="account-feature-grid">{% for feature in account_features %}<a href="{{ feature.url }}"><i class="fas fa-th-large" aria-hidden="true"></i><span>{{ feature.name }}</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>{% endfor %}</div></details>
+  <div class="account-utilities"><button type="button" data-account-theme>Change appearance</button><a href="/logout/">Sign out</a></div>
+</section>

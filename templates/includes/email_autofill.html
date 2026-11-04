@@ -1,0 +1,19 @@
+<!-- EMAIL AUTO-FILL snippet — include before </body> on standalone pages -->
+<script>
+(function(){
+  var STORAGE_KEY = 'op_user_email';
+  function isValidEmail(v){ return v && v.indexOf('@')>1 && v.indexOf('.')>v.indexOf('@')+1; }
+  function getInputs(){ return document.querySelectorAll('input[type="email"],input[name*="email"],input[placeholder*="email" i]'); }
+  function fillAll(email){ getInputs().forEach(function(el){ if(!el.value && email) el.value=email; }); }
+  function saveAndFill(email){ if(!isValidEmail(email)) return; try{localStorage.setItem(STORAGE_KEY,email);}catch(e){} fillAll(email); }
+  function init(){
+    var saved; try{saved=localStorage.getItem(STORAGE_KEY);}catch(e){}
+    if(saved) fillAll(saved);
+    getInputs().forEach(function(el){
+      el.addEventListener('blur',function(){ if(isValidEmail(el.value.trim())) saveAndFill(el.value.trim()); });
+      el.addEventListener('change',function(){ if(isValidEmail(el.value.trim())) saveAndFill(el.value.trim()); });
+    });
+  }
+  document.readyState==='loading' ? document.addEventListener('DOMContentLoaded',init) : init();
+})();
+</script>

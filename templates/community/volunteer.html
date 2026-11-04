@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Volunteer Activities – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#f0fdf4}
+  #volTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #bbf7d0;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #volTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #volTopBar h2{font-size:16px;font-weight:900;color:#111;margin:0;flex:1}
+
+  .vol-hero{background:linear-gradient(135deg,#16a34a,#22c55e);padding:20px 16px;text-align:center;color:#fff}
+  .vol-hero h1{font-size:20px;font-weight:900;margin:0 0 4px}
+  .vol-hero p{font-size:12px;opacity:.85;margin:0}
+
+  .vol-cats{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:#fff;border-bottom:1px solid #dcfce7;scrollbar-width:none}
+  .vol-cats::-webkit-scrollbar{display:none}
+  .vol-cat{flex-shrink:0;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;background:#dcfce7;color:#14532d;border:1.5px solid transparent;white-space:nowrap}
+  .vol-cat.active{background:#bbf7d0;color:#15803d;border-color:#86efac}
+
+  .vol-fab{position:fixed;bottom:80px;right:16px;z-index:100;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.4);display:flex;align-items:center;justify-content:center;text-decoration:none}
+
+  .vol-feed{padding:14px 16px 100px;max-width:600px;margin:0 auto}
+  .vol-card{background:#fff;border-radius:16px;border:1.5px solid #bbf7d0;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 4px rgba(22,163,74,.07)}
+  .vol-card-img{width:100%;max-height:180px;object-fit:cover;display:block}
+  .vol-card-head{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .vol-cat-icon{font-size:22px}
+  .vol-head-info{flex:1}
+  .vol-head-date{font-size:12px;font-weight:800}
+  .vol-head-venue{font-size:11px;opacity:.85}
+  .vol-need-badge{font-size:10px;font-weight:800;background:rgba(255,255,255,.25);padding:3px 10px;border-radius:8px;white-space:nowrap}
+  .vol-card-body{padding:14px}
+  .vol-title{font-size:15px;font-weight:900;color:#111;margin-bottom:5px}
+  .vol-desc{font-size:13px;color:#374151;line-height:1.6}
+  .vol-meta{font-size:11px;color:#9ca3af;margin-top:6px}
+  .vol-actions{display:flex;gap:8px;margin-top:10px;border-top:1px solid #f0fdf4;padding-top:10px}
+  .vol-signup-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:inherit;background:#16a34a;color:#fff;transition:all .15s}
+  .vol-signup-btn.signed{background:#15803d}
+  .vol-detail-btn{padding:10px 14px;border-radius:10px;font-size:12px;font-weight:700;background:#dcfce7;color:#14532d;text-decoration:none;display:flex;align-items:center;justify-content:center}
+  .vol-empty{text-align:center;padding:3rem 1rem;color:#9ca3af}
+</style>
+
+<div id="volTopBar">
+  <a href="/community/" class="back">&#8592;</a>
+  <h2>🤝 Volunteer Activities</h2>
+</div>
+
+<div class="vol-hero">
+  <h1>🤝 Volunteer Activities</h1>
+  <p>Blood donation, tree plantation, health camps & more</p>
+</div>
+
+<div class="vol-cats">
+  <a href="/community/volunteer/" class="vol-cat {% if not active_cat %}active{% endif %}">🤝 All</a>
+  {% for val, label in categories %}
+  <a href="/community/volunteer/?cat={{ val }}" class="vol-cat {% if active_cat == val %}active{% endif %}" data-val="{{ val }}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+{% if request.user.is_authenticated %}
+<a href="/community/volunteer/post/" class="vol-fab">✏️</a>
+{% endif %}
+
+<div class="vol-feed">
+  {% if activities %}
+  {% for act in activities %}
+  <div class="vol-card">
+    {% if act.image %}<img class="vol-card-img" src="{{ act.image.url }}" alt="{{ act.title }}">{% endif %}
+    <div class="vol-card-head">
+      <span class="vol-cat-icon" data-cat="{{ act.category }}">🤝</span>
+      <div class="vol-head-info">
+        <div class="vol-head-date">{{ act.activity_date|date:"d M Y" }}{% if act.activity_time %} · {{ act.activity_time|time:"g:i A" }}{% endif %}</div>
+        <div class="vol-head-venue">📍 {{ act.venue }}</div>
+      </div>
+      {% if act.volunteers_needed %}<span class="vol-need-badge">{{ act.volunteer_count }}/{{ act.volunteers_needed }} Volunteers</span>{% endif %}
+    </div>
+    <div class="vol-card-body">
+      <div class="vol-title"><a href="/community/volunteer/{{ act.pk }}/" style="color:inherit;text-decoration:none">{{ act.title }}</a></div>
+      <div class="vol-desc">{{ act.description|truncatewords:22 }}</div>
+      <div class="vol-meta">Posted {{ act.created_at|timesince }} ago{% if act.contact %} · 📞 {{ act.contact }}{% endif %}{% if act.pincode %} · 📍 {{ act.pincode }}{% endif %}</div>
+    </div>
+    {% if request.user.is_authenticated %}
+    <div style="padding:0 14px 14px;display:flex;gap:8px">
+      <button class="vol-signup-btn {% if act.pk in my_signups %}signed{% endif %}"
+        id="vsb-{{ act.pk }}" onclick="signup({{ act.pk }}, this)">
+        {% if act.pk in my_signups %}✅ Signed Up{% else %}🙋 Sign Up{% endif %}
+      </button>
+      <a href="/community/volunteer/{{ act.pk }}/" class="vol-detail-btn">Details 💬</a>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="vol-empty">
+    <div style="font-size:3rem;margin-bottom:8px">🤝</div>
+    <p style="font-weight:700;color:#374151;margin-bottom:4px">No activities posted yet</p>
+    <p style="font-size:13px">Organise a volunteer drive for your community!</p>
+    {% if request.user.is_authenticated %}
+    <a href="/community/volunteer/post/" style="display:inline-block;margin-top:12px;background:#16a34a;color:#fff;padding:10px 24px;border-radius:24px;font-weight:800;font-size:13px;text-decoration:none">Post Activity</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  var icons={blood:'🩸',tree:'🌳',health:'🏥',education:'📚',cleanup:'🧹',food:'🍱',other:'🤝'};
+  document.querySelectorAll('.vol-cat[data-val]').forEach(function(el){
+    var v=el.getAttribute('data-val');if(icons[v])el.textContent=icons[v]+' '+el.textContent.trim();
+  });
+  document.querySelectorAll('.vol-cat-icon[data-cat]').forEach(function(el){
+    var v=el.getAttribute('data-cat');if(icons[v])el.textContent=icons[v];
+  });
+})();
+function signup(pk,btn){
+  fetch('/community/volunteer/'+pk+'/signup/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    btn.classList.toggle('signed',d.signed_up);
+    btn.textContent=d.signed_up?'✅ Signed Up':'🙋 Sign Up';
+  });
+}
+</script>
+{% endblock %}

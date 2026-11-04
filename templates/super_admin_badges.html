@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Badges – Super Admin{% endblock %}
+{% block content %}
+<main style="max-width:800px;margin:24px auto;padding:16px">
+  <a href="{% url 'super_admin_dashboard' %}">Back to Super Admin</a>
+  <h1>Badge images</h1>
+  <h2>{% if editing_badge %}Edit {{ editing_badge.name }}{% else %}Add badge{% endif %}</h2>
+  <p>Upload an icon and a badge image (up to 2 MB each). Select a community to make the badge available there.</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}{{ form.as_p }}
+    <button type="submit">Save badge</button>
+    {% if editing_badge %}<a href="{% url 'super_admin_badges' %}">Cancel editing</a>{% endif %}
+  </form>
+  <h2>Existing badges</h2>
+  {% for badge in badges %}
+  <article style="padding:16px 0;border-bottom:1px solid #ddd">
+    {% include 'portal/badge_artwork.html' %}
+    <strong>{{ badge.name }}</strong> — {{ badge.community.name|default:'No community' }}
+    <a href="?edit={{ badge.pk }}">Edit badge and images</a>
+  </article>
+  {% empty %}<p>No badges yet.</p>{% endfor %}
+</main>
+{% endblock %}

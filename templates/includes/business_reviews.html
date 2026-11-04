@@ -1,0 +1,22 @@
+<section id="customer-reviews" style="background:#fff;border-radius:14px;padding:20px;margin:20px 0;overflow-wrap:anywhere">
+  <h2>Customer reviews{% if review_average %} · {{ review_average|floatformat:1 }}/5{% endif %}</h2>
+  <p>{{ review_snapshot }}</p>
+  {% if latest_ai_report %}<aside><strong>AI review summary · {{ latest_ai_report.month|date:"F Y" }}</strong><p>{{ latest_ai_report.summary }}</p><small>Generated from customer feedback; may contain errors.</small></aside>{% endif %}
+  {% if request.user.is_authenticated and request.user != owner %}
+  <form method="post" action="{% url 'business_review' profile.company_id %}" style="display:grid;gap:12px;margin:20px 0">
+    {% csrf_token %}
+    <label>Rating <select name="rating" required><option value="">Choose stars</option>{% for value in '12345' %}<option value="{{ value }}" {% if own_review.rating|stringformat:'s' == value %}selected{% endif %}>{{ value }} / 5</option>{% endfor %}</select></label>
+    <label>Your experience<textarea name="text" required minlength="10" maxlength="2000" rows="4" style="display:block;width:100%;box-sizing:border-box;padding:12px">{{ own_review.text }}</textarea></label>
+    <button type="submit" style="padding:12px">{% if own_review %}Update review{% else %}Post review{% endif %}</button>
+  </form>
+  {% elif not request.user.is_authenticated %}<p><a href="/login/?next={{ request.path|urlencode }}">Sign in to write a review</a></p>{% endif %}
+
+  {% for review in reviews %}<article style="border-top:1px solid #e2e8f0;padding:16px 0"><strong>{{ review.user.get_full_name|default:review.user.username }}</strong> · {{ review.rating }}/5<br><small>{{ review.badge_label }} · {{ review.updated_at|date:"j M Y" }}</small><p style="white-space:pre-line">{{ review.text }}</p></article>{% empty %}<p>Be the first to share your experience.</p>{% endfor %}
+  {% if reviews.has_previous %}<a href="?review_page={{ reviews.previous_page_number }}#customer-reviews">Previous reviews</a>{% endif %}
+  {% if reviews.has_next %}<a href="?review_page={{ reviews.next_page_number }}#customer-reviews">More reviews</a>{% endif %}
+  {% if request.user == owner %}
+
+    <h3>Monthly review reports</h3>
+    {% for report in review_reports %}<details><summary>{{ report.month|date:"F Y" }}{% if report.ai_generated %} · AI summary{% endif %}</summary><p>{{ report.summary }}</p></details>{% empty %}<p>Your monthly reports will appear here after the monthly report job runs.</p>{% endfor %}
+  {% endif %}
+</section>

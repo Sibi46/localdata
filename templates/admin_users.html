@@ -1,0 +1,150 @@
+{% extends 'admin_base.html' %}
+{% block title %}All Users — Admin{% endblock %}
+
+{% block content %}
+<div class="ap-breadcrumb"><i class="fas fa-home"></i> Admin Panel › <a href="/admin-panel/users/">Users</a></div>
+<div class="ap-page-title"><i class="fas fa-users" style="color:#0a66c2"></i> All Users</div>
+<div class="ap-page-subtitle">View all registered users — employers and job seekers</div>
+
+<!-- Stats -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+  <div class="ap-stat blue" style="cursor:pointer" onclick="location.href='?type='">
+    <div class="ap-stat-icon"><i class="fas fa-users"></i></div>
+    <h3>{{ total_count }}</h3>
+    <p>Total Users</p>
+  </div>
+  <div class="ap-stat green" style="cursor:pointer" onclick="location.href='?type=employer'">
+    <div class="ap-stat-icon"><i class="fas fa-briefcase"></i></div>
+    <h3>{{ employer_count }}</h3>
+    <p>Employers</p>
+  </div>
+  <div class="ap-stat orange" style="cursor:pointer" onclick="location.href='?type=personal'">
+    <div class="ap-stat-icon"><i class="fas fa-search"></i></div>
+    <h3>{{ jobseeker_count }}</h3>
+    <p>Personal accounts</p>
+  </div>
+  <div class="ap-stat" style="cursor:pointer;background:linear-gradient(135deg,#6d28d9,#7c3aed)" onclick="location.href='?type=admin'">
+    <div class="ap-stat-icon"><i class="fas fa-shield-alt"></i></div>
+    <h3 style="color:#fff">{{ admin_count }}</h3>
+    <p style="color:#e9d5ff">Admins</p>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="ap-card" style="margin-bottom:18px">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:4px 0">
+    <input type="text" name="q" value="{{ search }}" placeholder="Search name, phone, city, PIN…"
+      style="flex:1;min-width:200px;padding:9px 14px;border:1.5px solid #dde1ea;border-radius:8px;font-size:13px;outline:none">
+    <select name="type" style="padding:9px 14px;border:1.5px solid #dde1ea;border-radius:8px;font-size:13px;outline:none;background:#fff">
+      <option value="" {% if not utype %}selected{% endif %}>All Users</option>
+      <option value="employer" {% if utype == 'employer' %}selected{% endif %}>Employers</option>
+
+      <option value="admin" {% if utype == 'admin' %}selected{% endif %}>Admins</option>
+    </select>
+    <button type="submit" style="padding:9px 20px;background:#0a66c2;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer"><i class="fas fa-search"></i> Search</button>
+    {% if search or utype %}<a href="/admin-panel/users/" style="padding:9px 16px;background:#f3f4f6;color:#555;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">Clear</a>{% endif %}
+  </form>
+</div>
+
+<!-- Tab Pills -->
+<div style="display:flex;gap:8px;margin-bottom:16px">
+  <a href="?{% if search %}q={{ search }}&{% endif %}type=" style="padding:7px 18px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;{% if not utype %}background:#0a66c2;color:#fff{% else %}background:#f3f4f6;color:#555{% endif %}">All ({{ total_count }})</a>
+  <a href="?{% if search %}q={{ search }}&{% endif %}type=employer" style="padding:7px 18px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;{% if utype == 'employer' %}background:#0a66c2;color:#fff{% else %}background:#f3f4f6;color:#555{% endif %}"><i class="fas fa-briefcase"></i> Employers ({{ employer_count }})</a>
+  <a href="?{% if search %}q={{ search }}&{% endif %}type=personal" style="padding:7px 18px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;{% if utype == 'personal' %}background:#f3a000;color:#fff{% else %}background:#f3f4f6;color:#555{% endif %}"><i class="fas fa-search"></i> Personal accounts ({{ jobseeker_count }})</a>
+  <a href="?{% if search %}q={{ search }}&{% endif %}type=admin" style="padding:7px 18px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;{% if utype == 'admin' %}background:#6d28d9;color:#fff{% else %}background:#f3f4f6;color:#555{% endif %}"><i class="fas fa-shield-alt"></i> Admins ({{ admin_count }})</a>
+</div>
+
+<!-- Users Table -->
+<div class="ap-card">
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead>
+        <tr style="background:#f8f9fa;border-bottom:2px solid #e5e7eb">
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">#</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">Name</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">Type</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">Phone</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">Email</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">City</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">PIN Code</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">Org / Shop</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">Joined</th>
+          <th style="padding:12px 14px;text-align:left;font-weight:700;color:#555;white-space:nowrap">Status</th>
+          {% if request.user.admin_role == 'super_admin' %}<th style="padding:12px 14px;text-align:left;font-weight:700;color:#555">Action</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr style="border-bottom:1px solid #f0f2f5;transition:.15s" onmouseover="this.style.background='#f8f9ff'" onmouseout="this.style.background=''">
+          <td style="padding:12px 14px;color:#aaa">{{ forloop.counter }}</td>
+          <td style="padding:12px 14px">
+            <div style="font-weight:700;color:#111">{{ u.get_full_name|default:u.username }}</div>
+            <div style="font-size:11px;color:#888">{{ u.username }}</div>
+          </td>
+          <td style="padding:12px 14px">
+            {% if u.admin_role %}
+              <span style="background:#ede9fe;color:#6d28d9;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">
+                <i class="fas fa-shield-alt"></i> {{ u.get_admin_role_display }}
+              </span>
+            {% elif u.user_type in u.EMPLOYER_TYPES %}
+              <span style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">
+                <i class="fas fa-briefcase"></i> {{ u.get_user_type_display }}
+              </span>
+            {% else %}
+              <span style="background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">
+                <i class="fas fa-search"></i> {{ u.get_user_type_display }}
+              </span>
+            {% endif %}
+          </td>
+          <td style="padding:12px 14px;font-weight:600;color:#0a66c2">
+            {% if u.phone %}<a href="tel:{{ u.phone }}" style="color:#0a66c2;text-decoration:none">{{ u.phone }}</a>{% else %}<span style="color:#ccc">—</span>{% endif %}
+          </td>
+          <td style="padding:12px 14px;color:#555">{{ u.email|default:"—" }}</td>
+          <td style="padding:12px 14px;color:#555">{{ u.city|default:"—" }}</td>
+          <td style="padding:12px 14px">
+            {% if u.pincode %}<span style="background:#f0f6ff;color:#0a66c2;padding:3px 9px;border-radius:8px;font-size:12px;font-weight:700">{{ u.pincode }}</span>{% else %}<span style="color:#ccc">—</span>{% endif %}
+          </td>
+          <td style="padding:12px 14px;color:#555">
+            {% if u.user_type == 'company' and u.company %}{{ u.company.company_name }}
+            {% elif u.user_type == 'shop' and u.shop %}{{ u.shop.shop_name }}
+            {% else %}—{% endif %}
+          </td>
+          <td style="padding:12px 14px;color:#888;white-space:nowrap">{{ u.date_joined|date:"d M Y" }}</td>
+          <td style="padding:12px 14px">
+            {% if u.is_active %}
+              <span style="background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">Active</span>
+            {% else %}
+              <span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">Inactive</span>
+            {% endif %}
+          </td>
+          {% if request.user.admin_role == 'super_admin' %}
+          <td style="padding:12px 14px">
+            {% if u.admin_role != 'super_admin' %}
+            <form method="post" action="/super-admin/users/{{ u.pk }}/delete/" onsubmit="return confirm('Delete {{ u.get_full_name|default:u.username }}? This cannot be undone.')">
+              {% csrf_token %}
+              <button type="submit" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </form>
+            {% else %}
+            <span style="font-size:11px;color:#ccc">—</span>
+            {% endif %}
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="11" style="padding:40px;text-align:center;color:#888">
+            <i class="fas fa-users" style="font-size:32px;color:#ddd;display:block;margin-bottom:10px"></i>
+            No users found{% if search %} for "{{ search }}"{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div style="padding:12px 14px;font-size:12px;color:#888;border-top:1px solid #f0f2f5">
+    Showing {{ users|length }} user{{ users|length|pluralize }}
+  </div>
+</div>
+{% endblock %}

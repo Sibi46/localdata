@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Advertise your business - Local From{% endblock %}
+{% block register_business_button %}{% endblock %}
+{% block content %}
+<main style="max-width:700px;margin:40px auto;padding:24px">
+  <a href="/">Home</a><h1 style="margin:20px 0">Advertise your business</h1>
+  <p>Register your business to promote local offers and reach customers near you.</p>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin:24px 0">
+    <a href="/register/?type=company" class="btn-signin" style="padding:14px">Register Your Business</a>
+    <a href="/login/?next=/advertise/register/" style="padding:14px">Already registered? Sign in to advertise</a>
+  </div>
+  <a href="/businesses/">Browse registered businesses</a>
+</main>
+{% endblock %}

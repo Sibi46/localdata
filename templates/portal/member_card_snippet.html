@@ -1,0 +1,50 @@
+<div class="mm-card">
+  <div class="mm-card-top" style="{% if m.current_role_key == 'president' %}background:linear-gradient(135deg,#b45309,#f59e0b){% elif m.current_role_key == 'vice_president' %}background:linear-gradient(135deg,#1d4ed8,#6366f1){% elif m.current_role_key %}background:linear-gradient(135deg,#059669,#0d9488){% else %}background:linear-gradient(135deg,#4f46e5,#7c3aed){% endif %}">
+    <div class="mm-avatar">
+      {% with p=m.user.seeker %}{% if p and p.photo %}<img src="{{ p.photo.url }}">{% else %}{{ m.user.get_full_name|default:m.user.username|first|upper }}{% endif %}{% endwith %}
+    </div>
+  </div>
+  <div class="mm-card-body">
+    <div class="mm-name">{{ m.user.get_full_name|default:m.user.username }}</div>
+    {% if m.current_role %}<div class="mm-role-badge">⭐ {{ m.current_role }}</div>{% endif %}
+    {% if m.user.pincode %}<div class="mm-pincode">📍 {% if m.user.city %}{{ m.user.city }} — {% endif %}{{ m.user.pincode }}</div>{% endif %}
+    <div class="mm-pincode" style="color:#94a3b8;font-size:10px">🗓️ Joined {{ m.approved_at|default:m.joined_at|date:"d M Y" }}</div>
+
+    {% if is_admin %}
+    <div class="mm-pincode" style="word-break:break-all">{{ m.user.email }}</div>
+    {% if m.user.phone %}<div class="mm-pincode">📞 {{ m.user.phone }}</div>{% endif %}
+    {% if m.user.whatsapp %}<div class="mm-pincode"><a href="https://wa.me/91{{ m.user.whatsapp }}" target="_blank" style="color:#25d366;font-weight:700">💬 {{ m.user.whatsapp }}</a></div>{% endif %}
+    <hr class="mm-divider">
+    <form method="post" class="mm-actions" style="margin-bottom:6px">
+      {% csrf_token %}
+      <input type="hidden" name="member_id" value="{{ m.pk }}">
+      <input type="hidden" name="status_filter" value="approved">
+      {% if m.user.phone %}<a href="tel:{{ m.user.phone }}" class="pbtn pbtn-outline pbtn-sm">📞</a>{% endif %}
+      {% if m.user.whatsapp %}<a href="https://wa.me/91{{ m.user.whatsapp }}" target="_blank" class="pbtn pbtn-sm" style="background:#25d366;color:#fff">💬</a>{% endif %}
+      <button name="action" value="remove" class="pbtn pbtn-red pbtn-sm" onclick="return confirm('Remove this member?')" style="margin-left:auto">Remove</button>
+    </form>
+    <form method="post" class="mm-actions">
+      {% csrf_token %}
+      <input type="hidden" name="member_id" value="{{ m.pk }}">
+      <input type="hidden" name="action" value="assign_role">
+      <input type="hidden" name="status_filter" value="approved">
+      <select name="role" class="role-sel" onchange="toggleCustomRole(this)" style="flex:1;font-size:11px;padding:4px 6px;border-radius:8px;border:1.5px solid #e2e8f0;color:#374151;background:#fff;min-width:0">
+        <option value="">— Role —</option>
+        {% if 'president' not in taken_roles or m.current_role_key == 'president' %}<option value="president" {% if m.current_role_key == 'president' %}selected{% endif %}>President</option>{% endif %}
+        {% if 'vice_president' not in taken_roles or m.current_role_key == 'vice_president' %}<option value="vice_president" {% if m.current_role_key == 'vice_president' %}selected{% endif %}>Vice President</option>{% endif %}
+        {% if 'secretary' not in taken_roles or m.current_role_key == 'secretary' %}<option value="secretary" {% if m.current_role_key == 'secretary' %}selected{% endif %}>Secretary</option>{% endif %}
+        {% if 'treasurer' not in taken_roles or m.current_role_key == 'treasurer' %}<option value="treasurer" {% if m.current_role_key == 'treasurer' %}selected{% endif %}>Treasurer</option>{% endif %}
+        {% if 'event_coordinator' not in taken_roles or m.current_role_key == 'event_coordinator' %}<option value="event_coordinator" {% if m.current_role_key == 'event_coordinator' %}selected{% endif %}>Event Coord.</option>{% endif %}
+        {% if 'volunteer_coordinator' not in taken_roles or m.current_role_key == 'volunteer_coordinator' %}<option value="volunteer_coordinator" {% if m.current_role_key == 'volunteer_coordinator' %}selected{% endif %}>Volunteer Coord.</option>{% endif %}
+        {% if 'media_coordinator' not in taken_roles or m.current_role_key == 'media_coordinator' %}<option value="media_coordinator" {% if m.current_role_key == 'media_coordinator' %}selected{% endif %}>Media Coord.</option>{% endif %}
+        <option value="member" {% if m.current_role_key == 'member' %}selected{% endif %}>Member</option>
+      </select>
+      <input type="text" name="custom_role" placeholder="Role name…" class="custom-role-input"
+        style="{% if m.current_role_key == 'other' %}display:block{% else %}display:none{% endif %};font-size:11px;padding:4px 6px;border-radius:8px;border:1.5px solid #c7d2fe;color:#374151;width:100%;margin-top:4px"
+        value="{% if m.current_role_key == 'other' %}{{ m.current_role }}{% endif %}">
+      <button type="submit" class="pbtn pbtn-sm" style="background:#4f46e5;color:#fff;font-size:11px;padding:4px 10px"
+        onclick="var s=this.form.role,c=this.form.custom_role;if(!s.value){alert('Select a role');return false}if(s.value==='other'&&!c.value.trim()){alert('Type role name');return false}">Assign</button>
+    </form>
+    {% endif %}
+  </div>
+</div>

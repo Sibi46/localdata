@@ -1,0 +1,6 @@
+.studio-home .home-greeting{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 22px;padding:0;border:0;background:none;border-radius:0}
+.studio-home .home-greeting h2{min-width:0;margin:0;font-size:22px;line-height:1.5;font-weight:600;letter-spacing:-.6px;color:#26212f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.studio-home .greeting-shop-link{display:inline-flex;align-items:center;gap:9px;flex-shrink:0;padding:9px 13px;border-radius:20px;background:#e9dcff;color:#694591;font-size:11px;line-height:1.5}
+.greeting-shop-link:hover{background:#decbfc}
+.greeting-shop-link:focus-visible{outline:3px solid #9c7acf;outline-offset:3px}
+@media(max-width:640px){.studio-home .home-greeting{margin:10px 0 18px;gap:8px}.studio-home .home-greeting h2{font-size:18px;letter-spacing:-.4px}.studio-home .greeting-shop-link{font-size:9px;padding:8px 10px;gap:6px}}

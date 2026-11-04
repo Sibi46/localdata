@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Admin — Advertisers{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/advertiser.css' %}?v=2">{% endblock %}
+
+{% block content %}
+<div class="adm-page">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 style="font-size:22px;font-weight:800;color:#191919"><i class="fas fa-bullhorn" style="color:#0a66c2"></i> Advertiser Management</h1>
+      <p style="font-size:13px;color:#888;margin-top:3px">Review and approve advertiser registrations</p>
+    </div>
+    <a href="/super-admin/ad-posts/" style="padding:10px 20px;background:#0a66c2;color:white;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none">
+      <i class="fas fa-ad"></i> Manage Ads
+    </a>
+  </div>
+
+  <!-- Status Tabs -->
+  <div class="adm-tabs">
+    <a href="?status=pending" class="adm-tab {% if status_filter == 'pending' %}active{% endif %}">
+      <i class="fas fa-clock"></i> Pending
+      <span class="adm-count">{{ counts.pending }}</span>
+    </a>
+    <a href="?status=approved" class="adm-tab {% if status_filter == 'approved' %}active{% endif %}">
+      <i class="fas fa-check-circle"></i> Approved
+      <span class="adm-count">{{ counts.approved }}</span>
+    </a>
+    <a href="?status=rejected" class="adm-tab {% if status_filter == 'rejected' %}active{% endif %}">
+      <i class="fas fa-times-circle"></i> Rejected
+      <span class="adm-count">{{ counts.rejected }}</span>
+    </a>
+    <a href="?status=suspended" class="adm-tab {% if status_filter == 'suspended' %}active{% endif %}">
+      <i class="fas fa-ban"></i> Suspended
+      <span class="adm-count">{{ counts.suspended }}</span>
+    </a>
+  </div>
+
+  <div class="adm-table-card">
+    {% if advs %}
+    <div style="overflow-x:auto">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Contact</th>
+            <th>Phone / Email</th>
+            <th>GST</th>
+            <th>Website</th>
+            <th>Registered</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for adv in advs %}
+          <tr>
+            <td>
+              {% if adv.banner_image %}
+              <img src="{{ adv.banner_image.url }}" alt="" style="width:80px;height:48px;object-fit:cover;border-radius:6px;display:block;margin-bottom:6px;border:1px solid #eee">
+              {% endif %}
+              <div class="adm-biz-name">
+                {{ adv.business_name }}
+                {% if adv.status == 'pending' and adv.rejection_note %}
+                <span style="background:#fff3e0;color:#e65100;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle">↩ Re-application</span>
+                {% endif %}
+              </div>
+              <div class="adm-biz-contact">{{ adv.address }}</div>
+              {% if adv.status == 'pending' and adv.rejection_note %}
+              <div style="margin-top:5px;font-size:11px;color:#b71c1c;background:#fce4ec;border-radius:6px;padding:4px 8px">
+                <strong>Prev. rejection:</strong> {{ adv.rejection_note }}
+              </div>
+              {% endif %}
+            </td>
+            <td>{{ adv.contact_person }}</td>
+            <td>
+              <div>{{ adv.phone }}</div>
+              <div style="color:#888;font-size:12px">{{ adv.email }}</div>
+            </td>
+            <td>{{ adv.gst|default:"—" }}</td>
+            <td>
+              {% if adv.website %}
+              <a href="{{ adv.website }}" target="_blank" style="color:#0a66c2;font-size:12px">Visit</a>
+              {% else %}—{% endif %}
+            </td>
+            <td style="font-size:12px;color:#888;white-space:nowrap">{{ adv.created_at|date:"d M Y" }}</td>
+            <td>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                {% if adv.status == 'pending' %}
+                <form method="post" action="/admin-panel/advertisers/{{ adv.pk }}/approve/" style="display:inline">{% csrf_token %}<button type="submit" class="adm-btn adm-approve">
+                  <i class="fas fa-check"></i> Approve
+                </button></form>
+                <form method="POST" action="/admin-panel/advertisers/{{ adv.pk }}/reject/" style="display:inline">
+                  {% csrf_token %}
+                  <button type="submit" class="adm-btn adm-reject" onclick="return confirm('Reject this advertiser?')">
+                    <i class="fas fa-times"></i> Reject
+                  </button>
+                </form>
+                {% elif adv.status == 'approved' %}
+                <span style="color:#2e7d32;font-size:12px;font-weight:700"><i class="fas fa-check-circle"></i> Approved {{ adv.approved_at|date:"d M" }}</span>
+                <button onclick="document.getElementById('bannerForm{{ adv.pk }}').style.display=document.getElementById('bannerForm{{ adv.pk }}').style.display=='none'?'block':'none'" class="adm-btn" style="background:#e8f0fe;color:#0a66c2;font-size:11px">
+                  <i class="fas fa-image"></i> {% if adv.banner_image %}Change Banner{% else %}Upload Banner{% endif %}
+                </button>
+                <form id="bannerForm{{ adv.pk }}" method="POST" action="/admin-panel/advertisers/{{ adv.pk }}/upload-banner/" enctype="multipart/form-data" style="display:none;margin-top:6px;width:100%">
+                  {% csrf_token %}
+                  <input type="file" name="banner_image" accept="image/*" required style="font-size:12px;margin-bottom:4px">
+                  <button type="submit" class="adm-btn adm-approve" style="font-size:11px"><i class="fas fa-upload"></i> Save</button>
+                </form>
+                {% elif adv.status == 'rejected' %}
+                <form method="post" action="/admin-panel/advertisers/{{ adv.pk }}/approve/" style="display:inline">{% csrf_token %}<button type="submit" class="adm-btn adm-approve">Re-Approve</button></form>
+                {% endif %}
+                {% if adv.status == 'rejected' and adv.wa_link_reject %}
+                <a href="{{ adv.wa_link_reject }}" target="_blank" class="adm-btn" style="background:#fce4ec;color:#c62828">
+                  <i class="fab fa-whatsapp"></i> Notify Rejection
+                </a>
+                {% elif adv.wa_link %}
+                <a href="{{ adv.wa_link }}" target="_blank" class="adm-btn" style="background:#e7f9ed;color:#1b8a3d">
+                  <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                {% endif %}
+                <form method="POST" action="/admin-panel/advertisers/{{ adv.pk }}/remove/" style="display:inline">
+                  {% csrf_token %}
+                  <button type="submit" class="adm-btn adm-reject" style="background:#fff0f0;color:#dc2626;border-color:#fca5a5" onclick="return confirm('Permanently remove {{ adv.business_name }}?')">
+                    <i class="fas fa-trash"></i> Remove
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:60px;color:#888">
+      <i class="fas fa-inbox" style="font-size:48px;color:#ddd;display:block;margin-bottom:16px"></i>
+      <p>No <strong>{{ status_filter }}</strong> advertiser registrations.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

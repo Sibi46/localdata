@@ -1,0 +1,7 @@
+{% extends 'admin_base.html' %}
+{% block title %}Administration | Local From{% endblock %}
+{% block content %}
+<h1>Local From administration</h1><p>{{ total_users }} accounts · {{ total_businesses }} businesses</p>
+<p><a href="{% url 'admin_advertisers' %}">{{ pending_adverts }} advertisers awaiting review</a></p><p><a href="{% url 'admin_ad_posts' %}">{{ pending_ad_posts }} advertisements awaiting review</a></p><p><a href="{% url 'manage_offers' %}">{{ pending_offers_count }} offers awaiting review</a></p>
+<h2>Recent admin activity</h2>{% for activity in recent_admin_activity %}<p>{{ activity.actor_name }} · {{ activity.action }} · {{ activity.target_name }}</p>{% empty %}<p>No recent activity.</p>{% endfor %}
+{% endblock %}

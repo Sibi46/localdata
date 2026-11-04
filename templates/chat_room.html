@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Chat with {{ other.get_full_name|default:other.username }} - Local From{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/chat.css' %}">{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+
+  <!-- Left: conversation list sidebar -->
+  <div class="chat-list-panel slim">
+    <div class="chat-panel-header">
+      <a href="/chat/" style="color:#0a66c2;text-decoration:none;font-size:13px">
+        <i class="fas fa-arrow-left"></i> All chats
+      </a>
+    </div>
+    <div class="conv-item active">
+      <div class="conv-avatar">{{ other.get_full_name|default:other.username|first|upper }}</div>
+      <div class="conv-info">
+        <div class="conv-name">{{ other.get_full_name|default:other.username }}</div>
+        <div class="conv-job">{{ other.get_user_type_display }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: chat window -->
+  <div class="chat-window">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-avatar">{{ other.get_full_name|default:other.username|first|upper }}</div>
+      <div class="chat-header-info">
+        <h3>{{ other.get_full_name|default:other.username }}</h3>
+        <p>{{ other.get_user_type_display }}
+          {% if job %}&nbsp;·&nbsp; <i class="fas fa-briefcase"></i> {{ job.title }}{% endif %}
+        </p>
+      </div>
+      {% if job %}
+
+      {% endif %}
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+      {% if not msgs %}
+      <div class="chat-no-msg">
+        <i class="fas fa-comment"></i>
+        <p>Start your conversation</p>
+      </div>
+      {% endif %}
+      {% for msg in msgs %}
+      <div class="msg-bubble {% if msg.sender == request.user %}msg-me{% else %}msg-them{% endif %}" data-id="{{ msg.id }}">
+        <div class="msg-text">{{ msg.content }}</div>
+        <div class="msg-time">{{ msg.sent_at|date:"d M · h:i A" }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-bar">
+      <form method="POST" action="/chat/{{ other.id }}/{{ job.id|default:0 }}/" class="chat-form">
+        {% csrf_token %}
+        <textarea name="content" id="chatInput" placeholder="Type a message..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.form.submit();}"></textarea>
+        <button type="submit" class="chat-send-btn">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Scroll to bottom on load
+window.addEventListener('load', function () {
+    const box = document.getElementById('chatMessages');
+    if (box) box.scrollTop = box.scrollHeight;
+});
+
+// Auto-resize textarea
+const inp = document.getElementById('chatInput');
+if (inp) {
+    inp.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Messages - Local From{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/chat.css' %}">{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+  <div class="chat-list-panel">
+    <div class="chat-panel-header">
+      <h2><i class="fas fa-comments"></i> Messages</h2>
+    </div>
+
+    {% if conversations %}
+      {% for conv in conversations %}
+      <a href="/chat/{{ conv.other.id }}/{{ conv.job.id|default:0 }}/" class="conv-item">
+        <div class="conv-avatar">{{ conv.other.get_full_name|default:conv.other.username|first|upper }}</div>
+        <div class="conv-info">
+          <div class="conv-name-row">
+            <span class="conv-name">{{ conv.other.get_full_name|default:conv.other.username }}</span>
+            {% if conv.last %}<span class="conv-time">{{ conv.last.sent_at|date:"d M" }}</span>{% endif %}
+          </div>
+          {% if conv.job %}<div class="conv-job"><i class="fas fa-briefcase"></i> {{ conv.job.title }}</div>{% endif %}
+          {% if conv.last %}<div class="conv-preview">{{ conv.last.content|truncatechars:50 }}</div>{% endif %}
+        </div>
+        {% if conv.unread %}<span class="conv-unread">{{ conv.unread }}</span>{% endif %}
+      </a>
+      {% endfor %}
+    {% else %}
+      <div class="chat-empty">
+        <i class="fas fa-comment-dots"></i>
+        <h3>No conversations yet</h3>
+        <p>Apply for jobs and start chatting with employers</p>
+
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="chat-empty-right">
+    <i class="fas fa-comments"></i>
+    <p>Select a conversation to start messaging</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,2 @@
+{% if badge.icon_image %}<img src="{{ badge.icon_image.url }}" alt="{{ badge.name }} icon" style="width:32px;height:32px;object-fit:contain">{% else %}{{ badge.icon }}{% endif %}
+{% if badge.image %}<img src="{{ badge.image.url }}" alt="{{ badge.name }}" style="max-width:100px;max-height:80px;object-fit:contain">{% endif %}

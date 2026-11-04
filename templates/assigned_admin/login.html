@@ -1,0 +1,4 @@
+{% extends 'base.html' %}
+{% block title %}Admin Login{% endblock %}
+{% block extra_css %}{% include 'assigned_admin/styles.html' %}{% endblock %}
+{% block content %}<div class="team-wrap" style="max-width:480px;padding:30px 16px"><header class="team-hero"><div><span class="team-kicker">Local From</span><h1>Admin login</h1><p>Enter your phone number and password to open your assigned dashboard. Existing username logins also work.</p></div></header><section class="team-card"><form method="post">{% csrf_token %}{{ form.non_field_errors }}{% for field in form %}<div class="team-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}<button class="team-button" type="submit">Open my dashboard</button></form></section></div>{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}My Communities{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <div class="psec-header">
+    <div class="psec-title">🏘️ My Communities</div>
+    <a href="/portal/create/" class="pbtn pbtn-primary"><i class="fas fa-plus"></i> Create</a>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+    {% for m in memberships %}
+    <a href="/portal/c/{{ m.community.page_id }}/" class="pcard">
+      <div class="pcard-body">
+        <div style="font-size:10px;font-family:monospace;color:#1d4ed8;font-weight:700;margin-bottom:4px">{{ m.community.page_id }}</div>
+        <div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:4px">{{ m.community.name }}</div>
+        <div style="font-size:11px;color:#64748b;margin-bottom:8px">{{ m.community.purpose|truncatechars:60 }}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          {% if m.community.is_verified %}
+            <span class="pbadge pbadge-green">✓ Verified</span>
+          {% else %}
+            <span class="pbadge pbadge-orange">⏳ Pending Approval</span>
+          {% endif %}
+          {% if m.role == 'admin' or m.role == 'moderator' %}<span class="pbadge" style="background:#eff6ff;color:#1d4ed8">Admin</span>{% endif %}
+        </div>
+      </div>
+    </a>
+    {% empty %}
+    <div class="pempty" style="grid-column:1/-1">
+      <div class="pempty-icon">🏘️</div>
+      <div class="pempty-text">You haven't joined any communities</div>
+      <a href="/portal/communities/" class="pbtn pbtn-primary" style="margin-top:14px">Find Communities</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

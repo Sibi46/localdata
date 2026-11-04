@@ -1,0 +1,307 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "includes/ga4.html" %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin Panel{% endblock %} — Local From</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2">
+  <link rel="stylesheet" href="{% static 'css/admin_panel.css' %}?v=5">
+  <link rel="stylesheet" href="/static/fontawesome/css/all.min.css">
+  {% block extra_css %}{% endblock %}
+{% include "includes/site_ui.html" %}
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<nav class="ap-topnav">
+  <button class="ap-topnav-toggle ap-sidebar-toggle" onclick="toggleAdminSidebar()">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <a href="/" class="ap-topnav-logo">
+    <img src="/static/images/local-form.svg" alt="Local From">
+    <span>Local From</span>
+  </a>
+
+  {% if request.user.admin_role == 'super_admin' %}
+    <span class="ap-role-pill super"><i class="fas fa-crown"></i> Super Admin</span>
+  {% elif request.user.admin_role == 'scoped_admin' %}
+    <span class="ap-role-pill state">Assigned Admin</span>
+  {% elif request.user.admin_role == 'state_admin' %}
+    <span class="ap-role-pill state"><i class="fas fa-map"></i> State Admin</span>
+  {% elif request.user.admin_role == 'district_admin' %}
+    <span class="ap-role-pill district"><i class="fas fa-map-marker-alt"></i> District Admin</span>
+  {% endif %}
+
+  <span class="ap-topnav-name">{{ request.user.get_full_name|default:request.user.username }}</span>
+
+  <div class="ap-topnav-actions">
+    {% if request.user.admin_role == 'super_admin' %}<a href="{% url 'super_admin_dashboard' %}#admin-notifications" class="ap-topnav-link"><i class="fas fa-bell" aria-hidden="true"></i> Notifications</a>{% endif %}
+    <a href="/" class="ap-topnav-link"><i class="fas fa-home"></i> Site</a>
+    <a href="/logout/" class="ap-topnav-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+</nav>
+
+<div class="ap-sidebar-overlay" id="apSidebarOverlay" onclick="toggleAdminSidebar()"></div>
+
+{% if messages %}
+<div class="messages-bar">
+  {% for msg in messages %}
+  <div class="msg msg-{{ msg.tags }}">{{ msg }} <span onclick="this.parentElement.remove()">✕</span></div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="ap-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="ap-sidebar" id="apSidebar">
+    {% if request.user.admin_role != 'super_admin' %}
+    <div class="ap-sidebar-header">
+      {% if request.user.admin_role == 'super_admin' %}
+        <div class="ap-role-pill super"><i class="fas fa-crown"></i> Super Admin</div>
+        <p>National Level</p>
+      {% elif request.user.admin_role == 'scoped_admin' %}
+        <div class="ap-role-pill state">{% if request.user.admin_profile.hierarchy_level %}{{ request.user.admin_profile.get_hierarchy_level_display }}{% else %}Assigned Admin{% endif %}</div>
+        <p>{% if request.user.admin_profile.all_states %}All states{% else %}{{ request.user.admin_profile.state.name }}{% endif %}</p>
+      {% elif request.user.admin_role == 'state_admin' %}
+        <div class="ap-role-pill state"><i class="fas fa-map"></i> State Admin</div>
+        <p>{% if request.user.admin_profile.state %}{{ request.user.admin_profile.state.name }}{% else %}—{% endif %}</p>
+      {% else %}
+        <div class="ap-role-pill district"><i class="fas fa-map-marker-alt"></i> District Admin</div>
+        <p>{% if request.user.admin_profile.district %}{{ request.user.admin_profile.district.name }}{% else %}—{% endif %}</p>
+      {% endif %}
+    </div>
+
+    {% endif %}
+    <nav class="ap-nav">
+
+      {% if request.user.admin_role == 'super_admin' %}
+      <a href="{% url 'hierarchy_workspace' %}" class="ap-nav-link"><i class="fas fa-users"></i> Admin hierarchy</a>
+
+
+
+
+
+
+
+      <div class="ap-nav-section">News Desk</div>
+      <a href="{% url 'newsdesk:manage' %}" class="ap-nav-link {% if request.resolver_match.view_name == 'newsdesk:manage' %}active{% endif %}"><i class="fas fa-newspaper" aria-hidden="true"></i> Manage News</a>
+      <a href="{% url 'newsdesk:create' %}" class="ap-nav-link {% if request.resolver_match.view_name == 'newsdesk:create' %}active{% endif %}"><i class="fas fa-pen" aria-hidden="true"></i> Post News</a>
+      <a href="{% url 'newsdesk:agents' %}" class="ap-nav-link {% if request.resolver_match.view_name == 'newsdesk:agents' %}active{% endif %}"><i class="fas fa-user-plus" aria-hidden="true"></i> Assign News Agents</a>
+      <a href="{% url 'newsdesk:feed' %}" class="ap-nav-link"><i class="fas fa-book-open" aria-hidden="true"></i> View Newspaper</a>
+
+      <div class="ap-nav-section">Geography</div>
+      <a href="/super-admin/states/" class="ap-nav-link">
+        <i class="fas fa-flag"></i> States
+      </a>
+      <a href="/super-admin/pincodes/" class="ap-nav-link">
+        <i class="fas fa-map-pin"></i> PIN Codes
+      </a>
+
+      <div class="ap-nav-section">Admins</div>
+
+      <a href="/super-admin/state-admins/" class="ap-nav-link">
+        <i class="fas fa-user-shield"></i> State Admins
+      </a>
+
+      <div class="ap-nav-section">Configuration</div>
+      <a href="/super-admin/industries/" class="ap-nav-link">
+        <i class="fas fa-industry"></i> Industries
+      </a>
+
+
+      <a href="/super-admin/discounts/" class="ap-nav-link">
+        <i class="fas fa-tag"></i> Discounts
+      </a>
+
+
+
+
+
+      <div class="ap-nav-section">Content</div>
+      <a href="/admin-panel/advertisers/" class="ap-nav-link">
+        <i class="fas fa-bullhorn"></i> Advertisers
+      </a>
+      <a href="/super-admin/ad-posts/" class="ap-nav-link">
+        <i class="fas fa-ad"></i> Advertisements
+      </a>
+      <a href="/super-admin/offers/" class="ap-nav-link">
+        <i class="fas fa-tag"></i> Offers
+      </a>
+      <a href="/super-admin/flicks/" class="ap-nav-link">
+        <i class="fas fa-bolt"></i> Flicks
+      </a>
+      <a href="/super-admin/notifications/" class="ap-nav-link">
+        <i class="fas fa-bell"></i> Notifications
+      </a>
+      <a href="/super-admin/ad-packages/" class="ap-nav-link">
+        <i class="fas fa-box-open"></i> Ad Packages
+      </a>
+
+
+      <div class="ap-nav-section">Users</div>
+      <a href="/super-admin/users/" class="ap-nav-link {% if request.path == '/super-admin/users/' %}active{% endif %}">
+        <i class="fas fa-users"></i> All Users
+      </a>
+      <a href="/super-admin/feedback/" class="ap-nav-link">
+        <i class="fas fa-comment-dots"></i> Feedback
+      </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div class="ap-nav-section">System</div>
+      <a href="/admin/" class="ap-nav-link">
+        <i class="fas fa-cog"></i> Django Admin
+      </a>
+
+      {% elif request.user.admin_role == 'scoped_admin' %}
+      <div class="ap-nav-section">Assigned access</div>
+      <a href="{% url 'assigned_dashboard' %}" class="ap-nav-link"><i class="fas fa-th-large" aria-hidden="true"></i> My workspace</a>
+      {% for item in section_nav %}<a href="{% url 'assigned_section' item.key %}" class="ap-nav-link {% if section == item.key %}active{% endif %}">{{ item.name }}</a>{% endfor %}
+      <p style="padding:14px;color:#64748b;font-size:12px;line-height:1.6">{% if request.user.admin_profile.hierarchy_level %}Manage your assigned team and location. Access follows your parent admin assignment.{% else %}Your workspace shows the sections and state assigned by the Main Super Admin.{% endif %}</p>
+      {% elif request.user.admin_role == 'state_admin' %}
+
+      <div class="ap-nav-section">Overview</div>
+      <a href="/state-admin/" class="ap-nav-link {% if request.path == '/state-admin/' %}active{% endif %}">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a>
+      <a href="/state-admin/reports/" class="ap-nav-link">
+        <i class="fas fa-chart-bar"></i> Reports
+      </a>
+      <div class="ap-nav-section">Management</div>
+      <a href="/state-admin/district-admins/create/" class="ap-nav-link">
+        <i class="fas fa-user-plus"></i> Create District Admin
+      </a>
+      <a href="/state-admin/employers/" class="ap-nav-link">
+        <i class="fas fa-building"></i> Verify Employers
+      </a>
+
+      {% else %}
+
+      <div class="ap-nav-section">Overview</div>
+      <a href="/district-admin/" class="ap-nav-link {% if request.path == '/district-admin/' %}active{% endif %}">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a>
+      <a href="/district-admin/reports/" class="ap-nav-link">
+        <i class="fas fa-chart-bar"></i> Reports
+      </a>
+      <div class="ap-nav-section">Actions</div>
+      <a href="/district-admin/employers/" class="ap-nav-link">
+        <i class="fas fa-building"></i> Approve Employers
+      </a>
+      <a href="/admin-panel/advertisers/" class="ap-nav-link">
+        <i class="fas fa-bullhorn"></i> Approve Advertisers
+      </a>
+
+      <a href="/district-admin/complaints/" class="ap-nav-link">
+        <i class="fas fa-exclamation-circle"></i> Complaints
+      </a>
+
+      {% endif %}
+    </nav>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="ap-main">
+    {% block content %}{% endblock %}
+  </main>
+
+</div>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+<script>
+function toggleAdminSidebar(){
+  var s=document.getElementById('apSidebar');
+  var o=document.getElementById('apSidebarOverlay');
+  var open=s.classList.toggle('ap-sidebar-open');
+  o.classList.toggle('ap-overlay-open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('input[type="tel"]').forEach(function(inp){
+    inp.setAttribute('inputmode','numeric');
+    if(!inp.getAttribute('maxlength')) inp.setAttribute('maxlength','10');
+    inp.addEventListener('keypress',function(e){ if(!/[0-9]/.test(e.key)) e.preventDefault(); });
+    inp.addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
+    inp.addEventListener('blur',function(){
+      if(this.value&&this.value.length!==10){this.setCustomValidity('Enter a valid 10-digit mobile number');this.reportValidity();}
+      else{this.setCustomValidity('');}
+    });
+  });
+});
+</script>
+
+<!-- ── PAGE LOADING INDICATOR ── -->
+<div id="opc-bar" style="position:fixed;top:0;left:0;width:0%;height:3px;background:linear-gradient(90deg,#1d4ed8,#f97316,#059669);z-index:99999;transition:width .25s ease,opacity .3s ease;opacity:0;pointer-events:none"></div>
+<div id="opc-loader" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,.82);backdrop-filter:blur(3px);z-index:99998;align-items:center;justify-content:center;flex-direction:column;gap:14px">
+  <div style="width:44px;height:44px;border-radius:50%;border:4px solid #e5e7eb;border-top-color:#1d4ed8;animation:opc-spin .7s linear infinite"></div>
+  <div style="font-size:13px;font-weight:700;color:#374151;font-family:'Poppins','Segoe UI',sans-serif">Loading…</div>
+</div>
+<style>@keyframes opc-spin{to{transform:rotate(360deg)}}</style>
+<script>
+(function(){
+  var bar=document.getElementById('opc-bar');
+  var loader=document.getElementById('opc-loader');
+  var timer=null,overlayTimer=null,started=false;
+  function start(){
+    if(started)return; started=true;
+    bar.style.opacity='1'; bar.style.width='30%';
+    bar.style.transition='width 8s cubic-bezier(.1,.6,.3,1),opacity .3s ease';
+    clearTimeout(overlayTimer);
+    overlayTimer=setTimeout(function(){ loader.style.display='flex'; },400);
+  }
+  function finish(){
+    clearTimeout(overlayTimer);
+    bar.style.transition='width .2s ease,opacity .4s ease .2s';
+    bar.style.width='100%';
+    loader.style.display='none';
+    setTimeout(function(){bar.style.opacity='0';setTimeout(function(){bar.style.width='0%';started=false;},400);},200);
+  }
+  window.addEventListener('beforeunload',start);
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a');
+    if(!a)return;
+    var href=a.getAttribute('href');
+    if(!href||href.startsWith('#')||href.startsWith('javascript')||a.target==='_blank'||e.ctrlKey||e.metaKey||e.shiftKey)return;
+    if(href.startsWith('http')&&!href.includes(window.location.hostname))return;
+    start();
+  });
+  document.addEventListener('submit',function(e){
+    if(e.target&&e.target.tagName==='FORM'&&e.target.method!=='dialog')start();
+  });
+  window.addEventListener('pageshow',finish);
+  document.addEventListener('DOMContentLoaded',finish);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Search Community – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#f0f9ff}
+  #srTopBar{position:sticky;top:0;z-index:200;background:#0891b2;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #srTopBar a.back{color:rgba(255,255,255,.7);text-decoration:none;font-size:20px}
+  #srTopBar h2{font-size:16px;font-weight:900;color:#fff;margin:0;flex:1}
+
+  .sr-search-bar{background:#0891b2;padding:0 16px 14px}
+  .sr-input-wrap{position:relative}
+  .sr-input{width:100%;padding:11px 44px 11px 16px;border:none;border-radius:12px;font-size:14px;font-family:inherit;background:#fff;outline:none;box-sizing:border-box}
+  .sr-pin-input{width:100%;padding:9px 16px;border:none;border-radius:12px;font-size:13px;font-family:inherit;background:rgba(255,255,255,.2);outline:none;box-sizing:border-box;color:#fff;margin-top:6px}
+  .sr-pin-input::placeholder{color:rgba(255,255,255,.7)}
+  .sr-btn{width:100%;padding:10px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:12px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:6px}
+
+  .sr-wrap{padding:12px 16px 100px;max-width:600px;margin:0 auto}
+  .sr-count{font-size:12px;font-weight:700;color:#0369a1;margin-bottom:10px}
+  .sr-card{background:#fff;border-radius:14px;border:1.5px solid #e0f2fe;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;text-decoration:none}
+  .sr-card:active{background:#f0f9ff}
+  .sr-icon{font-size:1.4rem;flex-shrink:0;width:40px;height:40px;border-radius:12px;background:#e0f2fe;display:flex;align-items:center;justify-content:center}
+  .sr-body{flex:1;min-width:0}
+  .sr-type{font-size:10px;font-weight:800;color:#0891b2;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+  .sr-title{font-size:14px;font-weight:800;color:#111;margin-bottom:3px;line-height:1.3}
+  .sr-desc{font-size:12px;color:#6b7280;line-height:1.4}
+
+  .sr-empty{text-align:center;padding:3rem 1rem;color:#9ca3af}
+  .sr-start{text-align:center;padding:3rem 1rem;color:#9ca3af}
+
+  .sr-modules{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .sr-module-chip{background:#fff;border:1.5px solid #e0f2fe;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#374151;text-decoration:none}
+  .sr-module-chip:active{background:#e0f2fe}
+</style>
+
+<div id="srTopBar">
+  <a href="/community/notifications/" class="back">&#8592;</a>
+  <h2>🔍 Community Search</h2>
+</div>
+
+<div class="sr-search-bar">
+  <form method="get" action="/community/search/">
+    <div class="sr-input-wrap">
+      <input class="sr-input" type="text" name="q" value="{{ q }}" placeholder="Search posts, events, listings..." autofocus>
+    </div>
+    <input class="sr-pin-input" type="text" name="pincode" value="{{ pincode }}" placeholder="📍 Pincode (optional)">
+    <button type="submit" class="sr-btn">🔍 Search</button>
+  </form>
+</div>
+
+<div class="sr-wrap">
+  {% if q or pincode %}
+    {% if results %}
+    <div class="sr-count">{{ count }} result{{ count|pluralize }} for "{{ q }}{% if pincode %} · 📍 {{ pincode }}{% endif %}"</div>
+    {% for r in results %}
+    <a href="{{ r.url }}" class="sr-card">
+      <div class="sr-icon">{{ r.icon }}</div>
+      <div class="sr-body">
+        <div class="sr-type">{{ r.type }}</div>
+        <div class="sr-title">{{ r.title }}</div>
+        <div class="sr-desc">{{ r.desc }}{% if r.desc|length >= 80 %}…{% endif %}</div>
+      </div>
+    </a>
+    {% endfor %}
+    {% else %}
+    <div class="sr-empty">
+      <div style="font-size:3rem;margin-bottom:8px">🔍</div>
+      <p style="font-weight:700;color:#374151;margin-bottom:4px">No results found</p>
+      <p style="font-size:13px">Try different keywords or remove the pincode filter</p>
+    </div>
+    {% endif %}
+  {% else %}
+  <div class="sr-start">
+    <div style="font-size:2.5rem;margin-bottom:8px">🌐</div>
+    <p style="font-weight:700;color:#374151;font-size:14px;margin-bottom:6px">Search across all community modules</p>
+    <p style="font-size:12px;margin-bottom:20px">Local heroes, marketplace, business stories and community reports</p>
+  </div>
+  <div class="sr-modules">
+
+
+
+    <a href="/community/local-heroes/" class="sr-module-chip">🦸 Local Heroes</a>
+
+    <a href="/community/volunteer/" class="sr-module-chip">🤝 Volunteer</a>
+    <a href="/community/business-stories/" class="sr-module-chip">🏪 Business Stories</a>
+    <a href="/community/hall-of-fame/" class="sr-module-chip">🏆 Hall of Fame</a>
+    <a href="/community/marketplace/" class="sr-module-chip">🛒 Marketplace</a>
+    <a href="/community/community-watch/" class="sr-module-chip">👁️ Watch</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Local Heroes – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#fff5f5}
+  #lhTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #fecaca;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #lhTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #lhTopBar h2{font-size:16px;font-weight:900;color:#111;margin:0;flex:1}
+
+  .lh-hero{background:linear-gradient(135deg,#dc2626,#ef4444);padding:20px 16px;text-align:center;color:#fff}
+  .lh-hero h1{font-size:20px;font-weight:900;margin:0 0 4px}
+  .lh-hero p{font-size:12px;opacity:.85;margin:0}
+
+  .lh-cats{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:#fff;border-bottom:1px solid #fee2e2;scrollbar-width:none}
+  .lh-cats::-webkit-scrollbar{display:none}
+  .lh-cat{flex-shrink:0;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;background:#fee2e2;color:#991b1b;border:1.5px solid transparent;white-space:nowrap}
+  .lh-cat.active{background:#fca5a5;color:#7f1d1d;border-color:#f87171}
+
+  .lh-fab{position:fixed;bottom:80px;right:16px;z-index:100;background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,.4);display:flex;align-items:center;justify-content:center;text-decoration:none}
+
+  .lh-feed{padding:14px 16px 100px;max-width:600px;margin:0 auto}
+  .lh-card{background:#fff;border-radius:16px;border:1.5px solid #fecaca;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 4px rgba(220,38,38,.07)}
+  .lh-card-img{width:100%;max-height:240px;object-fit:cover;display:block}
+  .lh-card-body{padding:14px}
+  .lh-badge-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+  .lh-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;background:#fee2e2;color:#dc2626}
+  .lh-hero-name{font-size:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,#dc2626,#ef4444);padding:3px 10px;border-radius:8px;margin-left:auto}
+  .lh-title{font-size:15px;font-weight:900;color:#111;margin-bottom:5px}
+  .lh-text{font-size:13px;color:#374151;line-height:1.65}
+  .lh-meta{font-size:11px;color:#9ca3af;margin-top:6px}
+  .lh-actions{display:flex;border-top:1px solid #fff5f5;margin-top:10px}
+  .lh-action{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 0;background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;color:#6b7280;font-family:inherit;text-decoration:none}
+  .lh-action.liked{color:#dc2626}
+  .lh-divider{width:1px;background:#fee2e2;height:36px;flex-shrink:0;align-self:center}
+  .lh-empty{text-align:center;padding:3rem 1rem;color:#9ca3af}
+</style>
+
+<div id="lhTopBar">
+  <a href="/community/" class="back">&#8592;</a>
+  <h2>🦸 Local Heroes</h2>
+</div>
+
+<div class="lh-hero">
+  <h1>🦸 Local Heroes</h1>
+  <p>Celebrate the unsung heroes making a difference in your community</p>
+</div>
+
+<div class="lh-cats">
+  <a href="/community/local-heroes/" class="lh-cat {% if not active_cat %}active{% endif %}">🦸 All</a>
+  {% for val, label in categories %}
+  <a href="/community/local-heroes/?cat={{ val }}" class="lh-cat {% if active_cat == val %}active{% endif %}" data-val="{{ val }}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+{% if request.user.is_authenticated %}
+<a href="/community/local-heroes/post/" class="lh-fab">✏️</a>
+{% endif %}
+
+<div class="lh-feed">
+  {% if heroes %}
+  {% for hero in heroes %}
+  <div class="lh-card">
+    {% if hero.image %}<img class="lh-card-img" src="{{ hero.image.url }}" alt="{{ hero.title }}">{% endif %}
+    <div class="lh-card-body">
+      <div class="lh-badge-row">
+        <span class="lh-badge" data-cat="{{ hero.category }}">{{ hero.get_category_display }}</span>
+        <span class="lh-hero-name">🦸 {{ hero.hero_name }}</span>
+      </div>
+      <div class="lh-title"><a href="/community/local-heroes/{{ hero.pk }}/" style="color:inherit;text-decoration:none">{{ hero.title }}</a></div>
+      <div class="lh-text">{{ hero.content|truncatewords:28 }}</div>
+      <div class="lh-meta">{{ hero.created_at|timesince }} ago · by {{ hero.posted_by.get_full_name|default:hero.posted_by.username }}{% if hero.pincode %} · 📍 {{ hero.pincode }}{% endif %}</div>
+    </div>
+    <div class="lh-actions">
+      <button class="lh-action {% if hero.pk in liked_ids %}liked{% endif %}" onclick="likeHero({{ hero.pk }}, this)">
+        ❤️ <span id="llc-{{ hero.pk }}">{{ hero.like_count }}</span> Salute
+      </button>
+      <div class="lh-divider"></div>
+      <a href="/community/local-heroes/{{ hero.pk }}/" class="lh-action">💬 {{ hero.comment_count }}</a>
+      {% if request.user == hero.posted_by %}
+      <div class="lh-divider"></div>
+      <a href="/community/local-heroes/{{ hero.pk }}/delete/" class="lh-action" style="color:#ef4444" onclick="return confirm('Delete this post?')">🗑️</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="lh-empty">
+    <div style="font-size:3rem;margin-bottom:8px">🦸</div>
+    <p style="font-weight:700;color:#374151;margin-bottom:4px">No heroes nominated yet</p>
+    <p style="font-size:13px">Know someone making a difference? Nominate them!</p>
+    {% if request.user.is_authenticated %}
+    <a href="/community/local-heroes/post/" style="display:inline-block;margin-top:12px;background:#dc2626;color:#fff;padding:10px 24px;border-radius:24px;font-weight:800;font-size:13px;text-decoration:none">Nominate a Hero</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  var icons={social:'🤝',environment:'🌿',education:'📚',health:'🏥',sports:'🏅',arts:'🎨',other:'🦸'};
+  document.querySelectorAll('.lh-cat[data-val]').forEach(function(el){
+    var v=el.getAttribute('data-val');
+    if(icons[v]) el.textContent=icons[v]+' '+el.textContent.trim();
+  });
+  document.querySelectorAll('.lh-badge[data-cat]').forEach(function(el){
+    var v=el.getAttribute('data-cat');
+    if(icons[v]) el.textContent=icons[v]+' '+el.textContent.trim();
+  });
+})();
+function likeHero(pk,btn){
+  fetch('/community/local-heroes/'+pk+'/like/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    btn.classList.toggle('liked',d.liked);
+    document.getElementById('llc-'+pk).textContent=d.count;
+  });
+}
+</script>
+{% endblock %}

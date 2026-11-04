@@ -1,0 +1,120 @@
+{% extends "admin_base.html" %}
+{% block title %}Manage Discounts{% endblock %}
+
+{% block content %}
+<div class="ap-breadcrumb"><i class="fas fa-tag"></i> Super Admin / Discounts</div>
+<div class="ap-page-title"><i class="fas fa-tag" style="color:#c62828"></i> Discount Codes</div>
+<div class="ap-page-subtitle">Create and manage promotional discount codes for payment plans</div>
+
+{% if messages %}{% for msg in messages %}
+<div class="ap-alert ap-alert-{{ msg.tags }}"><i class="fas fa-info-circle"></i> {{ msg }}</div>
+{% endfor %}{% endif %}
+
+<div class="ap-two-col">
+  <div class="ap-card">
+    <div class="ap-card-header"><h3><i class="fas fa-plus" style="color:#c62828"></i> New Discount Code</h3></div>
+    <form method="POST" class="ap-form">
+      {% csrf_token %}
+      <div class="ap-form-group">
+        <label>Discount Code</label>
+        <input type="text" name="code" class="ap-input" placeholder="e.g. LAUNCH50" required style="text-transform:uppercase">
+      </div>
+      <div class="ap-form-group">
+        <label>Discount Type</label>
+        <select name="discount_type" class="ap-input">
+          <option value="percentage">Percentage (%)</option>
+          <option value="flat">Flat Amount (&#8377;)</option>
+        </select>
+      </div>
+      <div class="ap-form-group">
+        <label>Value</label>
+        <input type="number" name="value" class="ap-input" placeholder="e.g. 20 for 20%" min="1" required>
+      </div>
+      <div class="ap-form-group">
+        <label>Max Uses <small style="color:#888">(0 = unlimited)</small></label>
+        <input type="number" name="max_uses" class="ap-input" value="0" min="0">
+      </div>
+      <div class="ap-form-group">
+        <label>Valid Until</label>
+        <input type="date" name="valid_until" class="ap-input">
+        <small style="color:#888">Leave blank for no expiry</small>
+      </div>
+      <button type="submit" name="action" value="add" class="ap-btn ap-btn-primary" style="width:100%;justify-content:center">
+        <i class="fas fa-plus"></i> Create Discount
+      </button>
+    </form>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-card-header"><h3><i class="fas fa-info-circle" style="color:#0a66c2"></i> Usage Rules</h3></div>
+    <ul style="padding:0 0 0 18px;margin:0;color:#555;font-size:13px;line-height:2">
+      <li>Percentage discounts apply to the plan price</li>
+      <li>Flat discounts deduct a fixed rupee amount</li>
+      <li>Max uses = 0 means the code has unlimited uses</li>
+      <li>Expired codes are automatically invalid</li>
+      <li>Inactive codes cannot be redeemed</li>
+    </ul>
+    <div class="ap-stats" style="grid-template-columns:1fr 1fr;margin-top:20px">
+      <div class="ap-stat green">
+        <div class="ap-stat-icon"><i class="fas fa-tag"></i></div>
+        <h3>{{ discounts|length }}</h3>
+        <p>Total Codes</p>
+      </div>
+      <div class="ap-stat blue">
+        <div class="ap-stat-icon"><i class="fas fa-check-circle"></i></div>
+        <h3>{% with cnt=0 %}{% for d in discounts %}{% if d.is_active %}{% with cnt=cnt|add:1 %}{% endwith %}{% endif %}{% endfor %}{{ discounts|length }}{% endwith %}</h3>
+        <p>Active Codes</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ap-card">
+  <div class="ap-card-header"><h3><i class="fas fa-list" style="color:#6a1b9a"></i> All Discount Codes</h3></div>
+  {% if discounts %}
+  <div class="ap-table-wrap">
+    <table class="ap-table">
+      <thead>
+        <tr><th>Code</th><th>Type</th><th>Value</th><th>Used / Max</th><th>Valid Until</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for d in discounts %}
+        <tr>
+          <td><code style="background:#f3e5f5;color:#6a1b9a;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:700">{{ d.code }}</code></td>
+          <td><span style="font-size:12px;font-weight:600;{% if d.discount_type == 'percentage' %}color:#0a66c2{% else %}color:#e65100{% endif %}">
+            {{ d.get_discount_type_display }}
+          </span></td>
+          <td><strong>{% if d.discount_type == 'percentage' %}{{ d.value }}%{% else %}&#8377;{{ d.value }}{% endif %}</strong></td>
+          <td>{{ d.used_count }} / {% if d.max_uses == 0 %}&infin;{% else %}{{ d.max_uses }}{% endif %}</td>
+          <td>
+            {% if d.valid_until %}
+              <span style="font-size:12px;color:#{% if d.is_active %}2e7d32{% else %}c62828{% endif %}">
+                <i class="fas fa-calendar"></i> {{ d.valid_until|date:"d M Y" }}
+              </span>
+            {% else %}
+              <span style="color:#888;font-size:12px">No expiry</span>
+            {% endif %}
+          </td>
+          <td><span class="status-pill {% if d.is_active %}pill-active{% else %}pill-inactive{% endif %}">
+            {{ d.is_active|yesno:"Active,Inactive" }}
+          </span></td>
+          <td>
+            <form method="POST" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="pk" value="{{ d.pk }}">
+              <button type="submit" name="action" value="toggle"
+                class="ap-btn {% if d.is_active %}ap-btn-danger{% else %}ap-btn-success{% endif %}" style="font-size:11px">
+                {{ d.is_active|yesno:"Deactivate,Activate" }}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="ap-empty"><i class="fas fa-tag"></i><p>No discount codes yet. Create one above.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

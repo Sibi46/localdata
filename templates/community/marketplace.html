@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Marketplace – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#faf5ff}
+  #mpTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #e9d5ff;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #mpTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #mpTopBar h2{font-size:16px;font-weight:900;color:#111;margin:0;flex:1}
+
+  .mp-hero{background:linear-gradient(135deg,#7c3aed,#9333ea);padding:16px;text-align:center;color:#fff}
+  .mp-hero h1{font-size:18px;font-weight:900;margin:0 0 3px}
+  .mp-hero p{font-size:12px;opacity:.85;margin:0}
+
+  .mp-filters{background:#fff;border-bottom:1px solid #f3e8ff;padding:8px 16px;display:flex;flex-direction:column;gap:8px}
+  .mp-filter-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .mp-filter-row::-webkit-scrollbar{display:none}
+  .mp-chip{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;background:#f3e8ff;color:#6b21a8;border:1.5px solid transparent;white-space:nowrap}
+  .mp-chip.active{background:#e9d5ff;color:#581c87;border-color:#a855f7}
+
+  .mp-fab{position:fixed;bottom:80px;right:16px;z-index:100;background:linear-gradient(135deg,#7c3aed,#9333ea);color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;text-decoration:none}
+
+  .mp-feed{padding:14px 16px 100px;max-width:600px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .mp-card{background:#fff;border-radius:14px;border:1.5px solid #e9d5ff;overflow:hidden;box-shadow:0 1px 4px rgba(124,58,237,.08);display:flex;flex-direction:column}
+  .mp-card-img-wrap{position:relative}
+  .mp-card-img{width:100%;height:120px;object-fit:cover;display:block;background:#f3e8ff}
+  .mp-card-img-placeholder{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:#f3e8ff}
+  .mp-type-badge{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;color:#fff}
+  .mp-type-sell{background:#7c3aed}
+  .mp-type-rent{background:#0891b2}
+  .mp-type-free{background:#16a34a}
+  .mp-type-wanted{background:#ea580c}
+  .mp-sold-badge{position:absolute;top:6px;right:6px;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;background:#374151;color:#fff}
+  .mp-card-body{padding:10px;flex:1;display:flex;flex-direction:column}
+  .mp-card-title{font-size:13px;font-weight:800;color:#111;margin-bottom:3px;line-height:1.3}
+  .mp-card-price{font-size:14px;font-weight:900;color:#7c3aed;margin-bottom:4px}
+  .mp-card-price.free{color:#16a34a}
+  .mp-card-meta{font-size:10px;color:#9ca3af;margin-top:auto}
+  .mp-card-actions{display:flex;border-top:1px solid #f3e8ff;margin-top:8px}
+  .mp-card-action{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 0;background:none;border:none;cursor:pointer;font-size:11px;font-weight:700;color:#6b7280;font-family:inherit;text-decoration:none}
+  .mp-card-action.interested{color:#7c3aed}
+  .mp-card-divider{width:1px;background:#f3e8ff;align-self:stretch}
+
+  .mp-empty{text-align:center;padding:3rem 1rem;color:#9ca3af;grid-column:1/-1}
+</style>
+
+<div id="mpTopBar">
+  <a href="/community/" class="back">&#8592;</a>
+  <h2>🛒 Marketplace</h2>
+</div>
+
+<div class="mp-hero">
+  <h1>🛒 Local Marketplace</h1>
+  <p>Buy, sell & discover within your pincode community</p>
+</div>
+
+<div class="mp-filters">
+  <div class="mp-filter-row">
+    <a href="/community/marketplace/{% if active_type %}?type={{ active_type }}{% endif %}" class="mp-chip {% if not active_cat %}active{% endif %}">🛒 All</a>
+    {% for val, label in categories %}
+    <a href="/community/marketplace/?cat={{ val }}{% if active_type %}&type={{ active_type }}{% endif %}" class="mp-chip {% if active_cat == val %}active{% endif %}" data-cat="{{ val }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+  <div class="mp-filter-row">
+    <a href="/community/marketplace/{% if active_cat %}?cat={{ active_cat }}{% endif %}" class="mp-chip {% if not active_type %}active{% endif %}">All Types</a>
+    {% for val, label in types %}
+    <a href="/community/marketplace/?type={{ val }}{% if active_cat %}&cat={{ active_cat }}{% endif %}" class="mp-chip {% if active_type == val %}active{% endif %}" data-type="{{ val }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if request.user.is_authenticated %}
+<a href="/community/marketplace/post/" class="mp-fab">+</a>
+{% endif %}
+
+<div class="mp-feed">
+  {% if listings %}
+  {% for listing in listings %}
+  <div class="mp-card">
+    <div class="mp-card-img-wrap">
+      {% if listing.image %}
+      <img class="mp-card-img" src="{{ listing.image.url }}" alt="{{ listing.title }}">
+      {% else %}
+      <div class="mp-card-img-placeholder" data-cat="{{ listing.category }}">🛒</div>
+      {% endif %}
+      <span class="mp-type-badge mp-type-{{ listing.listing_type }}" data-type="{{ listing.listing_type }}">{{ listing.get_listing_type_display }}</span>
+      {% if listing.is_sold %}<span class="mp-sold-badge">SOLD</span>{% endif %}
+    </div>
+    <div class="mp-card-body">
+      <div class="mp-card-title"><a href="/community/marketplace/{{ listing.pk }}/" style="color:inherit;text-decoration:none">{{ listing.title }}</a></div>
+      {% if listing.listing_type == 'free' %}
+      <div class="mp-card-price free">🎁 Free</div>
+      {% elif listing.listing_type == 'wanted' %}
+      <div class="mp-card-price" style="color:#ea580c">🔍 Wanted</div>
+      {% elif listing.price %}
+      <div class="mp-card-price">₹{{ listing.price|floatformat:0 }}</div>
+      {% else %}
+      <div class="mp-card-price" style="color:#9ca3af;font-size:12px">Price on request</div>
+      {% endif %}
+      <div class="mp-card-meta">{{ listing.created_at|timesince }} ago{% if listing.pincode %} · 📍 {{ listing.pincode }}{% endif %}</div>
+    </div>
+    <div class="mp-card-actions">
+      <button class="mp-card-action {% if listing.pk in interest_ids %}interested{% endif %}" onclick="toggleInterest({{ listing.pk }}, this)">
+        🤝 <span id="mic-{{ listing.pk }}">{{ listing.interest_count }}</span>
+      </button>
+      <div class="mp-card-divider"></div>
+      <a href="/community/marketplace/{{ listing.pk }}/" class="mp-card-action">💬 {{ listing.comment_count }}</a>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="mp-empty">
+    <div style="font-size:3rem;margin-bottom:8px">🛒</div>
+    <p style="font-weight:700;color:#374151;margin-bottom:4px">No listings yet</p>
+    <p style="font-size:13px">Be the first to list something!</p>
+    {% if request.user.is_authenticated %}
+    <a href="/community/marketplace/post/" style="display:inline-block;margin-top:12px;background:#7c3aed;color:#fff;padding:10px 24px;border-radius:24px;font-weight:800;font-size:13px;text-decoration:none">Post a Listing</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  var catIcons={electronics:'📱',furniture:'🛋️',clothing:'👗',books:'📚',vehicles:'🚗',appliances:'🏠',sports:'⚽',toys:'🧸',food:'🥗',services:'🔧',other:'🛒'};
+  var typeIcons={sell:'🏷️',rent:'🔑',free:'🎁',wanted:'🔍'};
+  document.querySelectorAll('[data-cat]').forEach(function(el){
+    var v=el.getAttribute('data-cat');if(catIcons[v])el.textContent=catIcons[v];
+  });
+  document.querySelectorAll('.mp-chip[data-cat]').forEach(function(el){
+    var v=el.getAttribute('data-cat');if(catIcons[v])el.textContent=catIcons[v]+' '+el.textContent.trim();
+  });
+  document.querySelectorAll('.mp-chip[data-type]').forEach(function(el){
+    var v=el.getAttribute('data-type');if(typeIcons[v])el.textContent=typeIcons[v]+' '+el.textContent.trim();
+  });
+  document.querySelectorAll('.mp-type-badge[data-type]').forEach(function(el){
+    var v=el.getAttribute('data-type');if(typeIcons[v])el.textContent=typeIcons[v]+' '+el.textContent.trim();
+  });
+})();
+function toggleInterest(pk, btn){
+  fetch('/community/marketplace/'+pk+'/interest/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    btn.classList.toggle('interested',d.interested);
+    document.getElementById('mic-'+pk).textContent=d.count;
+  });
+}
+</script>
+{% endblock %}

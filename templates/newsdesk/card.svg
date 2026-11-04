@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 760" role="img" aria-label="Birthday wishes for {{ card.recipient }}">
+<rect width="720" height="760" rx="32" fill="{{ background }}"/><rect x="25" y="25" width="670" height="710" rx="22" fill="none" stroke="{{ foreground }}" stroke-opacity=".25" stroke-width="2"/>
+<g fill="{{ foreground }}" opacity=".25"><circle cx="88" cy="120" r="18"/><circle cx="640" cy="270" r="26"/><circle cx="95" cy="635" r="22"/><path d="M598 90l12 25 28 4-20 20 5 28-25-13-25 13 5-28-20-20 28-4z"/></g>
+<g fill="{{ foreground }}" text-anchor="middle" font-family="Arial, sans-serif"><text x="360" y="110" font-size="17" letter-spacing="4">A LITTLE WISH. A BIG SMILE.</text><text x="360" y="202" font-size="48" font-weight="bold">Happy Birthday!</text>
+<text x="360" y="280" font-size="34" font-weight="bold">{% for line in recipient_lines %}<tspan x="360" dy="{% if forloop.first %}0{% else %}44{% endif %}">{{ line }}</tspan>{% endfor %}</text>
+<text x="360" y="415" font-size="25">{% for line in message_lines %}<tspan x="360" dy="{% if forloop.first %}0{% else %}38{% endif %}">{{ line }}</tspan>{% endfor %}</text>
+<text x="360" y="695" font-size="15" letter-spacing="2">WITH LOVE · Local From</text></g></svg>

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}{{ offer.business_name }} - Store and offer details{% endblock %}
+{% block content %}
+<main class="offer-store-page" style="max-width:760px;margin:24px auto;padding:20px">
+  <a href="/advertise/">Back to Offers</a>
+  <h1 style="margin:20px 0">{{ offer.business_name }}</h1>
+  <p>Merchant details supplied with this offer. A registered store profile has not been confirmed.</p>
+  {% if offer.image %}<img src="{{ offer.image.url }}" alt="{{ offer.business_name }} offer" style="width:100%;max-height:400px;object-fit:contain;margin:20px 0">{% endif %}
+  <h2>{{ offer.title }}</h2><p>{{ offer.discount_text }}</p>
+  {{ offer.description|linebreaks }}
+  {% if offer.whatsapp_url %}<a href="{{ offer.whatsapp_url }}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 0">Contact on WhatsApp</a>
+  {% else %}<p role="status">A verified WhatsApp contact is not available for this offer.</p>{% endif %}
+</main>
+{% endblock %}

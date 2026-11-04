@@ -1,0 +1,27 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Delete Community{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:480px">
+  <div style="background:#fff;border-radius:18px;border:1.5px solid #fee2e2;padding:28px 24px;text-align:center">
+    <div style="font-size:44px;margin-bottom:12px">🗑️</div>
+    <div style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:8px">Delete Community?</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:6px">
+      You are about to permanently delete:
+    </div>
+    <div style="font-size:15px;font-weight:800;color:#dc2626;margin-bottom:4px">{{ community.name }}</div>
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:20px">{{ community.page_id }} · {{ community.member_count }} members</div>
+    <div style="background:#fef2f2;border-radius:10px;padding:12px 16px;font-size:12px;color:#b91c1c;font-weight:600;margin-bottom:24px;text-align:left">
+      ⚠️ This will permanently delete all posts, events, members, leaders and data associated with this community. This cannot be undone.
+    </div>
+    <div style="display:flex;gap:10px">
+      <a href="/portal/admin/communities/" class="pbtn pbtn-outline pbtn-full" style="flex:1">Cancel</a>
+      <form method="post" style="flex:1">
+        {% csrf_token %}
+        <button type="submit" class="pbtn pbtn-full" style="background:#dc2626;color:#fff;border:none;width:100%">
+          Yes, Delete Permanently
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

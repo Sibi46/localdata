@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title %}Post a Listing – Marketplace{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#faf5ff}
+  #mppTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #e9d5ff;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #mppTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #mppTopBar h2{font-size:16px;font-weight:900;color:#111;margin:0;flex:1}
+
+  .mpp-wrap{padding:14px 16px 100px;max-width:600px;margin:0 auto}
+  .mpp-card{background:#fff;border-radius:16px;border:1.5px solid #e9d5ff;padding:18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(124,58,237,.07)}
+  .mpp-section{font-size:11px;font-weight:900;color:#7c3aed;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+  .mpp-label{font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block}
+  .mpp-input,.mpp-select,.mpp-textarea{width:100%;padding:11px 14px;border:1.5px solid #e9d5ff;border-radius:12px;font-size:14px;font-family:inherit;background:#faf5ff;color:#111;box-sizing:border-box;outline:none}
+  .mpp-input:focus,.mpp-select:focus,.mpp-textarea:focus{border-color:#7c3aed;background:#fff}
+  .mpp-textarea{resize:none;min-height:100px}
+  .mpp-field{margin-bottom:14px}
+
+  /* listing type buttons */
+  .type-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .type-btn{padding:12px 8px;border-radius:12px;border:2px solid #e9d5ff;background:#faf5ff;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:#6b21a8}
+  .type-btn.selected{border-color:#7c3aed;background:#f3e8ff;color:#4c1d95}
+  .type-icon{font-size:1.4rem;display:block;margin-bottom:3px}
+
+  /* category grid */
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .cat-btn{padding:10px 6px;border-radius:12px;border:2px solid #e9d5ff;background:#faf5ff;text-align:center;cursor:pointer;font-size:11px;font-weight:700;color:#6b21a8}
+  .cat-btn.selected{border-color:#7c3aed;background:#f3e8ff;color:#4c1d95}
+  .cat-icon-el{font-size:1.2rem;display:block;margin-bottom:2px}
+
+  .mpp-photo-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px dashed #e9d5ff;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;color:#6b21a8;background:#faf5ff}
+  .mpp-photo-label:hover{border-color:#7c3aed;background:#f3e8ff}
+  #photoPreview{display:none;width:100%;max-height:180px;object-fit:cover;border-radius:12px;margin-top:8px}
+
+  #conditionWrap{display:block}
+
+  .mpp-submit{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#9333ea);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit}
+  .mpp-submit:active{opacity:.85}
+</style>
+
+<div id="mppTopBar">
+  <a href="/community/marketplace/" class="back">&#8592;</a>
+  <h2>🛒 Post a Listing</h2>
+</div>
+
+<div class="mpp-wrap">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="category" id="catHidden" required>
+    <input type="hidden" name="listing_type" id="typeHidden" value="sell">
+
+    <div class="mpp-card">
+      <div class="mpp-section">Listing Type *</div>
+      <div class="type-grid">
+        {% for val, label in types %}
+        <div class="type-btn {% if forloop.first %}selected{% endif %}" data-val="{{ val }}" onclick="selectType(this)">
+          <span class="type-icon" id="ti-{{ val }}">🏷️</span>
+          <span>{{ label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="mpp-card">
+      <div class="mpp-section">What are you listing? *</div>
+      <div class="mpp-field">
+        <label class="mpp-label">Title *</label>
+        <input class="mpp-input" type="text" name="title" placeholder="e.g. Samsung TV 43 inch" required maxlength="200">
+      </div>
+      <div id="conditionWrap" class="mpp-field">
+        <label class="mpp-label">Condition</label>
+        <select class="mpp-select" name="condition">
+          {% for val, label in conditions %}
+          <option value="{{ val }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mpp-field" id="priceWrap">
+        <label class="mpp-label">Price (₹) — leave blank for "on request"</label>
+        <input class="mpp-input" type="number" name="price" placeholder="0" min="0" step="0.01">
+      </div>
+    </div>
+
+    <div class="mpp-card">
+      <div class="mpp-section">Category *</div>
+      <div class="cat-grid">
+        {% for val, label in categories %}
+        <div class="cat-btn" data-val="{{ val }}" onclick="selectCat(this)">
+          <span class="cat-icon-el" id="ci-{{ val }}">🛒</span>
+          <span>{{ label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="mpp-card">
+      <div class="mpp-section">Description *</div>
+      <div class="mpp-field">
+        <textarea class="mpp-textarea" name="description" placeholder="Describe the item — condition, size, reason for selling, delivery options..." required></textarea>
+      </div>
+      <div class="mpp-field">
+        <label class="mpp-label">Pincode (optional)</label>
+        <input class="mpp-input" type="text" name="pincode" placeholder="Your pincode" maxlength="10">
+      </div>
+      <div class="mpp-field">
+        <label class="mpp-label">Contact (optional)</label>
+        <input class="mpp-input" type="text" name="contact" placeholder="Phone / WhatsApp number" maxlength="20">
+      </div>
+    </div>
+
+    <div class="mpp-card">
+      <div class="mpp-section">Photo (optional)</div>
+      <label class="mpp-photo-label" for="photoInput">📸 Upload Photo</label>
+      <input type="file" id="photoInput" name="image" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+      <img id="photoPreview" alt="Preview">
+    </div>
+
+    <button type="submit" class="mpp-submit">🛒 Post Listing</button>
+  </form>
+</div>
+
+<script>
+var catIcons={electronics:'📱',furniture:'🛋️',clothing:'👗',books:'📚',vehicles:'🚗',appliances:'🏠',sports:'⚽',toys:'🧸',food:'🥗',services:'🔧',other:'🛒'};
+var typeIcons={sell:'🏷️',rent:'🔑',free:'🎁',wanted:'🔍'};
+document.querySelectorAll('.cat-icon-el').forEach(function(el){
+  var v=el.id.replace('ci-','');if(catIcons[v])el.textContent=catIcons[v];
+});
+document.querySelectorAll('.type-icon').forEach(function(el){
+  var v=el.id.replace('ti-','');if(typeIcons[v])el.textContent=typeIcons[v];
+});
+
+// pre-select first type
+document.getElementById('typeHidden').value='sell';
+
+function selectType(el){
+  document.querySelectorAll('.type-btn').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');
+  var v=el.getAttribute('data-val');
+  document.getElementById('typeHidden').value=v;
+  // hide condition & price for 'wanted'; hide condition for 'free'
+  var cw=document.getElementById('conditionWrap');
+  var pw=document.getElementById('priceWrap');
+  cw.style.display=(v==='wanted')?'none':'block';
+  pw.style.display=(v==='free'||v==='wanted')?'none':'block';
+}
+function selectCat(el){
+  document.querySelectorAll('.cat-btn').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');
+  document.getElementById('catHidden').value=el.getAttribute('data-val');
+}
+function previewPhoto(input){
+  if(input.files&&input.files[0]){
+    var r=new FileReader();
+    r.onload=function(e){
+      var img=document.getElementById('photoPreview');
+      img.src=e.target.result;img.style.display='block';
+    };r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

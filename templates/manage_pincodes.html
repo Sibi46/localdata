@@ -1,0 +1,107 @@
+{% extends "admin_base.html" %}
+{% block title %}Manage PIN Codes{% endblock %}
+
+{% block content %}
+<div class="ap-breadcrumb"><i class="fas fa-map-pin"></i> Super Admin / PIN Codes</div>
+<div class="ap-page-title"><i class="fas fa-map-pin" style="color:#2e7d32"></i> PIN Code Management</div>
+<div class="ap-page-subtitle">Configure PIN codes and area mappings for districts</div>
+
+{% if messages %}{% for msg in messages %}
+<div class="ap-alert ap-alert-{{ msg.tags }}"><i class="fas fa-info-circle"></i> {{ msg }}</div>
+{% endfor %}{% endif %}
+
+<div class="ap-two-col">
+
+  <!-- District Selector -->
+  <div class="ap-card">
+    <div class="ap-card-header"><h3><i class="fas fa-map-marker-alt" style="color:#0a66c2"></i> Select District</h3></div>
+    <form method="GET" action="/super-admin/pincodes/" class="ap-form" id="distSelector">
+      <div class="ap-form-group">
+        <label>State</label>
+        <select name="state_filter" class="ap-input" id="stateFilter" onchange="document.getElementById('distSelect').value='';this.form.submit()">
+          <option value="">All States</option>
+          {% for state in states %}
+            <option value="{{ state.pk }}" {% if state_filter == state.pk|stringformat:'s' %}selected{% endif %}>{{ state.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="ap-form-group">
+        <label>District</label>
+        <select name="district_id" class="ap-input" id="distSelect" onchange="this.form.submit()">
+          <option value="">-- Select District --</option>
+          {% for d in districts %}
+          <option value="{{ d.pk }}" data-state="{{ d.state.pk }}"
+            {% if selected and selected.pk == d.pk %}selected{% endif %}>
+            {{ d.name }} ({{ d.state.name }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="ap-btn ap-btn-primary">Show PIN codes</button>
+    </form>
+  </div>
+
+  <!-- Add PIN Code (only when district selected) -->
+  {% if selected %}
+  <div class="ap-card">
+    <div class="ap-card-header">
+      <h3><i class="fas fa-plus" style="color:#2e7d32"></i> Add PIN to {{ selected.name }}</h3>
+    </div>
+    <form method="POST" action="/super-admin/pincodes/{{ selected.pk }}/" class="ap-form">
+      {% csrf_token %}
+      <div class="ap-form-group">
+        <label>PIN Code <span style="color:#c62828">*</span></label>
+        <input type="text" name="code" class="ap-input" placeholder="6-digit PIN" maxlength="6" minlength="6" pattern="[0-9]{6}" required>
+      </div>
+      <div class="ap-form-group">
+        <label>Area / Locality Name</label>
+        <input type="text" name="area_name" class="ap-input" placeholder="e.g. Koramangala, Sector 5">
+      </div>
+      <button type="submit" class="ap-btn ap-btn-primary" style="width:100%;justify-content:center">
+        <i class="fas fa-plus"></i> Add PIN Code
+      </button>
+    </form>
+  </div>
+  {% else %}
+  <div class="ap-card" style="display:flex;align-items:center;justify-content:center;flex-direction:column;padding:40px;background:#f9f9f9">
+    <i class="fas fa-arrow-left" style="font-size:32px;color:#ccc;margin-bottom:12px"></i>
+    <p style="color:#888;text-align:center">Select a district on the left to add or view its PIN codes.</p>
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- PIN Codes Table -->
+<div class="ap-card">
+  <div class="ap-card-header">
+    <h3><i class="fas fa-map-pin" style="color:#0a66c2"></i>
+      {% if selected %}PIN Codes — {{ selected.name }}, {{ selected.state.name }}{% else %}All Districts{% endif %}
+      ({{ pincodes|length }})
+    </h3>
+  </div>
+  {% if pincodes %}
+  <div class="ap-table-wrap">
+    <table class="ap-table">
+      <thead><tr><th>PIN Code</th><th>Area Name</th><th>District</th><th>State</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in pincodes %}
+        <tr>
+          <td><code style="background:#e8f5e9;color:#2e7d32;padding:4px 10px;border-radius:6px;font-size:14px;font-weight:700;letter-spacing:1px">{{ p.code }}</code></td>
+          <td>{{ p.area_name|default:"—" }}</td>
+          <td>{{ p.district.name }}</td>
+          <td>{{ p.district.state.name }}</td>
+          <td><span class="status-pill {% if p.is_active %}pill-active{% else %}pill-inactive{% endif %}">{{ p.is_active|yesno:"Active,Inactive" }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% elif selected %}
+  <div class="ap-empty"><i class="fas fa-map-pin"></i><p>No PIN codes for {{ selected.name }} yet. Add one above.</p></div>
+  {% else %}
+  <div class="ap-empty"><i class="fas fa-map-pin"></i><p>Select a district to view its PIN codes.</p></div>
+  {% endif %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,34 @@
+<header class="local-intro">
+  <p class="local-eyebrow"><span aria-hidden="true"></span> YOUR AREA. YOUR PEOPLE.</p>
+  <h1 id="local-welcome-title">There’s more to discover<br>right around you.</h1>
+  <p class="local-intro-copy" id="local-welcome-description">Find what’s nearby, support local businesses, and feel part of your neighbourhood. That’s what Local From is for.</p>
+</header>
+<section class="local-welcome" aria-label="What you can do on Local From">
+  <div class="local-cards" id="local-welcome-cards" tabindex="0" aria-label="Discover nearby and register a business">
+    <article class="local-card local-card-nearby" id="local-card-nearby">
+      <div class="local-card-inner">
+        <span class="local-card-label"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> EXPLORE NEARBY</span>
+        <h2>Good things.<br>Closer to<br><em>home.</em></h2>
+        <p>Looking for what’s around you? Discover local shops, useful services, offers in your area.</p>
+        <div class="local-art local-map" aria-hidden="true"><span class="local-map-road"></span><span class="local-map-pin"><i class="fas fa-map-marker-alt"></i></span><span class="local-map-shop"><i class="fas fa-store"></i></span><span class="local-map-heart"><i class="fas fa-heart"></i></span><span class="local-art-caption">A little closer. A lot to explore.</span></div>
+      </div>
+      <a class="local-card-cta" href="{% url 'business_list' %}">Explore nearby <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+      <span class="local-card-number" aria-hidden="true">01 / 02</span>
+    </article>
+    <article class="local-card local-card-business" id="local-card-business">
+      <div class="local-card-inner">
+        <span class="local-card-label"><i class="fas fa-store" aria-hidden="true"></i> FOR BUSINESS OWNERS</span>
+        <h2>Your business.<br>Your next<br><em>local customer.</em></h2>
+        <p>Own a business? Register it so people nearby can find you. Share what you offer and reach customers in your local area.</p>
+        <div class="local-art local-shop" aria-hidden="true"><span class="local-shop-glow"></span><span class="local-shop-sign">HELLO, NEIGHBOUR!</span><i class="fas fa-store local-shop-front"></i><span class="local-shop-bubble"><i class="fas fa-heart"></i> Shop local</span><span class="local-art-spark">✦</span></div>
+      </div>
+      <a class="local-card-cta" href="{% url 'register' %}?type=company">Register your business <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+      <span class="local-card-number" aria-hidden="true">02 / 02</span>
+    </article>
+  </div>
+  <nav class="local-card-controls" aria-label="Welcome cards">
+    <button type="button" data-local-prev aria-label="Previous welcome card" aria-controls="local-welcome-cards"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+    <div class="local-card-dots"><button type="button" data-local-card="0" aria-label="Show Explore nearby" aria-current="true" aria-controls="local-welcome-cards"></button><button type="button" data-local-card="1" aria-label="Show For business owners" aria-controls="local-welcome-cards"></button></div>
+    <button type="button" data-local-next aria-label="Next welcome card" aria-controls="local-welcome-cards"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+  </nav>
+</section>

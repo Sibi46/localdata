@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}My Ads — Local From{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:32px auto;padding:0 16px 60px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 style="font-size:22px;font-weight:900;color:#111;margin:0 0 4px"><i class="fas fa-bullhorn" style="color:#f3a000"></i> My Ads</h1>
+      <p style="font-size:13px;color:#888;margin:0">{{ ads.count }} ad{{ ads.count|pluralize }} submitted</p>
+    </div>
+    <a href="/ads/post/" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;background:#0a66c2;color:#fff;border-radius:22px;font-size:13px;font-weight:700;text-decoration:none">
+      <i class="fas fa-plus"></i> Post New Ad
+    </a>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div style="padding:12px 16px;border-radius:10px;margin-bottom:16px;background:#e8f5e9;border-left:4px solid #2e7d32;color:#1b5e20;font-size:13px;font-weight:700">
+      <i class="fas fa-check-circle"></i> {{ msg }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if not ads %}
+  <div style="text-align:center;padding:60px 20px;background:#fff;border:1.5px solid #e5e7eb;border-radius:16px">
+    <div style="font-size:48px;margin-bottom:12px">📢</div>
+    <h4 style="font-size:16px;font-weight:700;color:#444;margin-bottom:8px">No ads posted yet</h4>
+    <p style="font-size:13px;color:#888;margin-bottom:20px">Post your first ad — 1 month free after admin approval</p>
+    <a href="/ads/post/" style="display:inline-flex;align-items:center;gap:7px;padding:12px 28px;background:#0a66c2;color:#fff;border-radius:22px;font-size:14px;font-weight:700;text-decoration:none">
+      <i class="fas fa-plus"></i> Post an Ad
+    </a>
+  </div>
+
+  {% else %}
+  <div style="display:flex;flex-direction:column;gap:20px">
+    {% for ad in ads %}
+    {% with is_live=ad.is_live is_expired=ad.is_expired pending_ren=ad.pending_renewal %}
+
+    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);
+      border:2px solid {% if is_live %}#22c55e{% elif is_expired %}#f87171{% elif ad.status == 'pending' %}#fbbf24{% else %}#f87171{% endif %}">
+
+      <!-- Status header bar -->
+      {% if is_live %}
+      <div style="background:linear-gradient(135deg,#16a34a,#15803d);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span style="color:#fff;font-size:14px;font-weight:900"><i class="fas fa-check-circle" style="font-size:16px;margin-right:6px"></i> YOUR AD IS LIVE!</span>
+        {% if ad.expires_at %}<span style="color:#bbf7d0;font-size:12px;font-weight:700"><i class="fas fa-calendar-check"></i> Valid till {{ ad.expires_at|date:"d M Y" }}</span>{% endif %}
+      </div>
+      {% elif is_expired %}
+      <div style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span style="color:#fff;font-size:13px;font-weight:800"><i class="fas fa-times-circle"></i> Ad Expired</span>
+        {% if ad.expires_at %}<span style="color:#fecaca;font-size:12px;font-weight:700"><i class="fas fa-calendar-times"></i> Expired on {{ ad.expires_at|date:"d M Y" }}</span>{% endif %}
+      </div>
+      {% elif ad.status == 'pending' %}
+      <div style="background:linear-gradient(135deg,#d97706,#b45309);padding:10px 18px;display:flex;align-items:center;gap:8px">
+        <i class="fas fa-hourglass-half" style="color:#fff"></i>
+        <span style="color:#fff;font-size:13px;font-weight:800">Waiting for Admin Approval</span>
+      </div>
+      {% else %}
+      <div style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:10px 18px;display:flex;align-items:center;gap:8px">
+        <i class="fas fa-times-circle" style="color:#fff"></i>
+        <span style="color:#fff;font-size:13px;font-weight:800">Ad Rejected by Admin</span>
+      </div>
+      {% endif %}
+
+      <!-- Ad content -->
+      <div style="display:flex;align-items:stretch">
+        <div style="width:110px;flex-shrink:0;overflow:hidden;background:#f5f7fa">
+          <img src="{{ ad.image.url }}" style="width:110px;height:100%;min-height:90px;object-fit:cover;display:block">
+        </div>
+        <div style="flex:1;padding:14px 16px">
+          <div style="font-size:15px;font-weight:800;color:#111;margin-bottom:3px">{{ ad.company_name }}</div>
+          {% if ad.pincode %}<div style="font-size:11px;color:#0369a1;font-weight:700;margin-bottom:4px"><i class="fas fa-map-marker-alt"></i> {{ ad.pincode }}</div>{% endif %}
+          <div style="font-size:12px;color:#666;line-height:1.5;margin-bottom:8px">{{ ad.description|truncatechars:100 }}</div>
+
+          <!-- Stats row -->
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            {% if ad.views %}
+            <span style="font-size:12px;background:#f0f9ff;color:#0369a1;padding:4px 10px;border-radius:20px;font-weight:700">
+              <i class="fas fa-eye"></i> {{ ad.views }} views
+            </span>
+            {% endif %}
+            {% if ad.website %}
+            <a href="{{ ad.website }}" target="_blank" style="font-size:12px;background:#f0fdf4;color:#15803d;padding:4px 10px;border-radius:20px;font-weight:700;text-decoration:none">
+              <i class="fas fa-external-link-alt"></i> Visit Website
+            </a>
+            {% endif %}
+            <span style="font-size:12px;color:#aaa;padding:4px 0">
+              <i class="fas fa-clock"></i> Submitted {{ ad.created_at|date:"d M Y" }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom info strip -->
+      {% if ad.status == 'pending' %}
+      <div style="padding:12px 18px;border-top:1px solid #fde68a;background:#fffbeb;font-size:12px;color:#92400e;line-height:1.6">
+        <i class="fas fa-info-circle"></i>
+        Your ad is under review. Admin will approve it shortly. Once approved, your ad will be <strong>live for {{ settings.renewal_days }} days for free</strong>.
+      </div>
+
+      {% elif is_live %}
+      <div style="padding:12px 18px;border-top:1px solid #bbf7d0;background:#f0fdf4;display:flex;align-items:center;flex-wrap:wrap;gap:12px;justify-content:space-between">
+        <div style="font-size:12px;color:#166534">
+          <i class="fas fa-circle" style="font-size:8px;color:#22c55e"></i>
+          <strong>Live</strong> — Your ad is visible to all Local From users
+          {% if ad.approved_at %}&nbsp;· Approved {{ ad.approved_at|date:"d M Y" }}{% endif %}
+        </div>
+        {% if ad.expires_at %}
+        <span style="font-size:12px;background:#dcfce7;color:#15803d;padding:5px 12px;border-radius:20px;font-weight:700;border:1px solid #bbf7d0">
+          <i class="fas fa-calendar-check"></i> Valid till {{ ad.expires_at|date:"d M Y" }}
+        </span>
+        {% endif %}
+      </div>
+
+      {% elif is_expired %}
+      <div style="padding:12px 18px;border-top:1px solid #fecaca;background:#fff5f5;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div style="font-size:12px;color:#b91c1c;font-weight:600">
+          <i class="fas fa-redo"></i> Renew your ad to make it live again
+        </div>
+        {% if pending_ren %}
+          <span style="font-size:12px;background:#fff8e1;color:#92400e;padding:6px 14px;border-radius:20px;font-weight:700;border:1.5px solid #fde68a">
+            <i class="fas fa-hourglass-half"></i> Renewal payment under review
+          </span>
+        {% else %}
+          <a href="/ads/{{ ad.pk }}/renew/" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#e65100;color:#fff;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none">
+            <i class="fas fa-redo"></i> Renew — ₹{{ settings.renewal_price }}
+          </a>
+        {% endif %}
+      </div>
+
+      {% elif ad.status == 'rejected' %}
+      <div style="padding:12px 18px;border-top:1px solid #fecaca;background:#fff5f5;font-size:12px;color:#b91c1c">
+        {% if ad.reject_note %}
+        <i class="fas fa-info-circle"></i> <strong>Reason:</strong> {{ ad.reject_note }}
+        {% else %}
+        <i class="fas fa-info-circle"></i> Your ad was not approved. You may post a new ad.
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

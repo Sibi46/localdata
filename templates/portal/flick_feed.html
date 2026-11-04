@@ -1,0 +1,494 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Flicks{% endblock %}
+{% block extra_css %}
+<style>
+body { background: #000; overflow-x: hidden; }
+.pnav { display: none; }
+.pfooter { display: none; }
+.u-share-fab { display: none; }
+
+.flick-container {
+  height: 100dvh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.flick-container::-webkit-scrollbar { display: none; }
+
+.flick-slide {
+  height: 100dvh;
+  width: 100%;
+  scroll-snap-align: start;
+  position: relative;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.flick-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.flick-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,.7) 0%, transparent 40%, transparent 70%, rgba(0,0,0,.3) 100%);
+  pointer-events: none;
+}
+
+.flick-top-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+.flick-back-btn {
+  background: rgba(255,255,255,.15);
+  border: none;
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 16px; cursor: pointer; text-decoration: none;
+  backdrop-filter: blur(4px);
+}
+.flick-page-title {
+  font-size: 15px; font-weight: 800; color: #fff;
+}
+.flick-create-btn {
+  margin-left: auto;
+  background: rgba(255,255,255,.15);
+  border: none; border-radius: 20px;
+  padding: 6px 14px;
+  color: #fff; font-size: 12px; font-weight: 700;
+  cursor: pointer; text-decoration: none;
+  backdrop-filter: blur(4px);
+}
+
+.flick-info {
+  position: absolute;
+  bottom: 90px; left: 16px; right: 70px;
+  z-index: 10;
+}
+.flick-community-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 6px 12px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,.2);
+}
+.flick-comm-logo {
+  width: 24px; height: 24px;
+  border-radius: 50%; object-fit: cover;
+  border: 1.5px solid rgba(255,255,255,.5);
+}
+.flick-comm-logo-placeholder {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #fff;
+  border: 1.5px solid rgba(255,255,255,.5);
+}
+.flick-comm-name {
+  font-size: 12px; font-weight: 800; color: #fff;
+}
+.flick-poster {
+  font-size: 12px; color: rgba(255,255,255,.8); margin-bottom: 6px;
+}
+.flick-caption {
+  font-size: 13px; color: #fff; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.flick-actions {
+  position: absolute;
+  bottom: 110px; right: 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+  z-index: 10;
+}
+.flick-action-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: none; border: none; color: #fff; cursor: pointer;
+  font-size: 28px; text-decoration: none;
+}
+.flick-action-count {
+  font-size: 11px; font-weight: 700; color: #fff;
+}
+.flick-action-btn.liked .flick-heart { color: #ef4444; }
+.flick-heart { font-size: 28px; transition: transform .15s; display:block; }
+.flick-action-btn.liked .flick-heart { transform: scale(1.2); }
+
+/* Comment sheet */
+.flick-comment-sheet {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+  background: #1a1a2e; border-radius: 20px 20px 0 0;
+  transform: translateY(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+  max-height: 75vh; display: flex; flex-direction: column;
+}
+.flick-comment-sheet.open { transform: translateY(0); }
+.flick-comment-sheet-handle {
+  width: 40px; height: 4px; background: rgba(255,255,255,.3);
+  border-radius: 2px; margin: 12px auto 0;
+}
+.flick-comment-sheet-title {
+  font-size: 14px; font-weight: 800; color: #fff;
+  text-align: center; padding: 10px 0 12px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.flick-comment-list {
+  flex: 1; overflow-y: auto; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.flick-comment-item { display: flex; gap: 10px; align-items: flex-start; }
+.flick-comment-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.flick-comment-body { flex: 1; }
+.flick-comment-name { font-size: 12px; font-weight: 800; color: #a5b4fc; }
+.flick-comment-text { font-size: 13px; color: #e2e8f0; line-height: 1.4; }
+.flick-comment-time { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.flick-comment-input-row {
+  display: flex; gap: 10px; padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  background: #1a1a2e;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+.flick-comment-input {
+  flex: 1; background: rgba(255,255,255,.1); border: none; border-radius: 20px;
+  padding: 10px 16px; color: #fff; font-size: 14px; outline: none;
+}
+.flick-comment-input::placeholder { color: rgba(255,255,255,.4); }
+.flick-comment-send {
+  background: #4f46e5; border: none; border-radius: 50%;
+  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 16px; cursor: pointer; flex-shrink: 0;
+}
+.flick-sheet-backdrop {
+  display: none; position: fixed; inset: 0; z-index: 299;
+  background: rgba(0,0,0,.5);
+}
+.flick-sheet-backdrop.open { display: block; }
+
+.flick-play-icon {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 64px; color: rgba(255,255,255,.85);
+  z-index: 5;
+  transition: opacity .25s;
+  text-shadow: 0 2px 12px rgba(0,0,0,.5);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Bottom nav override for flick page */
+.pbot-nav { background: rgba(0,0,0,.8) !important; border-top: 1px solid rgba(255,255,255,.1) !important; }
+.pbot-nav-item { color: rgba(255,255,255,.6) !important; }
+.pbot-nav-item.active, .pbot-nav-item:hover { color: #fff !important; }
+.pbot-nav-item.active .pbot-icon { background: rgba(255,255,255,.15) !important; }
+
+.flick-empty {
+  height: 100dvh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; text-align: center; padding: 40px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flick-container" id="flickContainer">
+
+  <!-- Top bar -->
+  <div class="flick-top-bar" style="position:fixed;top:0;left:0;right:0;z-index:20;background:linear-gradient(180deg,rgba(0,0,0,.5) 0%,transparent 100%)">
+    <a href="/portal/" class="flick-back-btn">←</a>
+    <div class="flick-page-title">🎬 Flicks</div>
+    {% if request.user.is_authenticated %}
+    <a href="/portal/" class="flick-create-btn" style="font-size:11px">🏘️ My Community</a>
+    {% endif %}
+  </div>
+
+  {% if flicks %}
+    {% for flick in flicks %}
+    <div class="flick-slide" id="flick-{{ flick.pk }}" data-type="{{ flick.media_type }}">
+
+      {% if flick.media_type == 'video' %}
+      <video class="flick-media" loop playsinline preload="none"
+             src="{{ flick.media.url }}"
+             onclick="togglePlay(this, '{{ flick.pk }}')"></video>
+      <div class="flick-play-icon" id="playIcon{{ flick.pk }}" onclick="togglePlay(this.previousElementSibling, '{{ flick.pk }}')">▶</div>
+      {% else %}
+      <img class="flick-media" src="{{ flick.media.url }}" alt="{{ flick.caption }}">
+      {% endif %}
+
+      <div class="flick-overlay"></div>
+
+      <!-- Community + info -->
+      <div class="flick-info">
+        <a href="/portal/c/{{ flick.community.page_id }}/" class="flick-community-link">
+          {% if flick.community.logo %}
+          <img src="{{ flick.community.logo.url }}" class="flick-comm-logo" alt="">
+          {% else %}
+          <div class="flick-comm-logo-placeholder">{{ flick.community.name|slice:":1"|upper }}</div>
+          {% endif %}
+          <span class="flick-comm-name">{{ flick.community.name }}</span>
+        </a>
+        {% if flick.community.page_id in admin_community_ids %}
+        <a href="/portal/member/{{ flick.posted_by.pk }}/" class="flick-poster" style="text-decoration:none;display:block">
+          <i class="fas fa-user-circle" style="margin-right:4px"></i>{{ flick.posted_by.get_full_name|default:flick.posted_by.username }}
+        </a>
+        {% else %}
+        <div class="flick-poster">
+          <i class="fas fa-user-circle" style="margin-right:4px"></i>{{ flick.posted_by.get_full_name|default:flick.posted_by.username }}
+        </div>
+        {% endif %}
+        {% if flick.approved_by %}
+        <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:5px">
+          ✓ Approved by {{ flick.approved_by.get_full_name|default:flick.approved_by.username }}
+        </div>
+        {% endif %}
+        {% if flick.caption %}
+        <div class="flick-caption">{{ flick.caption }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Actions -->
+      <div class="flick-actions">
+        <button class="flick-action-btn {% if flick.pk in liked_ids %}liked{% endif %}"
+                onclick="likeFlick({{ flick.pk }}, this)"
+                id="likeBtn{{ flick.pk }}">
+          <span class="flick-heart">{% if flick.pk in liked_ids %}❤️{% else %}🤍{% endif %}</span>
+          <span class="flick-action-count" id="likeCount{{ flick.pk }}">{{ flick.like_count }}</span>
+        </button>
+        <button class="flick-action-btn" onclick="openComments({{ flick.pk }})">
+          💬
+          <span class="flick-action-count" id="cmtCount{{ flick.pk }}">0</span>
+        </button>
+        <button class="flick-action-btn" onclick="shareFlick('{{ flick.community.name }}', '{{ flick.caption|escapejs }}', window.location.origin + '/portal/flicks/?community={{ flick.community.page_id }}')">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span class="flick-action-count">Share</span>
+        </button>
+        {% if request.user == flick.posted_by %}
+        <button class="flick-action-btn" onclick="deleteFlick({{ flick.pk }}, this)" style="color:rgba(255,100,100,.9)">
+          🗑️
+          <span class="flick-action-count">Delete</span>
+        </button>
+        {% endif %}
+      </div>
+
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="flick-empty">
+    <div style="font-size:60px;margin-bottom:20px">🎬</div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:10px">No Flicks yet</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.6);margin-bottom:24px">Be the first to post a Flick from your community!</div>
+    {% if request.user.is_authenticated %}
+    <a href="/portal/flicks/create/" style="background:#4f46e5;color:#fff;padding:12px 28px;border-radius:20px;font-size:14px;font-weight:800;text-decoration:none">+ Post a Flick</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- Comment sheet backdrop -->
+<div class="flick-sheet-backdrop" id="commentBackdrop" onclick="closeComments()"></div>
+
+<!-- Comment bottom sheet -->
+<div class="flick-comment-sheet" id="commentSheet">
+  <div class="flick-comment-sheet-handle"></div>
+  <div class="flick-comment-sheet-title">Comments</div>
+  <div class="flick-comment-list" id="commentList">
+    <div style="text-align:center;color:rgba(255,255,255,.4);padding:30px;font-size:13px">Loading…</div>
+  </div>
+  {% if request.user.is_authenticated %}
+  <div class="flick-comment-input-row">
+    <input type="text" class="flick-comment-input" id="commentInput" placeholder="Add a comment…" maxlength="500"
+           onkeydown="if(event.key==='Enter')sendComment()">
+    <button class="flick-comment-send" onclick="sendComment()">➤</button>
+  </div>
+  {% else %}
+  <div style="padding:14px;text-align:center;font-size:13px;color:rgba(255,255,255,.5)">
+    <a href="/login/" style="color:#a5b4fc">Login</a> to comment
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var LIKE_URL_BASE = '/portal/flick/';
+var CSRF = '{{ csrf_token }}';
+var isLoggedIn = {{ request.user.is_authenticated|yesno:"true,false" }};
+
+// Auto-play video when in view
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    var slide = entry.target;
+    var pk = slide.id.replace('flick-', '').replace('flick-', '');
+    var video = slide.querySelector('video');
+    var icon  = document.getElementById('playIcon' + pk);
+    if (video) {
+      if (entry.isIntersecting) {
+        video.play().catch(function(){});
+        if (icon) icon.style.opacity = '0';
+      } else {
+        video.pause();
+        video.currentTime = 0;
+        if (icon) icon.style.opacity = '1';
+      }
+    }
+  });
+}, { threshold: 0.6 });
+
+document.querySelectorAll('.flick-slide').forEach(function(slide) {
+  observer.observe(slide);
+});
+
+function togglePlay(video, pk) {
+  var icon = document.getElementById('playIcon' + pk);
+  if (video.paused) {
+    video.play();
+    if (icon) icon.style.opacity = '0';
+  } else {
+    video.pause();
+    if (icon) icon.style.opacity = '1';
+  }
+}
+
+function deleteFlick(pk, btn) {
+  if (!confirm('Delete this Flick?')) return;
+  fetch(LIKE_URL_BASE + pk + '/delete/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' }
+  }).then(function(r){ return r.json(); }).then(function(data) {
+    if (data.deleted) {
+      var slide = document.getElementById('flick-' + pk);
+      if (slide) slide.remove();
+    }
+  });
+}
+
+function likeFlick(pk, btn) {
+  if (!isLoggedIn) { window.location.href = '/login/'; return; }
+  fetch(LIKE_URL_BASE + pk + '/like/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' }
+  }).then(function(r){ return r.json(); }).then(function(data) {
+    var countEl = document.getElementById('likeCount' + pk);
+    if (countEl) countEl.textContent = data.count;
+    var heart = btn.querySelector('.flick-heart');
+    if (data.liked) {
+      btn.classList.add('liked');
+      if (heart) heart.textContent = '❤️';
+    } else {
+      btn.classList.remove('liked');
+      if (heart) heart.textContent = '🤍';
+    }
+  });
+}
+
+// ── Comments ──
+var currentFlickPk = null;
+
+function openComments(pk) {
+  currentFlickPk = pk;
+  var sheet = document.getElementById('commentSheet');
+  var backdrop = document.getElementById('commentBackdrop');
+  var list = document.getElementById('commentList');
+  list.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.4);padding:30px;font-size:13px">Loading…</div>';
+  sheet.classList.add('open');
+  backdrop.classList.add('open');
+  fetch(LIKE_URL_BASE + pk + '/comments/')
+    .then(function(r){ return r.json(); })
+    .then(function(data) { renderComments(data.comments, data.count); });
+}
+
+function closeComments() {
+  document.getElementById('commentSheet').classList.remove('open');
+  document.getElementById('commentBackdrop').classList.remove('open');
+  currentFlickPk = null;
+}
+
+function renderComments(comments, count) {
+  var list = document.getElementById('commentList');
+  if (!comments.length) {
+    list.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.4);padding:30px;font-size:13px">No comments yet. Be first!</div>';
+    return;
+  }
+  list.innerHTML = comments.map(function(c) {
+    return '<div class="flick-comment-item">' +
+      '<div class="flick-comment-avatar">' + c.name.charAt(0).toUpperCase() + '</div>' +
+      '<div class="flick-comment-body">' +
+        '<div class="flick-comment-name">' + c.name + '</div>' +
+        '<div class="flick-comment-text">' + c.text + '</div>' +
+        '<div class="flick-comment-time">' + c.created_at + '</div>' +
+      '</div></div>';
+  }).join('');
+  list.scrollTop = list.scrollHeight;
+  // Update count badge on slide
+  var countEl = document.getElementById('cmtCount' + currentFlickPk);
+  if (countEl) countEl.textContent = count;
+}
+
+function sendComment() {
+  if (!isLoggedIn) { window.location.href = '/login/'; return; }
+  var input = document.getElementById('commentInput');
+  var text = input.value.trim();
+  if (!text || !currentFlickPk) return;
+  input.value = '';
+  fetch(LIKE_URL_BASE + currentFlickPk + '/comment/add/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: text })
+  }).then(function(r){ return r.json(); }).then(function(data) {
+    if (data.ok) {
+      var list = document.getElementById('commentList');
+      var noMsg = list.querySelector('div[style*="No comments"]');
+      if (noMsg) noMsg.remove();
+      var item = document.createElement('div');
+      item.className = 'flick-comment-item';
+      item.innerHTML = '<div class="flick-comment-avatar">' + data.name.charAt(0).toUpperCase() + '</div>' +
+        '<div class="flick-comment-body">' +
+          '<div class="flick-comment-name">' + data.name + '</div>' +
+          '<div class="flick-comment-text">' + data.text + '</div>' +
+          '<div class="flick-comment-time">' + data.created_at + '</div>' +
+        '</div>';
+      list.appendChild(item);
+      list.scrollTop = list.scrollHeight;
+      var countEl = document.getElementById('cmtCount' + currentFlickPk);
+      if (countEl) countEl.textContent = data.count;
+    }
+  });
+}
+
+// ── Share ──
+function shareFlick(communityName, caption, url) {
+  var text = communityName + (caption ? ' — ' + caption : '');
+  if (navigator.share) {
+    navigator.share({ title: text, url: url }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      alert('Link copied!');
+    }).catch(function() { alert('Share: ' + url); });
+  }
+}
+</script>
+{% endblock %}

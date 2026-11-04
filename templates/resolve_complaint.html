@@ -1,0 +1,41 @@
+{% extends "admin_base.html" %}
+{% block title %}Resolve Complaint{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-check-circle" style="color:#2e7d32"></i> Resolve Complaint</div>
+
+<div class="ap-two-col">
+  <div class="ap-card">
+    <div class="ap-card-header"><h3>Complaint Details</h3></div>
+    <table style="width:100%;font-size:13px;border-collapse:collapse">
+      <tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px 0;color:#888;width:120px">Type</td><td style="padding:10px 0;font-weight:600">{{ complaint.get_complaint_type_display }}</td></tr>
+      <tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px 0;color:#888">Subject</td><td style="padding:10px 0;font-weight:600">{{ complaint.subject }}</td></tr>
+      <tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px 0;color:#888">Submitted By</td><td style="padding:10px 0">{{ complaint.submitted_by.get_full_name|default:complaint.submitted_by.username }}</td></tr>
+      <tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px 0;color:#888">Date</td><td style="padding:10px 0">{{ complaint.created_at|date:"d M Y H:i" }}</td></tr>
+      <tr style="border-bottom:1px solid #f0f0f0"><td style="padding:10px 0;color:#888">Status</td><td style="padding:10px 0"><span class="status-pill pill-{{ complaint.status }}">{{ complaint.get_status_display }}</span></td></tr>
+      <tr><td style="padding:10px 0;color:#888;vertical-align:top">Description</td><td style="padding:10px 0;line-height:1.6">{{ complaint.description }}</td></tr>
+    </table>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-card-header"><h3>Update Resolution</h3></div>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="ap-field" style="margin-bottom:16px">
+        <label>Update Status</label>
+        <select name="status">
+          <option value="in_review" {% if complaint.status == 'in_review' %}selected{% endif %}>In Review</option>
+          <option value="resolved"  {% if complaint.status == 'resolved'  %}selected{% endif %}>Resolved</option>
+          <option value="closed"    {% if complaint.status == 'closed'    %}selected{% endif %}>Closed</option>
+        </select>
+      </div>
+      <div class="ap-field" style="margin-bottom:20px">
+        <label>Resolution Note *</label>
+        <textarea name="resolution" rows="5" placeholder="Describe the action taken..." required>{{ complaint.resolution }}</textarea>
+      </div>
+      <button type="submit" class="ap-btn ap-btn-primary" style="width:100%;padding:12px;justify-content:center">
+        <i class="fas fa-save"></i> Save Resolution
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

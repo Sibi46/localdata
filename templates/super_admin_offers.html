@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block title %}Offers Management – Super Admin{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#f4f6f9;margin:0;padding:0}
+  .sa-wrap{max-width:900px;margin:0 auto;padding:20px 16px 80px}
+  .sa-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .sa-head a{color:#6b7280;text-decoration:none;font-size:13px}
+  .sa-head h2{font-size:20px;font-weight:900;color:#111;margin:0}
+  .sa-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:20px}
+  .sa-card h3{font-size:14px;font-weight:800;color:#374151;margin:0 0 14px;display:flex;align-items:center;gap:7px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:4px}
+  .field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:10px;font-size:14px;box-sizing:border-box;outline:none;font-family:inherit}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:#FF5722}
+  .field-row{display:flex;gap:10px}
+  .field-row .field{flex:1}
+  .btn-primary{background:linear-gradient(135deg,#FF5722,#e64a19);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;cursor:pointer}
+  .btn-approve{background:#10b981;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn-toggle{background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn-del{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+  .offer-table{width:100%;border-collapse:collapse}
+  .offer-table th{background:#f9fafb;font-size:12px;font-weight:700;color:#6b7280;padding:10px 12px;text-align:left;border-bottom:1px solid #e5e7eb}
+  .offer-table td{font-size:13px;color:#374151;padding:10px 12px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+  .offer-table tr:last-child td{border-bottom:none}
+  .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700}
+  .badge-pending{background:#FFF3E0;color:#E65100}
+  .badge-active{background:#E8F5E9;color:#2E7D32}
+  .badge-flash{background:#FF5722;color:#fff}
+  .empty-state{text-align:center;color:#9ca3af;padding:30px;font-size:14px}
+  .section-badge{display:inline-flex;align-items:center;justify-content:center;background:#FF5722;color:#fff;border-radius:20px;font-size:11px;font-weight:800;padding:2px 8px;margin-left:6px}
+  .flash-toggle{display:flex;align-items:center;gap:10px}
+  .switch{position:relative;display:inline-block;width:40px;height:22px}
+  .switch input{opacity:0;width:0;height:0}
+  .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.3s;border-radius:22px}
+  .slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:#fff;transition:.3s;border-radius:50%}
+  input:checked+.slider{background:#FF5722}
+  input:checked+.slider:before{transform:translateX(18px)}
+</style>
+
+<div class="sa-wrap">
+  <div class="sa-head">
+    <a href="/super-admin/">← Dashboard</a>
+    <h2>🔥 Offers Management</h2>
+  </div>
+
+  <!-- Add New Offer -->
+  <div class="sa-card">
+    <h3>➕ Add New Offer (Direct)</h3>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      <div class="field-row">
+        <div class="field">
+          <label>Business Name *</label>
+          <input name="business_name" required placeholder="e.g. Raju Bakery">
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select name="category">
+            {% for val,label in categories %}
+            <option value="{{ val }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Offer Title *</label>
+          <input name="title" required placeholder="e.g. 30% Off on Breads">
+        </div>
+        <div class="field">
+          <label>Discount Text *</label>
+          <input name="discount_text" required placeholder="e.g. 30% OFF">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Contact Phone</label>
+          <input name="contact_phone" placeholder="10-digit number">
+        </div>
+        <div class="field">
+          <label>Valid Until</label>
+          <input type="date" name="valid_until">
+        </div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea name="description" rows="2" placeholder="Additional details..."></textarea>
+      </div>
+      <div class="field">
+        <label>Offer Image</label>
+        <input type="file" name="image" accept="image/*">
+      </div>
+      <div class="flash-toggle" style="margin-bottom:16px">
+        <label class="switch">
+          <input type="checkbox" name="is_flash" id="flashToggle">
+          <span class="slider"></span>
+        </label>
+        <span style="font-size:13px;font-weight:700;color:#374151">Flash Deal 🔥 (appears in top strip)</span>
+      </div>
+      <button type="submit" class="btn-primary">✅ Add Offer (Live Immediately)</button>
+    </form>
+  </div>
+
+  <!-- Pending Offers -->
+  <div class="sa-card">
+    <h3>
+      ⏳ Pending Approval
+      {% if pending %}<span class="section-badge">{{ pending|length }}</span>{% endif %}
+    </h3>
+    {% if pending %}
+    <div style="overflow-x:auto">
+    <table class="offer-table">
+      <thead>
+        <tr>
+          <th>Business</th>
+          <th>Offer</th>
+          <th>Discount</th>
+          <th>Category</th>
+          <th>Phone</th>
+          <th>Flash?</th>
+          <th>Submitted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in pending %}
+        <tr>
+          <td><strong>{{ o.business_name }}</strong></td>
+          <td>{{ o.title }}</td>
+          <td><span class="badge badge-pending">{{ o.discount_text }}</span></td>
+          <td>{{ o.get_category_display }}</td>
+          <td>{% if o.contact_phone %}<a href="https://wa.me/91{{ o.contact_phone }}" target="_blank">{{ o.contact_phone }}</a>{% else %}—{% endif %}</td>
+          <td>{% if o.is_flash %}<span class="badge badge-flash">🔥</span>{% else %}—{% endif %}</td>
+          <td style="white-space:nowrap">{{ o.created_at|date:"d M Y" }}</td>
+          <td style="white-space:nowrap;display:flex;gap:6px">
+            <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="action" value="approve"><input type="hidden" name="pk" value="{{ o.pk }}"><button type="submit" class="btn-approve">✅ Approve</button></form>
+            <form method="post" style="display:inline" onsubmit="return confirm('Delete this offer?')">{% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="pk" value="{{ o.pk }}"><button type="submit" class="btn-del">🗑</button></form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No pending offers 🎉</div>
+    {% endif %}
+  </div>
+
+  <!-- Active Offers -->
+  <div class="sa-card">
+    <h3>✅ Live Offers <span class="section-badge" style="background:#10b981">{{ active|length }}</span></h3>
+    {% if active %}
+    <div style="overflow-x:auto">
+    <table class="offer-table">
+      <thead>
+        <tr>
+          <th>Business</th>
+          <th>Offer</th>
+          <th>Discount</th>
+          <th>Category</th>
+          <th>Flash?</th>
+          <th>Valid Until</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in active %}
+        <tr>
+          <td><strong>{{ o.business_name }}</strong></td>
+          <td>{{ o.title }}</td>
+          <td><span class="badge badge-active">{{ o.discount_text }}</span></td>
+          <td>{{ o.get_category_display }}</td>
+          <td>{% if o.is_flash %}<span class="badge badge-flash">🔥</span>{% else %}—{% endif %}</td>
+          <td>{% if o.valid_days %}🔁 {{ o.valid_days }}{% elif o.valid_until %}{{ o.valid_until|date:"d M Y" }}{% else %}—{% endif %}</td>
+          <td style="white-space:nowrap;display:flex;gap:6px">
+            <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="action" value="deactivate"><input type="hidden" name="pk" value="{{ o.pk }}"><button type="submit" class="btn-toggle">⏸ Deactivate</button></form>
+            <form method="post" style="display:inline" onsubmit="return confirm('Delete this offer?')">{% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="pk" value="{{ o.pk }}"><button type="submit" class="btn-del">🗑</button></form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No active offers yet</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

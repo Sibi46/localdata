@@ -1,0 +1,17 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Local From{% endblock %}</title>
+{% include 'includes/ga4.html' %}{% include 'includes/seo.html' %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}?v=6"><link rel="stylesheet" href="/static/fontawesome/css/all.min.css">
+{% include 'includes/site_ui.html' %}{% block extra_css %}{% endblock %}
+</head><body>
+{% block site_header %}{% include 'includes/account_header.html' %}{% endblock %}
+{% if request.path == '/businesses/' %}{% include 'includes/area_picker.html' %}{% endif %}
+{% if messages %}<div class="container" role="status" style="padding:16px">{% for message in messages %}<p class="alert alert-{{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
+{% block content %}{% endblock %}
+<footer style="padding:24px 16px 90px;text-align:center"><p>Local From · Your neighbourhood. Your businesses. Your community.</p><p><a href="/about/">About</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>{% if request.user.is_any_admin %} · <a href="/dashboard/">Administration</a>{% endif %}</p>{% include 'includes/site_contact.html' %}</footer>
+{% include 'includes/navigation.html' %}{% include 'includes/email_autofill.html' %}
+{% block extra_js %}{% endblock %}
+{% include 'includes/studio_theme.html' %}
+</body></html>

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Hall of Fame – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#fffbeb}
+  #hofTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #fde68a;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #hofTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #hofTopBar h2{font-size:16px;font-weight:900;color:#111;margin:0;flex:1}
+
+  .hof-hero{background:linear-gradient(135deg,#ca8a04,#d97706);padding:20px 16px;text-align:center;color:#fff}
+  .hof-hero h1{font-size:20px;font-weight:900;margin:0 0 4px}
+  .hof-hero p{font-size:12px;opacity:.85;margin:0}
+
+  .hof-filters{background:#fff;border-bottom:1px solid #fef3c7;padding:10px 16px;display:flex;flex-direction:column;gap:8px}
+  .hof-cats{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .hof-cats::-webkit-scrollbar{display:none}
+  .hof-cat{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;background:#fef3c7;color:#92400e;border:1.5px solid transparent;white-space:nowrap}
+  .hof-cat.active{background:#fde68a;color:#78350f;border-color:#fbbf24}
+  .hof-years{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+  .hof-years::-webkit-scrollbar{display:none}
+  .hof-year{flex-shrink:0;padding:4px 10px;border-radius:16px;font-size:11px;font-weight:800;text-decoration:none;background:#f3f4f6;color:#374151;border:1.5px solid transparent}
+  .hof-year.active{background:#fde68a;color:#78350f;border-color:#fbbf24}
+
+  .hof-fab{position:fixed;bottom:80px;right:16px;z-index:100;background:linear-gradient(135deg,#ca8a04,#d97706);color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(202,138,4,.4);display:flex;align-items:center;justify-content:center;text-decoration:none}
+
+  .hof-feed{padding:14px 16px 100px;max-width:600px;margin:0 auto}
+  /* rank 1 gets gold treatment */
+  .hof-card{background:#fff;border-radius:16px;border:1.5px solid #fde68a;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 4px rgba(202,138,4,.1);position:relative}
+  .hof-card.rank-1{border-color:#f59e0b;box-shadow:0 2px 12px rgba(202,138,4,.25)}
+  .hof-rank-badge{position:absolute;top:10px;left:10px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;z-index:1}
+  .rank-1 .hof-rank-badge{background:linear-gradient(135deg,#ca8a04,#f59e0b);font-size:16px}
+  .rank-2 .hof-rank-badge{background:#9ca3af}
+  .rank-3 .hof-rank-badge{background:#b45309}
+  .hof-rank-badge.other{background:#e5e7eb;color:#374151}
+  .hof-card-img{width:100%;max-height:160px;object-fit:cover;display:block}
+  .hof-card-body{padding:14px}
+  .hof-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .hof-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;background:#fef3c7;color:#ca8a04}
+  .hof-year-tag{font-size:10px;font-weight:800;color:#6b7280;background:#f3f4f6;padding:3px 8px;border-radius:6px;margin-left:auto}
+  .hof-name{font-size:17px;font-weight:900;color:#111;margin-bottom:3px}
+  .hof-achievement{font-size:13px;color:#374151;font-style:italic;margin-bottom:6px}
+  .hof-desc{font-size:12px;color:#6b7280;line-height:1.5}
+  .hof-meta{font-size:11px;color:#9ca3af;margin-top:6px}
+  .hof-actions{display:flex;border-top:1px solid #fef3c7;margin-top:10px}
+  .hof-action{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 0;background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;color:#6b7280;font-family:inherit;text-decoration:none}
+  .hof-action.voted{color:#ca8a04}
+  .hof-divider{width:1px;background:#fef3c7;height:36px;flex-shrink:0;align-self:center}
+  .hof-empty{text-align:center;padding:3rem 1rem;color:#9ca3af}
+</style>
+
+<div id="hofTopBar">
+  <a href="/community/" class="back">&#8592;</a>
+  <h2>🏆 Hall of Fame</h2>
+</div>
+
+<div class="hof-hero">
+  <h1>🏆 Hall of Fame</h1>
+  <p>Celebrating top achievers in your pincode community</p>
+</div>
+
+<div class="hof-filters">
+  <div class="hof-cats">
+    <a href="/community/hall-of-fame/{% if active_year %}?year={{ active_year }}{% endif %}" class="hof-cat {% if not active_cat %}active{% endif %}">🏆 All</a>
+    {% for val, label in categories %}
+    <a href="/community/hall-of-fame/?cat={{ val }}{% if active_year %}&year={{ active_year }}{% endif %}" class="hof-cat {% if active_cat == val %}active{% endif %}" data-val="{{ val }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+  <div class="hof-years">
+    <a href="/community/hall-of-fame/{% if active_cat %}?cat={{ active_cat }}{% endif %}" class="hof-year {% if not active_year %}active{% endif %}">All Years</a>
+    {% for y in years %}
+    <a href="/community/hall-of-fame/?year={{ y }}{% if active_cat %}&cat={{ active_cat }}{% endif %}" class="hof-year {% if active_year == y|stringformat:'s' %}active{% endif %}">{{ y }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if request.user.is_authenticated %}
+<a href="/community/hall-of-fame/nominate/" class="hof-fab">✏️</a>
+{% endif %}
+
+<div class="hof-feed">
+  {% if entries %}
+  {% for entry in entries %}
+  <div class="hof-card {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+    <div class="hof-rank-badge {% if forloop.counter > 3 %}other{% endif %}">
+      {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}
+    </div>
+    {% if entry.image %}<img class="hof-card-img" src="{{ entry.image.url }}" alt="{{ entry.nominee_name }}">{% endif %}
+    <div class="hof-card-body">
+      <div class="hof-top">
+        <span class="hof-badge" data-cat="{{ entry.category }}">{{ entry.get_category_display }}</span>
+        <span class="hof-year-tag">{{ entry.year }}</span>
+      </div>
+      <div class="hof-name"><a href="/community/hall-of-fame/{{ entry.pk }}/" style="color:inherit;text-decoration:none">{{ entry.nominee_name }}</a></div>
+      <div class="hof-achievement">"{{ entry.achievement }}"</div>
+      <div class="hof-desc">{{ entry.description|truncatewords:20 }}</div>
+      <div class="hof-meta">Nominated {{ entry.created_at|timesince }} ago{% if entry.pincode %} · 📍 {{ entry.pincode }}{% endif %}</div>
+    </div>
+    <div class="hof-actions">
+      <button class="hof-action {% if entry.pk in voted_ids %}voted{% endif %}" onclick="vote({{ entry.pk }}, this)">
+        ⭐ <span id="hvc-{{ entry.pk }}">{{ entry.vote_count }}</span> Votes
+      </button>
+      <div class="hof-divider"></div>
+      <a href="/community/hall-of-fame/{{ entry.pk }}/" class="hof-action">💬 {{ entry.comment_count }}</a>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="hof-empty">
+    <div style="font-size:3rem;margin-bottom:8px">🏆</div>
+    <p style="font-weight:700;color:#374151;margin-bottom:4px">No nominees yet</p>
+    <p style="font-size:13px">Nominate a top achiever from your community!</p>
+    {% if request.user.is_authenticated %}
+    <a href="/community/hall-of-fame/nominate/" style="display:inline-block;margin-top:12px;background:#ca8a04;color:#fff;padding:10px 24px;border-radius:24px;font-weight:800;font-size:13px;text-decoration:none">Nominate Someone</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  var icons={academics:'📚',sports:'⚽',arts:'🎨',social:'🤝',business:'🏪',other:'🏆'};
+  document.querySelectorAll('.hof-cat[data-val]').forEach(function(el){
+    var v=el.getAttribute('data-val');if(icons[v])el.textContent=icons[v]+' '+el.textContent.trim();
+  });
+  document.querySelectorAll('.hof-badge[data-cat]').forEach(function(el){
+    var v=el.getAttribute('data-cat');if(icons[v])el.textContent=icons[v]+' '+el.textContent.trim();
+  });
+})();
+function vote(pk,btn){
+  fetch('/community/hall-of-fame/'+pk+'/vote/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    btn.classList.toggle('voted',d.voted);
+    document.getElementById('hvc-'+pk).textContent=d.count;
+  });
+}
+</script>
+{% endblock %}

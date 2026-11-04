@@ -1,0 +1,33 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Leadership Nomination{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:520px">
+  <div class="pcard">
+    <div class="pcard-body" style="text-align:center;padding:36px 24px">
+      {% if action == 'accept' %}
+        <div style="font-size:48px;margin-bottom:16px">🎉</div>
+        <h2 style="font-size:20px;font-weight:900;color:#059669;margin-bottom:8px">Welcome, {{ leader.get_role_label }}!</h2>
+        <p style="font-size:14px;color:#374151;margin-bottom:20px">You have accepted the role of <strong>{{ leader.get_role_label }}</strong> in <strong>{{ leader.community.name }}</strong>.</p>
+        <a href="/portal/c/{{ leader.community.page_id }}/" class="pbtn pbtn-primary">Go to Community →</a>
+      {% elif action == 'decline' %}
+        <div style="font-size:48px;margin-bottom:16px">🙏</div>
+        <h2 style="font-size:20px;font-weight:900;color:#64748b;margin-bottom:8px">Nomination Declined</h2>
+        <p style="font-size:14px;color:#374151;margin-bottom:20px">You have declined the nomination for {{ leader.get_role_label }} in {{ leader.community.name }}.</p>
+        <a href="/portal/" class="pbtn pbtn-outline">Back to Communities</a>
+      {% else %}
+        <div style="font-size:48px;margin-bottom:16px">👑</div>
+        <h2 style="font-size:20px;font-weight:900;color:#0f172a;margin-bottom:8px">Leadership Nomination</h2>
+        <p style="font-size:14px;color:#374151;margin-bottom:6px">You have been nominated as</p>
+        <div class="pbadge pbadge-blue" style="font-size:14px;padding:8px 20px;margin-bottom:16px;display:inline-block">{{ leader.get_role_display }}</div>
+        <p style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:4px">{{ leader.community.name }}</p>
+        <p style="font-size:12px;color:#1d4ed8;font-family:monospace;margin-bottom:20px">{{ leader.community.page_id }}</p>
+        <p style="font-size:13px;color:#64748b;margin-bottom:20px">Nominated by {{ leader.nominated_by.get_full_name }}</p>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <a href="?action=accept" class="pbtn pbtn-green">✓ Accept Role</a>
+          <a href="?action=decline" class="pbtn pbtn-outline">✗ Decline</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

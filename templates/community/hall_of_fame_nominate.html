@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Nominate Someone – Hall of Fame{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#fffbeb}
+  #hofnTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #fde68a;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #hofnTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #hofnTopBar h2{font-size:16px;font-weight:900;color:#111;margin:0;flex:1}
+
+  .hofn-wrap{padding:14px 16px 100px;max-width:600px;margin:0 auto}
+  .hofn-card{background:#fff;border-radius:16px;border:1.5px solid #fde68a;padding:18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(202,138,4,.08)}
+  .hofn-section{font-size:11px;font-weight:900;color:#ca8a04;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+  .hofn-label{font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block}
+  .hofn-input,.hofn-select,.hofn-textarea{width:100%;padding:11px 14px;border:1.5px solid #fde68a;border-radius:12px;font-size:14px;font-family:inherit;background:#fffbeb;color:#111;box-sizing:border-box;outline:none}
+  .hofn-input:focus,.hofn-select:focus,.hofn-textarea:focus{border-color:#ca8a04;background:#fff}
+  .hofn-textarea{resize:none;min-height:100px}
+  .hofn-field{margin-bottom:14px}
+
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
+  .cat-option{padding:10px 6px;border-radius:12px;border:2px solid #fde68a;background:#fffbeb;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:#92400e;transition:all .15s}
+  .cat-option.selected{border-color:#ca8a04;background:#fef3c7;color:#78350f}
+  .cat-icon{font-size:1.3rem;display:block;margin-bottom:3px}
+  .cat-input-hidden{display:none}
+
+  .year-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+  .year-chip{padding:7px 14px;border-radius:16px;border:2px solid #fde68a;background:#fffbeb;cursor:pointer;font-size:13px;font-weight:800;color:#92400e}
+  .year-chip.selected{border-color:#ca8a04;background:#fef3c7;color:#78350f}
+
+  .hofn-photo-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px dashed #fde68a;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;color:#92400e;background:#fffbeb}
+  .hofn-photo-label:hover{border-color:#ca8a04;background:#fef3c7}
+  #photoPreview{display:none;width:100%;max-height:180px;object-fit:cover;border-radius:12px;margin-top:8px}
+
+  .hofn-submit{width:100%;padding:14px;background:linear-gradient(135deg,#ca8a04,#d97706);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.01em}
+  .hofn-submit:active{opacity:.85}
+</style>
+
+<div id="hofnTopBar">
+  <a href="/community/hall-of-fame/" class="back">&#8592;</a>
+  <h2>🏆 Nominate Someone</h2>
+</div>
+
+<div class="hofn-wrap">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="category" id="catHidden" required>
+    <input type="hidden" name="year" id="yearHidden" required>
+
+    <div class="hofn-card">
+      <div class="hofn-section">Who are you nominating?</div>
+      <div class="hofn-field">
+        <label class="hofn-label">Full Name *</label>
+        <input class="hofn-input" type="text" name="nominee_name" placeholder="Enter nominee's full name" required>
+      </div>
+      <div class="hofn-field">
+        <label class="hofn-label">One-line Achievement *</label>
+        <input class="hofn-input" type="text" name="achievement" placeholder="e.g. State topper in Science Olympiad 2024" required maxlength="300">
+      </div>
+    </div>
+
+    <div class="hofn-card">
+      <div class="hofn-section">Category *</div>
+      <div class="cat-grid">
+        {% for val, label in categories %}
+        <div class="cat-option" data-val="{{ val }}" onclick="selectCat(this)">
+          <span class="cat-icon" id="ci-{{ val }}">🏆</span>
+          <span>{{ label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="hofn-card">
+      <div class="hofn-section">Year of Achievement *</div>
+      <div class="year-chips" id="yearChips">
+        {% for y in years %}
+        <div class="year-chip" data-year="{{ y }}" onclick="selectYear(this)">{{ y }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="hofn-card">
+      <div class="hofn-section">Tell their story</div>
+      <div class="hofn-field">
+        <label class="hofn-label">Full Description *</label>
+        <textarea class="hofn-textarea" name="description" placeholder="Describe their achievement, impact, and why they deserve to be in the Hall of Fame..." required></textarea>
+      </div>
+      <div class="hofn-field">
+        <label class="hofn-label">Pincode (optional)</label>
+        <input class="hofn-input" type="text" name="pincode" placeholder="Their local pincode" maxlength="10">
+      </div>
+    </div>
+
+    <div class="hofn-card">
+      <div class="hofn-section">Photo (optional)</div>
+      <label class="hofn-photo-label" for="photoInput">
+        📸 Upload Photo
+      </label>
+      <input type="file" id="photoInput" name="image" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+      <img id="photoPreview" alt="Preview">
+    </div>
+
+    <button type="submit" class="hofn-submit">🏆 Submit Nomination</button>
+  </form>
+</div>
+
+<script>
+var catIcons={academics:'📚',sports:'⚽',arts:'🎨',social:'🤝',business:'🏪',other:'🏆'};
+document.querySelectorAll('.cat-icon').forEach(function(el){
+  var v=el.id.replace('ci-','');if(catIcons[v])el.textContent=catIcons[v];
+});
+
+function selectCat(el){
+  document.querySelectorAll('.cat-option').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');
+  document.getElementById('catHidden').value=el.getAttribute('data-val');
+}
+function selectYear(el){
+  document.querySelectorAll('.year-chip').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');
+  document.getElementById('yearHidden').value=el.getAttribute('data-year');
+}
+function previewPhoto(input){
+  if(input.files&&input.files[0]){
+    var r=new FileReader();
+    r.onload=function(e){
+      var img=document.getElementById('photoPreview');
+      img.src=e.target.result;img.style.display='block';
+    };r.readAsDataURL(input.files[0]);
+  }
+}
+
+// pre-select current year
+(function(){
+  var first=document.querySelector('.year-chip');
+  if(first)selectYear(first);
+})();
+</script>
+{% endblock %}

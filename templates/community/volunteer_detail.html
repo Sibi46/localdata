@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block title %}{{ activity.title }} – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#f0fdf4}
+  #voldTopBar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #bbf7d0;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #voldTopBar a.back{color:#374151;text-decoration:none;font-size:20px}
+  #voldTopBar h2{font-size:15px;font-weight:900;color:#111;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .vold-wrap{padding:14px 16px 120px;max-width:600px;margin:0 auto}
+  .vold-card{background:#fff;border-radius:16px;border:1.5px solid #bbf7d0;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 4px rgba(22,163,74,.07)}
+  .vold-img{width:100%;max-height:240px;object-fit:cover;display:block}
+  .vold-banner{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  .vold-icon{font-size:2rem}
+  .vold-banner-info .date{font-size:14px;font-weight:900}
+  .vold-banner-info .venue{font-size:12px;opacity:.85;margin-top:2px}
+  .vold-progress{margin-left:auto;text-align:right}
+  .vold-progress .count{font-size:18px;font-weight:900}
+  .vold-progress .label{font-size:10px;opacity:.85}
+  .vold-body{padding:16px}
+  .vold-badge{display:inline-block;font-size:11px;font-weight:800;padding:4px 12px;border-radius:8px;background:#dcfce7;color:#16a34a;margin-bottom:10px}
+  .vold-title{font-size:18px;font-weight:900;color:#111;margin-bottom:8px;line-height:1.3}
+  .vold-desc{font-size:14px;color:#374151;line-height:1.75;white-space:pre-line}
+  .vold-info-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+  .vold-info-chip{font-size:11px;color:#374151;background:#f0fdf4;padding:5px 10px;border-radius:8px;font-weight:600}
+  .vold-meta{font-size:11px;color:#9ca3af;margin-top:10px}
+
+  .vold-signup{margin-top:14px;padding-top:14px;border-top:1px solid #f0fdf4}
+  .vold-signup-btn{width:100%;padding:13px;border-radius:12px;font-size:14px;font-weight:900;border:none;cursor:pointer;font-family:inherit;background:#16a34a;color:#fff;transition:all .15s}
+  .vold-signup-btn.signed{background:#15803d}
+
+  .vold-volunteers{background:#fff;border-radius:16px;border:1.5px solid #bbf7d0;overflow:hidden;margin-bottom:12px;padding:14px 16px}
+  .vold-volunteers h3{font-size:12px;font-weight:800;color:#16a34a;text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
+  .vold-vol-count{font-size:28px;font-weight:900;color:#111}
+  .vold-vol-sub{font-size:12px;color:#6b7280}
+  .vold-bar-wrap{background:#dcfce7;border-radius:8px;height:8px;margin-top:8px;overflow:hidden}
+  .vold-bar{background:linear-gradient(90deg,#16a34a,#22c55e);height:100%;border-radius:8px;transition:width .4s}
+
+  .vold-comments{background:#fff;border-radius:16px;border:1.5px solid #bbf7d0;overflow:hidden;margin-bottom:12px}
+  .vold-comments h3{font-size:12px;font-weight:800;color:#16a34a;text-transform:uppercase;letter-spacing:.06em;padding:14px 16px 0;margin:0}
+  .vold-comment{padding:12px 16px;border-top:1px solid #f0fdf4}
+  .vold-comment-head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .vold-comment-user{font-size:12px;font-weight:800;color:#111}
+  .vold-comment-time{font-size:10px;color:#9ca3af;margin-left:auto}
+  .vold-comment-text{font-size:13px;color:#374151;line-height:1.5}
+  .vold-no-comment{padding:16px;text-align:center;font-size:13px;color:#9ca3af}
+
+  .vold-comment-form{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #bbf7d0;padding:10px 16px;display:flex;gap:8px;z-index:100;max-width:600px;margin:0 auto}
+  .vold-comment-form input{flex:1;padding:10px 14px;border:1.5px solid #bbf7d0;border-radius:24px;font-size:14px;outline:none;font-family:inherit;background:#f0fdf4}
+  .vold-comment-form input:focus{border-color:#16a34a;background:#fff}
+  .vold-comment-form button{background:#16a34a;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+</style>
+
+<div id="voldTopBar">
+  <a href="/community/volunteer/" class="back">&#8592;</a>
+  <h2>{{ activity.title }}</h2>
+</div>
+
+<div class="vold-wrap">
+  <div class="vold-card">
+    {% if activity.image %}<img class="vold-img" src="{{ activity.image.url }}" alt="{{ activity.title }}">{% endif %}
+    <div class="vold-banner">
+      <span class="vold-icon" id="actIcon">🤝</span>
+      <div class="vold-banner-info">
+        <div class="date">{{ activity.activity_date|date:"d M Y" }}{% if activity.activity_time %} · {{ activity.activity_time|time:"g:i A" }}{% endif %}</div>
+        <div class="venue">📍 {{ activity.venue }}{% if activity.pincode %} · {{ activity.pincode }}{% endif %}</div>
+      </div>
+      {% if activity.volunteers_needed %}
+      <div class="vold-progress">
+        <div class="count" id="volCount">{{ activity.volunteer_count }}</div>
+        <div class="label">/ {{ activity.volunteers_needed }} needed</div>
+      </div>
+      {% endif %}
+    </div>
+    <div class="vold-body">
+      <span class="vold-badge" id="catBadge">{{ activity.get_category_display }}</span>
+      <div class="vold-title">{{ activity.title }}</div>
+      <div class="vold-desc">{{ activity.description }}</div>
+      <div class="vold-info-row">
+        {% if activity.contact %}<span class="vold-info-chip">📞 {{ activity.contact }}</span>{% endif %}
+        <span class="vold-info-chip">🙋 {{ activity.volunteer_count }} signed up</span>
+      </div>
+      <div class="vold-meta">Posted {{ activity.created_at|timesince }} ago by {{ activity.posted_by.get_full_name|default:activity.posted_by.username }}</div>
+
+      {% if request.user.is_authenticated %}
+      <div class="vold-signup">
+        <button class="vold-signup-btn {% if signed_up %}signed{% endif %}" id="signupBtn" onclick="signup({{ activity.pk }})">
+          {% if signed_up %}✅ You're Signed Up — Tap to Cancel{% else %}🙋 Sign Up to Volunteer{% endif %}
+        </button>
+      </div>
+      {% endif %}
+      {% if request.user == activity.posted_by %}
+      <a href="/community/volunteer/{{ activity.pk }}/delete/" style="display:inline-block;margin-top:10px;color:#ef4444;font-size:12px;font-weight:700;text-decoration:none" onclick="return confirm('Delete?')">🗑️ Delete</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if activity.volunteers_needed %}
+  <div class="vold-volunteers">
+    <h3>Volunteer Progress</h3>
+    <div class="vold-vol-count" id="progCount">{{ activity.volunteer_count }}</div>
+    <div class="vold-vol-sub">of {{ activity.volunteers_needed }} volunteers needed</div>
+    <div class="vold-bar-wrap">
+      <div class="vold-bar" id="progBar" style="width:{% widthratio activity.volunteer_count activity.volunteers_needed 100 %}%"></div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="vold-comments">
+    <h3>Questions & Comments ({{ comments.count }})</h3>
+    {% if comments %}
+    {% for c in comments %}
+    <div class="vold-comment">
+      <div class="vold-comment-head">
+        <span class="vold-comment-user">{{ c.user.get_full_name|default:c.user.username }}</span>
+        <span class="vold-comment-time">{{ c.created_at|timesince }} ago</span>
+      </div>
+      <div class="vold-comment-text">{{ c.text }}</div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="vold-no-comment">Have a question? Ask here! 💬</div>
+    {% endif %}
+  </div>
+</div>
+
+{% if request.user.is_authenticated %}
+<div class="vold-comment-form">
+  <form method="post" style="display:contents">
+    {% csrf_token %}
+    <input type="text" name="comment" placeholder="Ask a question or leave a message..." required>
+    <button type="submit">Send</button>
+  </form>
+</div>
+{% endif %}
+
+<script>
+(function(){
+  var icons={blood:'🩸',tree:'🌳',health:'🏥',education:'📚',cleanup:'🧹',food:'🍱',other:'🤝'};
+  var c='{{ activity.category }}';
+  var el=document.getElementById('catBadge');
+  var ic=document.getElementById('actIcon');
+  if(el&&icons[c]) el.textContent=icons[c]+' '+el.textContent.trim();
+  if(ic&&icons[c]) ic.textContent=icons[c];
+})();
+var maxVol={{ activity.volunteers_needed|default:0 }};
+function signup(pk){
+  fetch('/community/volunteer/'+pk+'/signup/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    var btn=document.getElementById('signupBtn');
+    btn.classList.toggle('signed',d.signed_up);
+    btn.textContent=d.signed_up?'✅ You\'re Signed Up — Tap to Cancel':'🙋 Sign Up to Volunteer';
+    var vc=document.getElementById('volCount');
+    if(vc) vc.textContent=d.count;
+    var pc=document.getElementById('progCount');
+    if(pc) pc.textContent=d.count;
+    var pb=document.getElementById('progBar');
+    if(pb&&maxVol) pb.style.width=Math.min(100,Math.round(d.count/maxVol*100))+'%';
+  });
+}
+</script>
+{% endblock %}

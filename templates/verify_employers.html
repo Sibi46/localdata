@@ -1,0 +1,39 @@
+{% extends "admin_base.html" %}
+{% block title %}Verify Employers{% endblock %}
+{% block content %}
+<div class="ap-page-title"><i class="fas fa-building" style="color:#0a66c2"></i> Verify Employers</div>
+<div class="ap-card">
+  <div class="ap-table-wrap">
+    <table class="ap-table">
+      <thead><tr><th>Employer</th><th>Type</th><th>Phone</th><th>City</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for emp in employers %}
+        <tr>
+          <td>
+            <div class="ap-user-row">
+              <div class="ap-avatar">{{ emp.get_full_name|default:emp.username|first|upper }}</div>
+              <div>
+                <div class="ap-user-name">{{ emp.get_full_name|default:emp.username }}</div>
+                <div class="ap-user-meta">{% if emp.company %}{{ emp.company.company_name }}{% elif emp.shop %}{{ emp.shop.shop_name }}{% endif %}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ emp.get_user_type_display }}</td>
+          <td>{{ emp.phone|default:"—" }}</td>
+          <td>{{ emp.city|default:"—" }}</td>
+          <td style="font-size:12px;color:#888">{{ emp.date_joined|date:"d M Y" }}</td>
+          <td><span class="status-pill {% if emp.is_active %}pill-active{% else %}pill-suspended{% endif %}">{{ emp.is_active|yesno:"Active,Blocked" }}</span></td>
+          <td>
+            <form method="post" action="/state-admin/users/{{ emp.pk }}/suspend/">{% csrf_token %}<button type="submit" class="ap-btn {% if emp.is_active %}ap-btn-danger{% else %}ap-btn-success{% endif %}" style="font-size:11px">
+              {{ emp.is_active|yesno:"Suspend,Activate" }}
+            </button></form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;color:#bbb;padding:40px">No employers.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

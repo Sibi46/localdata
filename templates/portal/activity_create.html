@@ -1,0 +1,38 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Log Activity{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:680px">
+  <div class="psec-header">
+    <div class="psec-title">🏃 Log an Activity</div>
+    <a href="/portal/c/{{ community.page_id }}/dashboard/" class="pbtn pbtn-outline pbtn-sm">← Dashboard</a>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="pcard">
+      <div class="pcard-body">
+        <div class="pform-group"><label class="pform-label">Activity Name *</label><input type="text" name="name" class="pform-input" required placeholder="e.g. Ukkadam Lake Cleanup Drive #1"></div>
+        <div class="pform-group"><label class="pform-label">Description *</label><textarea name="description" class="pform-input" required placeholder="What was done?"></textarea></div>
+        <div class="p2col">
+          <div class="pform-group"><label class="pform-label">Date *</label><input type="date" name="date" class="pform-input" required></div>
+          <div class="pform-group"><label class="pform-label">Location</label><input type="text" name="location" class="pform-input" placeholder="Where did it happen?"></div>
+          <div class="pform-group"><label class="pform-label">Total Participants</label><input type="number" name="participant_count" class="pform-input" placeholder="0" min="0"></div>
+          <div class="pform-group"><label class="pform-label">Total Volunteers</label><input type="number" name="volunteer_count" class="pform-input" placeholder="0" min="0"></div>
+        </div>
+        <div class="pform-group">
+          <label class="pform-label">Related Cause</label>
+          <select name="cause" class="pform-input">
+            <option value="">-- No cause --</option>
+            {% for cause in causes %}<option value="{{ cause.pk }}">{{ cause.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="pform-group"><label class="pform-label">Result / Impact</label><textarea name="result_impact" class="pform-input" placeholder="e.g. 2.3 tonnes of plastic waste removed. 143 participants."></textarea></div>
+        <div class="pform-group">
+          <label class="pform-label">Photos (multiple)</label>
+          <input type="file" name="photos" multiple accept="image/*" class="pform-input" style="padding:6px">
+        </div>
+        <button type="submit" class="pbtn pbtn-orange pbtn-full">Log Activity</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

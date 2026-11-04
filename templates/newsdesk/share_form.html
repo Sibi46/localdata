@@ -1,0 +1,19 @@
+{% extends 'newsdesk/base.html' %}{% load static %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'newsdesk/public-news.css' %}?v=1">{% endblock %}
+{% block news_content %}
+<div class="nd-section-title"><div><p class="nd-eyebrow">READER NEWSROOM</p><h1>Send your story to the editor</h1><p class="nd-muted">Mobile {{ phone }} · OTP verified</p></div></div>
+{% if contributor %}<section class="nd-panel"><h2>{{ contributor.name }}</h2><p>Your Contributor ID: <strong class="nd-reference">{{ contributor.reference }}</strong></p><p class="nd-muted">PIN {{ contributor.pincode.code }} · Your identity details are already on file. Your ID stays the same for future submissions.</p></section>{% endif %}
+<section class="nd-panel nd-share-panel">
+  {% if form.errors %}<div class="nd-news-errors" role="alert"><h2>Please check your submission</h2><p>Correct the highlighted fields. If you selected files, select them again before submitting.</p>{{ form.non_field_errors }}</div>{% endif %}
+  <form method="post" enctype="multipart/form-data" id="news-share-form">{% csrf_token %}{{ form.token }}{{ form.token.errors }}
+    {% for field in form.visible_fields %}{% if field.name != 'terms' and field.name != 'accuracy' %}<div class="nd-share-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="nd-muted">{{ field.help_text }}</p>{% endif %}{{ field.errors }}{% if field.name == 'body' %}<p id="news-word-count" aria-live="polite">0 / 200 words</p>{% endif %}</div>{% endif %}{% endfor %}
+    <section class="nd-news-terms" aria-labelledby="news-terms-heading"><h2 id="news-terms-heading">News-sharing terms</h2><ul><li>Share information you believe is true and can explain or support when an editor asks.</li><li>Do not submit fabricated news, hate, harassment, private information about others, or content you do not have permission to share.</li><li>Editors may verify, edit, reject or remove a submission. Sending a story does not guarantee publication.</li><li>Your name may be credited if your story is published. Your Aadhaar document, profile photo, mobile number and address are kept private for editorial review.</li></ul><p class="nd-muted">Terms version: news-sharing-v1</p></section>
+    <label class="nd-check">{{ form.terms }}<span>{{ form.terms.label }}</span></label>{{ form.terms.errors }}
+    <label class="nd-check">{{ form.accuracy }}<span>{{ form.accuracy.label }}</span></label>{{ form.accuracy.errors }}
+    <button type="submit" class="nd-btn">Accept and send to editor</button><p class="nd-muted">Your story will appear publicly only after an authorised editor or super admin approves and publishes it.</p>
+  </form>
+</section>
+{% if submissions %}<section class="nd-panel"><h2>Your submissions</h2><div class="nd-desk-list">{% for item in submissions %}<article><a href="{% url 'newsdesk:submission_status' item.pk %}">{{ item.topic }}</a><p class="nd-muted">{{ item.reference }} · {{ item.get_status_display }}</p></article>{% endfor %}</div></section>{% endif %}
+<form method="post" action="{% url 'newsdesk:share_finish' %}">{% csrf_token %}<button class="nd-btn nd-secondary" type="submit">Finish / verify a different number</button></form>
+{% endblock %}
+{% block extra_js %}{{ block.super }}<script src="{% static 'newsdesk/public-news.js' %}?v=1" defer></script>{% endblock %}

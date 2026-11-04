@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Manage Flicks — Admin{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:32px auto;padding:0 16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+    <div>
+      <h1 style="font-size:24px;font-weight:900;color:#111;margin:0 0 4px"><i class="fas fa-bolt" style="color:#7c3aed"></i> Manage Flicks</h1>
+      <p style="font-size:13px;color:#888;margin:0">{{ flicks.count }} total flicks</p>
+    </div>
+    <a href="/super-admin/" style="font-size:13px;color:#0a66c2;text-decoration:none"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div style="padding:12px 16px;border-radius:10px;margin-bottom:16px;background:#e8f5e9;border-left:4px solid #2e7d32;color:#1b5e20;font-size:13px;font-weight:700">
+      <i class="fas fa-check-circle"></i> {{ msg }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- ── Ad Settings ── -->
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:20px;margin-bottom:24px">
+    <h3 style="font-size:15px;font-weight:900;color:#111;margin:0 0 16px"><i class="fas fa-cog" style="color:#0a66c2"></i> Advertise Plan Settings</h3>
+    <form method="POST" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save_settings">
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:4px">UPI ID</label>
+        <input type="text" name="upi_id" value="{{ settings.upi_id }}"
+          style="padding:8px 12px;border:1.5px solid #dde1ea;border-radius:8px;font-size:13px;font-weight:700;min-width:200px">
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:4px">Price (₹)</label>
+        <input type="number" name="price" value="{{ settings.price }}"
+          style="padding:8px 12px;border:1.5px solid #dde1ea;border-radius:8px;font-size:13px;font-weight:700;width:100px">
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:4px">Duration (days)</label>
+        <input type="number" name="duration_days" value="{{ settings.duration_days }}"
+          style="padding:8px 12px;border:1.5px solid #dde1ea;border-radius:8px;font-size:13px;font-weight:700;width:100px">
+      </div>
+      <button type="submit" style="padding:8px 20px;background:#0a66c2;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+        Save Settings
+      </button>
+    </form>
+  </div>
+
+  <!-- ── Pending Payments ── -->
+  {% if payments %}
+  <div style="background:#fff;border:2px solid #fbbf24;border-radius:14px;padding:20px;margin-bottom:24px">
+    <h3 style="font-size:15px;font-weight:900;color:#92400e;margin:0 0 16px">
+      <i class="fas fa-clock" style="color:#f59e0b"></i> Pending Payment Approvals ({{ payments|length }})
+    </h3>
+    <div style="display:grid;gap:12px">
+      {% for pay in payments %}
+      <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:13px;font-weight:800;color:#111">{{ pay.user.get_full_name|default:pay.user.username }} <span style="font-weight:400;color:#888">({{ pay.user.phone }})</span></div>
+          <div style="font-size:12px;color:#555;margin-top:2px">
+            Flick: <strong>{{ pay.flick.title|default:"Untitled" }}</strong> &nbsp;·&nbsp;
+            ₹{{ pay.amount }} for {{ pay.duration_days }} days
+          </div>
+          <div style="font-size:12px;color:#666;margin-top:2px">
+            Transaction ID: <strong style="color:#0a66c2;font-family:monospace">{{ pay.transaction_id }}</strong>
+          </div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">Submitted: {{ pay.created_at|date:"d M Y, H:i" }}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="approve_payment">
+            <input type="hidden" name="payment_id" value="{{ pay.pk }}">
+            <button type="submit" style="padding:8px 16px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">
+              <i class="fas fa-check"></i> Approve
+            </button>
+          </form>
+          <form method="POST" onsubmit="return confirm('Reject this payment?')">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="reject_payment">
+            <input type="hidden" name="payment_id" value="{{ pay.pk }}">
+            <button type="submit" style="padding:8px 16px;background:#fce4ec;color:#c62828;border:1.5px solid #f48fb1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">
+              <i class="fas fa-times"></i> Reject
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── All Flicks ── -->
+  {% if not flicks %}
+  <div style="text-align:center;padding:60px 20px;color:#bbb">
+    <div style="font-size:48px;margin-bottom:12px">⚡</div>
+    <p>No flicks posted yet.</p>
+  </div>
+  {% else %}
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:20px">
+    <h3 style="font-size:15px;font-weight:900;color:#111;margin:0 0 16px"><i class="fas fa-list" style="color:#7c3aed"></i> All Flicks</h3>
+    <div style="display:grid;gap:14px">
+      {% for flick in flicks %}
+      <div style="border:1.5px solid #e5e7eb;border-radius:12px;padding:14px;display:flex;gap:14px;align-items:flex-start{% if flick.is_active_promoted %};border-color:#c4b5fd;background:#faf5ff{% endif %}">
+
+        <!-- Thumbnail -->
+        <div style="width:72px;height:72px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#000;display:flex;align-items:center;justify-content:center">
+          {% if flick.image %}
+            <img src="{{ flick.image.url }}" style="width:100%;height:100%;object-fit:cover">
+          {% elif flick.video %}
+            <i class="fas fa-play-circle" style="font-size:26px;color:#fff"></i>
+          {% else %}
+            <i class="fas fa-bolt" style="font-size:26px;color:#7c3aed"></i>
+          {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:800;color:#111;margin-bottom:2px">
+            {{ flick.user.get_full_name|default:flick.user.username }}
+            <span style="font-size:11px;color:#888;font-weight:400">({{ flick.user.phone }})</span>
+            {% if flick.is_active_promoted %}
+            <span style="background:#7c3aed;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px">⭐ SPONSORED</span>
+            {% elif flick.is_promoted %}
+            <span style="background:#0a66c2;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px">⭐ {{ flick.advertise_plan|upper }}</span>
+            {% endif %}
+          </div>
+          {% if flick.title %}<div style="font-size:12px;font-weight:700;color:#333;margin-bottom:2px">{{ flick.title }}</div>{% endif %}
+          {% if flick.caption %}<div style="font-size:11px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:380px">{{ flick.caption }}</div>{% endif %}
+          <div style="font-size:11px;color:#aaa;margin-top:3px">
+            {{ flick.created_at|date:"d M Y, H:i" }} &nbsp;·&nbsp; ❤️ {{ flick.like_count }} &nbsp;·&nbsp; 💬 {{ flick.comments.count }}
+            {% if flick.promoted_until %}&nbsp;·&nbsp; <span style="color:#7c3aed;font-weight:700">Promoted until {{ flick.promoted_until|date:"d M Y" }}</span>{% endif %}
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+          <form method="POST" style="display:flex;gap:6px;align-items:center">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="set_plan">
+            <input type="hidden" name="flick_id" value="{{ flick.pk }}">
+            <select name="plan" style="padding:5px 8px;border:1.5px solid #dde1ea;border-radius:8px;font-size:12px;font-weight:700;background:#fff;cursor:pointer">
+              <option value="" {% if not flick.advertise_plan %}selected{% endif %}>No Plan</option>
+              <option value="basic"    {% if flick.advertise_plan == 'basic'    %}selected{% endif %}>Basic</option>
+              <option value="premium"  {% if flick.advertise_plan == 'premium'  %}selected{% endif %}>Premium</option>
+              <option value="featured" {% if flick.advertise_plan == 'featured' %}selected{% endif %}>Featured</option>
+            </select>
+            <button type="submit" style="padding:5px 10px;background:#0a66c2;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">Set</button>
+          </form>
+          <form method="POST" onsubmit="return confirm('Delete this flick?')">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="flick_id" value="{{ flick.pk }}">
+            <button type="submit" style="width:100%;padding:5px 10px;background:#fce4ec;color:#c62828;border:1.5px solid #f48fb1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </form>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

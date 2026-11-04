@@ -1,0 +1,535 @@
+{% extends 'portal/base_portal.html' %}
+{% load static %}
+{% block title %}{{ community.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── Community Page ── */
+.cpage-wrap{max-width:680px;margin:0 auto;padding-bottom:80px}
+
+/* HEADER CARD */
+.cpage-header{background:#fff;border-radius:20px;border:1.5px solid #e5e7eb;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.cpage-cover{height:180px;background:linear-gradient(135deg,#1d4ed8,#7c3aed);position:relative;overflow:hidden}
+.cpage-cover img.cover-img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;display:block}
+.cpage-cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 30%,rgba(0,0,0,.5) 100%)}
+.cpage-badges{position:absolute;top:12px;left:12px;display:flex;gap:6px;z-index:2}
+.cpage-logo-row{display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px;margin-top:-36px;margin-bottom:10px;position:relative;z-index:3}
+.cpage-logo{width:72px;height:72px;border-radius:16px;border:3px solid #fff;background:#fff;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,.2);flex-shrink:0}
+.cpage-logo-wrap{width:72px;height:72px;border-radius:16px;border:3px solid #fff;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.2);flex-shrink:0}
+.cpage-info{padding:0 16px 14px}
+.cpage-name{font-size:20px;font-weight:900;color:#0f172a;margin-bottom:3px;line-height:1.2}
+.cpage-purpose{font-size:13px;color:#64748b;margin-bottom:10px;line-height:1.5}
+.cpage-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:#64748b;margin-bottom:14px}
+.cpage-meta span{display:flex;align-items:center;gap:4px}
+.cpage-actions{display:flex;gap:8px;flex-wrap:wrap}
+.cpage-actions .pbtn{flex:1;text-align:center;justify-content:center;min-width:100px}
+
+/* SECTIONS */
+.csection{background:#fff;border-radius:16px;border:1.5px solid #e5e7eb;margin-bottom:12px;overflow:hidden}
+.csection-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f1f5f9}
+.csection-title{font-size:14px;font-weight:800;color:#0f172a}
+.csection-body{padding:14px 16px}
+
+/* FEED */
+.feed-post{padding:14px 16px;border-bottom:1px solid #f8fafc}
+.feed-post:last-child{border-bottom:none}
+.feed-avatar{width:34px;height:34px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#1d4ed8;flex-shrink:0}
+.feed-compose{display:flex;gap:8px;align-items:flex-start}
+.feed-compose-wrap{flex:1;display:flex;flex-direction:column;gap:8px}
+.feed-compose select,.feed-compose textarea{border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;width:100%;box-sizing:border-box;background:#f8fafc}
+.feed-compose textarea{min-height:60px;resize:none}
+.feed-compose-footer{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+
+/* LEADERS */
+.leader-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.leader-row:last-child{border-bottom:none}
+.leader-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#eff6ff,#dbeafe);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#1d4ed8;flex-shrink:0}
+.leader-name{font-size:13px;font-weight:700;color:#0f172a}
+.leader-role{font-size:11px;color:#6366f1;font-weight:600}
+
+/* MEMBERS STRIP */
+.member-strip{display:flex;flex-wrap:wrap;gap:8px}
+.member-bubble{width:40px;height:40px;border-radius:50%;background:#eff6ff;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#1d4ed8;overflow:hidden;text-decoration:none}
+.member-bubble img{width:100%;height:100%;object-fit:cover}
+
+/* EVENT ITEM */
+.event-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9;text-decoration:none}
+.event-item:last-child{border-bottom:none}
+.event-date-box{background:#eff6ff;border-radius:10px;padding:8px 10px;text-align:center;flex-shrink:0;min-width:46px}
+.event-date-d{font-size:17px;font-weight:900;color:#1d4ed8}
+.event-date-m{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase}
+
+/* FLICKS GRID */
+.flicks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.flick-thumb{position:relative;aspect-ratio:9/16;overflow:hidden;background:#0f172a;text-decoration:none;display:block}
+.flick-thumb video,.flick-thumb img{width:100%;height:100%;object-fit:cover}
+.flick-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);color:#fff;font-size:22px}
+
+@media(max-width:600px){
+  .cpage-cover{height:140px}
+  .cpage-logo{width:60px;height:60px;border-radius:12px}
+  .cpage-logo-wrap{width:60px;height:60px;border-radius:12px;font-size:22px}
+  .cpage-logo-row{margin-top:-28px}
+  .cpage-name{font-size:17px}
+  .cpage-actions .pbtn{min-width:80px;font-size:12px;padding:8px 10px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<script>
+async function shareCommunity() {
+  const url = window.location.origin + '{% url "portal_community" community.page_id %}';
+  try {
+    if (navigator.share) await navigator.share({title: '{{ community.name|escapejs }}', url});
+    else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(url);
+      document.getElementById('community-share-status').textContent = 'Link copied';
+    } else window.prompt('Copy community link', url);
+  } catch (error) {
+    if (error.name !== 'AbortError') window.prompt('Copy community link', url);
+  }
+}
+</script>
+<div class="cpage-wrap">
+
+  {% if is_admin and not community.logo or is_admin and not community.cover %}
+  <div style="background:#fef9c3;border:1.5px solid #fbbf24;border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:13px;font-weight:800;color:#92400e;margin-bottom:4px">📸 Complete your community profile</div>
+      <div style="font-size:12px;color:#92400e">
+        {% if not community.logo %}🖼️ Upload a <strong>Logo</strong>{% endif %}
+        {% if not community.logo and not community.cover %} &amp; {% endif %}
+        {% if not community.cover %}🌄 Upload a <strong>Cover Banner</strong>{% endif %}
+        to make your community stand out.
+      </div>
+    </div>
+    <a href="/portal/c/{{ community.page_id }}/edit/" class="pbtn pbtn-primary" style="font-size:12px;white-space:nowrap"><i class="fas fa-upload"></i> Upload Images</a>
+  </div>
+  {% endif %}
+
+  <!-- ── HEADER ── -->
+  <div class="cpage-header">
+    <div class="cpage-cover">
+      {% if community.cover %}<img src="{{ community.cover.url }}" alt="" class="cover-img">{% endif %}
+      <div class="cpage-cover-overlay"></div>
+      <div class="cpage-badges">
+        <span class="pbadge pbadge-blue" style="font-family:monospace;font-size:10px">{{ community.page_id }}</span>
+        {% if community.is_verified %}<span class="pbadge pbadge-green">✓ Verified</span>{% endif %}
+      </div>
+    </div>
+
+    <div class="cpage-logo-row">
+      {% if community.logo %}
+        <img src="{{ community.logo.url }}" alt="{{ community.name }}" class="cpage-logo">
+      {% else %}
+        <div class="cpage-logo-wrap">{{ community.name|first|upper }}</div>
+      {% endif %}
+      <div style="font-size:11px;color:#64748b;padding-bottom:4px">
+        <i class="fas fa-calendar" style="color:#059669"></i> Since {{ community.created_at|date:"M Y" }}
+      </div>
+    </div>
+
+    <div class="cpage-info">
+      <div class="cpage-name">{{ community.name }}</div>
+      <div class="cpage-purpose">{{ community.purpose }}</div>
+      <div class="cpage-meta">
+        <span><i class="fas fa-map-marker-alt" style="color:#f97316"></i> {{ community.location }}{% if community.pincode %} — {{ community.pincode }}{% endif %}</span>
+        <span><i class="fas fa-users" style="color:#1d4ed8"></i> <span data-community-count>{{ community.member_count }}</span> members</span>
+        {% if community.category %}<span><i class="fas fa-tag" style="color:#7c3aed"></i> {{ community.category.name }}</span>{% endif %}
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="cpage-actions">
+        <button type="button" class="pbtn pbtn-outline" onclick="shareCommunity()" aria-label="Share community"><i class="fas fa-share-alt" aria-hidden="true"></i> Share</button>
+        <span id="community-share-status" role="status" style="align-self:center;font-size:12px;color:#059669"></span>
+        {% if not user.is_authenticated %}
+          <a href="/login/?next=/portal/c/{{ community.page_id }}/join/" class="pbtn pbtn-primary"><i class="fas fa-sign-in-alt"></i> Join</a>
+          <a href="/portal/c/{{ community.page_id }}/volunteer/" class="pbtn pbtn-green">Volunteer</a>
+          <span style="width:100%;font-size:11px;color:{% if community.join_mode == 'open' %}#059669{% else %}#ea580c{% endif %};font-weight:700">
+            {% if community.join_mode == 'open' %}✅ Open to join{% else %}🔒 Admin Approval Required{% endif %}
+          </span>
+        {% elif is_admin %}
+          <a href="/portal/c/{{ community.page_id }}/dashboard/" class="pbtn pbtn-primary"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+          <a href="/portal/c/{{ community.page_id }}/edit/" class="pbtn pbtn-outline">✏️ Edit</a>
+          <a href="/portal/c/{{ community.page_id }}/volunteer/" class="pbtn pbtn-outline" style="font-size:12px">Volunteer Requests</a>
+        {% elif membership %}
+          {% if membership.status == 'approved' %}
+            <span class="pbadge pbadge-green" style="font-size:12px;padding:7px 16px">✓ Member</span>
+            <a href="/portal/c/{{ community.page_id }}/volunteer/" class="pbtn pbtn-green">Volunteer</a>
+          {% elif membership.status == 'pending' %}
+            <span class="pbadge pbadge-orange" style="font-size:12px;padding:7px 16px">⏳ Request Pending</span>
+          {% else %}
+            <span class="pbadge pbadge-red" style="font-size:12px;padding:7px 16px">✗ {{ membership.get_status_display }}</span>
+          {% endif %}
+        {% else %}
+          <a href="/portal/c/{{ community.page_id }}/join/" class="pbtn pbtn-primary"><i class="fas fa-sign-in-alt"></i> Join</a>
+          <a href="/portal/c/{{ community.page_id }}/volunteer/" class="pbtn pbtn-green">Volunteer</a>
+          <span style="width:100%;font-size:11px;color:{% if community.join_mode == 'open' %}#059669{% else %}#ea580c{% endif %};font-weight:700">
+            {% if community.join_mode == 'open' %}✅ Open to join{% else %}🔒 Admin Approval Required{% endif %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ABOUT ── -->
+  <div class="csection">
+    <div class="csection-head"><div class="csection-title">ℹ️ About</div></div>
+    <div class="csection-body">
+      <p style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:0">{{ community.description }}</p>
+      {% if community.email or community.phone %}
+      <div style="display:flex;gap:16px;margin-top:10px;font-size:12px;color:#64748b;flex-wrap:wrap">
+        {% if community.email %}<span><i class="fas fa-envelope" style="color:#6366f1"></i> {{ community.email }}</span>{% endif %}
+        {% if community.phone %}<span><i class="fas fa-phone" style="color:#059669"></i> {{ community.phone }}</span>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── GALLERY PREVIEW for non-members ── -->
+  {% if not is_member and not is_admin and gallery_groups %}
+  <div class="csection">
+    <div class="csection-head">
+      <div class="csection-title">🖼️ Community Gallery</div>
+      <span style="font-size:11px;font-weight:700;color:#64748b">Preview</span>
+    </div>
+    <div style="padding:14px 16px 10px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">
+        {% for grp in gallery_groups %}
+          {% for p in grp.items|slice:":9" %}
+          <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background:#eff6ff;cursor:pointer" onclick="pgOpenImg('{{ p.image.url }}')">
+            <img src="{{ p.image.url }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          {% endfor %}
+        {% endfor %}
+      </div>
+      <div style="text-align:center;padding:10px;background:#f0f7ff;border-radius:10px;font-size:13px;color:#1d4ed8;font-weight:700">
+        <i class="fas fa-lock"></i> Join this community to see all posts and participate
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── COMMUNITY FEED ── -->
+  <div class="csection">
+    <div class="csection-head"><div class="csection-title">📢 Community Feed</div></div>
+    {% if is_member or is_admin %}
+    <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9">
+      <form id="communityPostForm" method="post" action="/portal/c/{{ community.page_id }}/post/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="feed-compose">
+          <div class="feed-avatar">{{ user.get_full_name|default:user.username|first|upper }}</div>
+          <div class="feed-compose-wrap">
+            <select name="post_type" class="feed-compose select">
+              <option value="update">Update</option>
+              <option value="announcement">📢 Announcement</option>
+              <option value="achievement">🏆 Achievement</option>
+
+              <option value="cause">❤️ Cause</option>
+              <option value="activity">🏃 Activity</option>
+            </select>
+            <input type="text" name="title" placeholder="Title (optional)" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:7px 12px;font-size:13px;width:100%;box-sizing:border-box;background:#f8fafc;outline:none;margin-bottom:4px">
+            <div style="position:relative">
+              <p id="communityPostError" role="alert" hidden style="color:#b91c1c">Write a message or attach a photo before publishing.</p>
+              <textarea aria-label="Community message" name="content" placeholder="Share something with your community..." maxlength="160" oninput="var c=document.getElementById('feed-char-count');if(c)c.textContent=(160-this.value.length)+' left'" style="min-height:60px;resize:none;width:100%;box-sizing:border-box;border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px 20px;font-size:13px;font-family:inherit;outline:none;background:#f8fafc"></textarea>
+              <span id="feed-char-count" style="position:absolute;bottom:6px;right:10px;font-size:10px;color:#94a3b8;font-weight:700">160 left</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <label style="font-size:11px;font-weight:700;color:#64748b;white-space:nowrap">📅 Date</label>
+              <input type="date" name="event_date" style="flex:1;padding:6px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:inherit;outline:none;color:#0f172a;background:#f8fafc">
+            </div>
+            <div class="feed-compose-footer">
+              <input type="file" name="image" accept="image/*" multiple style="display:none" id="post-img-input" onchange="cpShowImgPreviews(this)">
+              <label for="post-img-input" class="pbtn pbtn-outline pbtn-sm" style="cursor:pointer;background:#f0f7ff;border:1.5px solid #bfdbfe;color:#0a66c2;display:inline-flex;align-items:center;gap:4px"><i class="fas fa-image"></i> <span style="font-size:11px">+ Photo</span></label>
+              <div id="cp-img-preview-row" style="display:flex;gap:4px;flex-wrap:wrap;flex:1;overflow:hidden;align-items:center"></div>
+              <button type="submit" class="pbtn pbtn-primary pbtn-sm">Post</button>
+            </div>
+            <script>
+            function cpShowImgPreviews(input){
+              var row=document.getElementById('cp-img-preview-row');
+              row.innerHTML='';
+              Array.from(input.files).slice(0,5).forEach(function(f){
+                var r=new FileReader();
+                r.onload=function(e){
+                  var img=document.createElement('img');
+                  img.src=e.target.result;
+                  img.style.cssText='width:36px;height:36px;object-fit:cover;border-radius:6px;border:1.5px solid #e5e7eb';
+                  row.appendChild(img);
+                };
+                r.readAsDataURL(f);
+              });
+              if(input.files.length>5){var more=document.createElement('div');more.style.cssText='width:36px;height:36px;border-radius:6px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#64748b';more.textContent='+'+( input.files.length-5);row.appendChild(more);}
+            }
+            </script>
+          </div>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+    {% for post in posts %}
+    <div class="feed-post">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div class="feed-avatar">{{ post.author.get_full_name|default:post.author.username|first|upper }}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:#0f172a">{{ post.author.get_full_name|default:post.author.username }}</div>
+          <div style="font-size:10px;color:#94a3b8">{{ post.created_at|timesince }} ago</div>
+        </div>
+        <span class="pbadge pbadge-blue" style="font-size:10px">{{ post.get_post_type_display }}</span>
+      </div>
+      {% if post.image %}<img src="{{ post.image.url }}" alt="" class="p-post-img" style="width:100%;border-radius:10px;margin-bottom:8px;display:block">{% endif %}
+      <p style="font-size:13px;color:#374151;line-height:1.6;margin:0 0 8px">{{ post.content }}</p>
+      <div style="display:flex;gap:14px;padding-top:8px;border-top:1px solid #f8fafc;align-items:center">
+        <button onclick="likePost({{ post.pk }}, this)" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#64748b;display:flex;align-items:center;gap:4px;padding:0">
+          <i class="fas fa-heart"></i> <span class="lc">{{ post.like_count }}</span>
+        </button>
+        <span style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:4px">
+          <i class="fas fa-comment"></i> {{ post.comments.count }}
+        </span>
+        {% if is_admin or post.author == user %}
+        <form method="post" action="/portal/post/{{ post.pk }}/delete/" style="margin-left:auto" onsubmit="return confirm('Delete this post?')">
+          {% csrf_token %}
+          <button type="submit" style="background:none;border:none;cursor:pointer;font-size:12px;color:#ef4444;display:flex;align-items:center;gap:3px;padding:0">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </form>
+        {% endif %}
+      </div>
+      {% for comment in post.comments.all|slice:":3" %}
+      <div style="background:#f8fafc;border-radius:8px;padding:7px 10px;margin-top:6px;font-size:12px">
+        <span style="font-weight:700;color:#374151">{{ comment.user.get_full_name }}: </span>
+        <span style="color:#64748b">{{ comment.content }}</span>
+      </div>
+      {% endfor %}
+      {% if user.is_authenticated %}
+      <form method="post" action="/portal/post/{{ post.pk }}/comment/" style="display:flex;gap:6px;margin-top:8px">
+        {% csrf_token %}
+        <input type="text" name="content" placeholder="Comment..." class="pform-input" style="flex:1;height:32px;padding:4px 10px;font-size:12px">
+        <button type="submit" class="pbtn pbtn-primary pbtn-sm" style="height:32px;font-size:11px">Send</button>
+      </form>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="pempty" style="padding:24px 0"><div class="pempty-text" style="font-size:13px">No posts yet</div></div>
+    {% endfor %}
+  </div>
+
+  <!-- ── COMMUNITY GALLERY (timeline) ── -->
+  {% if gallery_groups %}
+  <div class="csection">
+    <div class="csection-head">
+      <div class="csection-title">🖼️ Photo Gallery</div>
+      <span style="font-size:11px;font-weight:700;color:#64748b">Timeline</span>
+    </div>
+    <div style="padding:14px 16px 8px">
+      <div id="shareToastPortal" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:700;z-index:9999;white-space:nowrap">✅ Link copied!</div>
+      {% for grp in gallery_groups %}
+        {% if grp.show_year %}
+        <div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1d4ed8,#4f46e5);color:#fff;font-size:11px;font-weight:800;padding:4px 14px;border-radius:20px;margin:10px 0 8px;letter-spacing:.04em">📅 {{ grp.year }}</div>
+        {% endif %}
+        <div style="display:flex;align-items:center;gap:8px;margin:10px 0 6px">
+          <span style="font-size:11px;font-weight:800;color:#64748b;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em">{{ grp.month_name }}</span>
+          <div style="flex:1;height:1px;background:#e0e7ff"></div>
+          <span style="font-size:10px;font-weight:700;color:#94a3b8">{{ grp.count }} photo{% if grp.count != 1 %}s{% endif %}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:4px">
+          {% for p in grp.items %}
+          <div style="display:flex;flex-direction:column">
+            <div id="pgcell-{{ p.pk }}" style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#eff6ff;cursor:pointer">
+              <img src="{{ p.image.url }}" alt="{{ p.content|truncatechars:30 }}"
+                   style="width:100%;height:100%;object-fit:cover;display:block"
+                   onclick="pgOpenImg('{{ p.image.url }}')">
+              {% if p.content %}
+              <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.65));padding:5px 7px;font-size:9px;font-weight:600;color:#fff;line-height:1.3;pointer-events:none">{{ p.content|truncatechars:40 }}</div>
+              {% endif %}
+            </div>
+            <div style="font-size:9px;font-weight:700;color:#94a3b8;margin-top:3px;text-align:center">{% if p.event_date %}{{ p.event_date|date:"d M Y" }}{% else %}{{ p.created_at|date:"d M Y" }}{% endif %}</div>
+            <button onclick="pgShare('{{ p.image.url }}','{{ p.content|default:community.name|truncatechars:60|escapejs }}',{{ p.pk }})"
+                    style="display:flex;align-items:center;justify-content:center;gap:3px;font-size:9px;font-weight:700;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:3px 6px;cursor:pointer;font-family:inherit;width:100%;margin-top:2px">
+              🔗 Share
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── PENDING EVENT REQUESTS (admin only) ── -->
+
+
+  <!-- ── EVENTS ── -->
+
+
+  <!-- ── CAUSES ── -->
+  {% if causes %}
+  <div class="csection">
+    <div class="csection-head">
+      <div class="csection-title">❤️ Causes</div>
+      {% if is_admin %}<a href="/portal/c/{{ community.page_id }}/causes/create/" class="pbtn pbtn-primary pbtn-sm">+ Add</a>{% endif %}
+    </div>
+    <div style="padding:0 16px">
+      {% for cause in causes %}
+      <a href="/portal/cause/{{ cause.pk }}/" style="display:block;padding:10px 0;border-bottom:1px solid #f1f5f9;text-decoration:none">
+        <div style="font-size:13px;font-weight:800;color:#0f172a">{{ cause.name }}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px">{{ cause.description|truncatechars:80 }}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:3px">{{ cause.support_count }} supporters{% if cause.target_goal %} · {{ cause.target_goal }}{% endif %}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── ACTIVITIES ── -->
+  {% if activities %}
+  <div class="csection">
+    <div class="csection-head">
+      <div class="csection-title">🏃 Activities</div>
+      {% if is_admin %}<a href="/portal/c/{{ community.page_id }}/activities/create/" class="pbtn pbtn-primary pbtn-sm">+ Log</a>{% endif %}
+    </div>
+    <div style="padding:0 16px">
+      {% for act in activities %}
+      <a href="/portal/activity/{{ act.pk }}/" style="display:block;padding:10px 0;border-bottom:1px solid #f1f5f9;text-decoration:none">
+        <div style="font-size:13px;font-weight:800;color:#0f172a">{{ act.name }}</div>
+        <div style="font-size:11px;color:#64748b">{{ act.date|date:"d M Y" }}{% if act.location %} · {{ act.location }}{% endif %}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px">{{ act.participant_count }} participants · {{ act.volunteer_count }} volunteers</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── LEADERSHIP ── -->
+  <div class="csection">
+    <div class="csection-head">
+      <div class="csection-title">👥 Leadership</div>
+      {% if is_admin %}<a href="/portal/c/{{ community.page_id }}/leaders/add/" class="pbtn pbtn-primary pbtn-sm">+ Add</a>{% endif %}
+    </div>
+    <div class="csection-body" style="padding:0 16px">
+      {% for leader in leaders %}
+      <div class="leader-row">
+        <div class="leader-avatar">{{ leader.user.get_full_name|default:leader.user.username|first|upper }}</div>
+        <div>
+          <div class="leader-name">{{ leader.user.get_full_name|default:leader.user.username }}</div>
+          <div class="leader-role">{{ leader.get_role_label }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="font-size:12px;color:#94a3b8;padding:12px 0">No leaders yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── MEMBERS ── -->
+  <div class="csection">
+    <div class="csection-head">
+      <div class="csection-title">Members (<span data-community-count>{{ community.member_count }}</span>)</div>
+      {% if is_admin %}
+        <a href="/portal/c/{{ community.page_id }}/members/" class="pbtn pbtn-outline pbtn-sm">Manage</a>
+
+      {% else %}
+        <a href="/portal/c/{{ community.page_id }}/members/" class="pbtn pbtn-outline pbtn-sm">View All</a>
+      {% endif %}
+    </div>
+    <div class="csection-body">
+      <div class="member-strip">
+        {% for m in members %}
+        <a href="/portal/member/{{ m.user.pk }}/" class="member-bubble" title="{{ m.user.get_full_name|default:m.user.username }}" style="position:relative">
+          {% with p=m.user.seeker %}{% if p and p.photo %}<img src="{{ p.photo.url }}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">{% else %}{{ m.user.get_full_name|default:m.user.username|first|upper }}{% endif %}{% endwith %}
+          {% if community.created_by == m.user %}<span style="position:absolute;bottom:-2px;right:-2px;background:#f59e0b;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-size:7px">⭐</span>{% endif %}
+        </a>
+        {% endfor %}
+      </div>
+      {% if community.member_count > 12 %}
+      <p style="font-size:11px;color:#94a3b8;margin-top:8px">+{{ community.member_count|add:"-12" }} more</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── FLICKS ── -->
+  {% if flicks %}
+  <div class="csection">
+    <div class="csection-head">
+      <div class="csection-title">🎬 Flicks</div>
+      <a href="/portal/flicks/?community={{ community.page_id }}" class="pbtn pbtn-outline pbtn-sm">View All</a>
+    </div>
+    <div class="flicks-grid">
+      {% for f in flicks %}
+      <a href="/portal/flicks/?community={{ community.page_id }}" class="flick-thumb">
+        {% if f.media_type == 'video' %}
+          <video src="{{ f.media.url }}" muted preload="none"></video>
+          <div class="flick-play">▶</div>
+        {% else %}
+          <img src="{{ f.media.url }}" alt="">
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── TOP CONTRIBUTORS WIDGET ── -->
+
+
+  <!-- ── JOIN MODE ── -->
+  <div class="csection">
+    <div class="csection-body" style="display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:13px;font-weight:700;color:#374151">Join Mode</span>
+      {% if community.join_mode == 'open' %}
+        <span class="pbadge pbadge-green">✅ Open</span>
+      {% else %}
+        <span class="pbadge pbadge-orange">🔒 Admin Approval</span>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block bottom_nav %}
+<nav class="pbot-nav">
+  <a href="/" class="pbot-nav-item"><div class="pbot-icon">🏠</div><span>Home</span></a>
+  <a href="/portal/communities/" class="pbot-nav-item active"><div class="pbot-icon"><i class="fas fa-users" style="font-size:16px"></i></div><span>Community</span></a>
+  <a href="/portal/flicks/" class="pbot-nav-item"><div class="pbot-icon">🎬</div><span>Flick</span></a>
+  <a href="/portal/create/" class="pbot-nav-item pbot-create"><div class="pbot-icon">➕</div><span>Create</span></a>
+
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function likePost(pk, btn) {
+  fetch('/portal/post/' + pk + '/like/', {method:'POST', headers:{'X-CSRFToken':'{{ csrf_token }}','Content-Type':'application/json'}})
+    .then(r => r.json())
+    .then(d => { btn.querySelector('.lc').textContent = d.count; btn.style.color = d.liked ? '#ef4444' : '#64748b'; });
+}
+function pgOpenImg(url) {
+  var lb = document.getElementById('pgLightbox');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.id = 'pgLightbox';
+    lb.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;align-items:center;justify-content:center;padding:20px';
+    lb.innerHTML = '<img style="max-width:100%;max-height:90vh;border-radius:16px;object-fit:contain">';
+    lb.onclick = function(){ lb.style.display = 'none'; };
+    document.body.appendChild(lb);
+  }
+  lb.querySelector('img').src = url;
+  lb.style.display = 'flex';
+}
+function pgShare(imgUrl, caption, pk) {
+  var pageUrl = window.location.origin + window.location.pathname + '#pgcell-' + pk;
+  var text = caption + ' — ' + '{{ community.name|escapejs }}' + ' on Local From';
+  if (navigator.share) {
+    navigator.share({title: text, url: pageUrl, text: caption}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(pageUrl).then(function() {
+      var t = document.getElementById('shareToastPortal');
+      if (t) { t.style.display = 'block'; setTimeout(function(){ t.style.display = 'none'; }, 2500); }
+    });
+  }
+}
+</script>
+{% if request.user.is_authenticated %}<div id="communityMembershipState" data-url="{% url 'portal_membership_status' community.page_id %}" hidden></div>{% endif %}
+<script src="{% static 'js/community-page.js' %}?v=1" defer></script>
+{% endblock %}

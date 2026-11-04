@@ -1,0 +1,58 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Manage Volunteers{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <div class="psec-header">
+    <div>
+      <div class="psec-title">🙋 Manage Volunteers</div>
+      <div class="psec-sub">{{ community.name }}</div>
+    </div>
+    <a href="/portal/c/{{ community.page_id }}/dashboard/" class="pbtn pbtn-outline pbtn-sm">← Dashboard</a>
+  </div>
+
+  <div class="stat-grid" style="margin-bottom:16px">
+    <div class="stat-card"><div class="stat-num" style="color:#f97316">{{ pending_count }}</div><div class="stat-label">Pending</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#059669">{{ approved_count }}</div><div class="stat-label">Approved</div></div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <a href="?status=pending" class="pbtn {% if status_filter == 'pending' %}pbtn-orange{% else %}pbtn-outline{% endif %} pbtn-sm">Pending</a>
+    <a href="?status=approved" class="pbtn {% if status_filter == 'approved' %}pbtn-green{% else %}pbtn-outline{% endif %} pbtn-sm">Approved</a>
+    <a href="?status=rejected" class="pbtn {% if status_filter == 'rejected' %}pbtn-red{% else %}pbtn-outline{% endif %} pbtn-sm">Rejected</a>
+  </div>
+
+  <div class="pcard">
+    <div style="overflow-x:auto">
+      <table class="ptable">
+        <thead>
+          <tr><th>Name</th><th>Contact</th><th>Interest</th><th>Availability</th><th>Event</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for vr in vrs %}
+          <tr>
+            <td><div style="font-size:13px;font-weight:700;color:#0f172a">{{ vr.name }}</div></td>
+            <td style="font-size:12px;color:#64748b">{{ vr.mobile }}<br>{{ vr.email }}</td>
+            <td style="font-size:12px;color:#374151">{{ vr.volunteer_interest }}</td>
+            <td style="font-size:12px;color:#64748b">{{ vr.availability }}</td>
+            <td style="font-size:11px;color:#64748b">{% if vr.event %}{{ vr.event.name }}{% else %}General{% endif %}</td>
+            <td><span class="pbadge {% if vr.status == 'approved' %}pbadge-green{% elif vr.status == 'pending' %}pbadge-orange{% else %}pbadge-red{% endif %}">{{ vr.get_status_display }}</span></td>
+            <td>
+              <form method="post" style="display:flex;gap:4px">
+                {% csrf_token %}
+                <input type="hidden" name="vr_id" value="{{ vr.pk }}">
+                {% if vr.status == 'pending' %}
+                <button name="action" value="approve" class="pbtn pbtn-green pbtn-sm">Approve</button>
+                <button name="action" value="reject" class="pbtn pbtn-red pbtn-sm">Reject</button>
+                {% endif %}
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px">No {{ status_filter }} volunteer requests.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

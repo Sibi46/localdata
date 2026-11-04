@@ -1,0 +1,23 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:680px">
+  <div class="psec-title" style="margin-bottom:16px">🔔 Notifications</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    {% for n in notifs %}
+    <a href="{{ n.link|default:'#' }}" class="pcard" style="border-color:{% if not n.is_read %}#93c5fd{% else %}#e5e7eb{% endif %}">
+      <div class="pcard-body" style="padding:12px 14px;display:flex;gap:12px;align-items:flex-start">
+        <div style="font-size:20px">{% if n.notif_type == 'join_approved' %}✅{% elif n.notif_type == 'join_rejected' %}❌{% elif n.notif_type == 'new_event' %}📅{% elif n.notif_type == 'new_cause' %}❤️{% elif n.notif_type == 'volunteer_approved' %}🙋{% elif n.notif_type == 'leader_nomination' %}👑{% else %}🔔{% endif %}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:{% if not n.is_read %}700{% else %}600{% endif %};color:#0f172a">{{ n.message }}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:3px">{{ n.created_at|timesince }} ago</div>
+        </div>
+        {% if not n.is_read %}<div style="width:8px;height:8px;border-radius:50%;background:#1d4ed8;margin-top:6px;flex-shrink:0"></div>{% endif %}
+      </div>
+    </a>
+    {% empty %}
+    <div class="pempty"><div class="pempty-icon">🔔</div><div class="pempty-text">No notifications</div></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

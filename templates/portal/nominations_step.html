@@ -1,0 +1,105 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Add Leadership — {{ community.name }}{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:640px">
+
+  <!-- Step indicator -->
+  <div style="display:flex;align-items:center;gap:0;margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:30px;height:30px;border-radius:50%;background:#22c55e;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center">✓</div>
+      <span style="font-size:13px;font-weight:700;color:#22c55e">Community Created</span>
+    </div>
+    <div style="flex:1;height:2px;background:linear-gradient(90deg,#22c55e,#4f46e5);margin:0 12px"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:30px;height:30px;border-radius:50%;background:#4f46e5;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center">2</div>
+      <span style="font-size:13px;font-weight:700;color:#4f46e5">Leadership Nominations</span>
+    </div>
+  </div>
+
+  <!-- Community badge -->
+  <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:16px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
+    {% if community.logo %}
+    <img src="{{ community.logo.url }}" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.3)">
+    {% else %}
+    <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem">🏘️</div>
+    {% endif %}
+    <div>
+      <div style="font-size:15px;font-weight:800;color:#fff">{{ community.name }}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:2px">{{ community.page_id }} · Pending verification</div>
+    </div>
+  </div>
+
+  {% if messages %}
+  {% for m in messages %}
+  <div style="background:{% if 'sent' in m.tags or 'success' in m.tags %}#f0fdf4;border:1px solid #86efac;color:#166534{% else %}#fffbeb;border:1px solid #fcd34d;color:#92400e{% endif %};border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px">{{ m }}</div>
+  {% endfor %}
+  {% endif %}
+
+  {% if errors %}
+  {% for e in errors %}
+  <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:10px 14px;font-size:13px;color:#b91c1c;margin-bottom:14px">{{ e }}</div>
+  {% endfor %}
+  {% endif %}
+
+  <!-- Current nominations -->
+  {% if leaders %}
+  <div class="pcard" style="margin-bottom:16px">
+    <div class="pcard-head">
+      <div class="pcard-title">👑 Nominations Sent</div>
+      <span style="font-size:12px;color:#64748b">{{ leaders|length }} nomination{{ leaders|length|pluralize }}</span>
+    </div>
+    <div class="pcard-body" style="padding:0">
+      {% for leader in leaders %}
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f1f5f9">
+        <div style="width:36px;height:36px;border-radius:10px;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">
+          {% if leader.role == 'president' %}👑{% elif leader.role == 'vice_president' %}🎖️{% elif leader.role == 'secretary' %}📋{% elif leader.role == 'treasurer' %}💰{% else %}⭐{% endif %}
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:#0f172a">{{ leader.user.get_full_name|default:leader.user.username }}</div>
+          <div style="font-size:11px;color:#64748b">{{ leader.get_role_display }}</div>
+        </div>
+        <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;{% if leader.status == 'accepted' %}background:#dcfce7;color:#166534{% elif leader.status == 'pending' %}background:#fef3c7;color:#92400e{% else %}background:#fee2e2;color:#b91c1c{% endif %}">{{ leader.get_status_display }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Nominate form -->
+  <div class="pcard" style="margin-bottom:16px">
+    <div class="pcard-head"><div class="pcard-title">Nominate a Leader</div></div>
+    <div class="pcard-body">
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:16px">
+        💡 The nominated person will receive an email to accept or decline their role.
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="nominate">
+        <div class="pform-group">
+          <label class="pform-label">Role *</label>
+          <select name="role" class="pform-input">
+            {% for val, label in roles %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="pform-group">
+          <label class="pform-label">Email Address *</label>
+          <input type="email" name="email" class="pform-input" required placeholder="Enter their registered email on Local From">
+        </div>
+        <button type="submit" class="pbtn pbtn-primary pbtn-full">Send Nomination →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="display:flex;gap:12px">
+    <form method="post" style="flex:1">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="skip">
+      <button type="submit" class="pbtn pbtn-outline pbtn-full">Skip for now</button>
+    </form>
+    <a href="/portal/c/{{ community.page_id }}/" class="pbtn pbtn-primary" style="flex:1;text-align:center;text-decoration:none">View Community →</a>
+  </div>
+  <p style="font-size:11px;color:#94a3b8;text-align:center;margin-top:10px">You can always add more leaders from the community dashboard.</p>
+
+</div>
+{% endblock %}

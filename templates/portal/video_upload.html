@@ -1,0 +1,65 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Upload Video{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:620px">
+  <div class="psec-header">
+    <div class="psec-title">🎬 Upload 30-Second Video</div>
+    <a href="/portal/c/{{ community.page_id }}/" class="pbtn pbtn-outline pbtn-sm">← Back</a>
+  </div>
+  <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:16px">
+    <strong>Maximum duration: 30 seconds.</strong> Videos longer than 30 seconds will be rejected by the community admin.
+  </div>
+  <form method="post" enctype="multipart/form-data" id="video-form">
+    {% csrf_token %}
+    <div class="pcard">
+      <div class="pcard-body">
+        <div class="pform-group"><label class="pform-label">Title *</label><input type="text" name="title" class="pform-input" required placeholder="Give your video a short title"></div>
+        <div class="pform-group">
+          <label class="pform-label">Category *</label>
+          <select name="category" class="pform-input">
+            {% for val, label in categories %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="pform-group">
+          <label class="pform-label">Video File * <span style="color:#64748b;font-size:11px">(MP4, max 30 seconds)</span></label>
+          <input type="file" name="video" accept="video/*" class="pform-input" style="padding:6px" id="video-input" required>
+          <div id="duration-warning" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;margin-top:6px">⚠️ Video is longer than 30 seconds!</div>
+        </div>
+        <div class="pform-group"><label class="pform-label">Thumbnail (optional)</label><input type="file" name="thumbnail" accept="image/*" class="pform-input" style="padding:6px"></div>
+        <div class="p2col">
+          <div class="pform-group"><label class="pform-label">Pincode</label><input type="text" name="pincode" class="pform-input" placeholder="6-digit pincode"></div>
+          <div class="pform-group"><label class="pform-label">Location</label><input type="text" name="location" class="pform-input" placeholder="City / area"></div>
+
+          <div class="pform-group">
+            <label class="pform-label">Related Cause</label>
+            <select name="related_cause" class="pform-input"><option value="">--</option>{% for c in causes %}<option value="{{ c.pk }}">{{ c.name }}</option>{% endfor %}</select>
+          </div>
+        </div>
+        <button type="submit" class="pbtn pbtn-primary pbtn-full">Upload Video</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('video-input').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const video = document.createElement('video');
+  video.preload = 'metadata';
+  video.onloadedmetadata = function() {
+    window.URL.revokeObjectURL(video.src);
+    const dur = video.duration;
+    const warn = document.getElementById('duration-warning');
+    if (dur > 30) {
+      warn.style.display = 'block';
+      warn.textContent = `⚠️ Video is ${Math.round(dur)} seconds — maximum is 30 seconds!`;
+    } else {
+      warn.style.display = 'none';
+    }
+  };
+  video.src = URL.createObjectURL(file);
+});
+</script>
+{% endblock %}

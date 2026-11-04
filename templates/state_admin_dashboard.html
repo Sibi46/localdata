@@ -1,0 +1,127 @@
+{% extends 'admin_base.html' %}
+{% block title %}State Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="ap-breadcrumb"><i class="fas fa-map"></i> State Admin — {{ state.name|default:"Unassigned" }}</div>
+<div class="ap-page-title"><i class="fas fa-map" style="color:#0a66c2"></i> {{ state.name|default:"State" }} Dashboard</div>
+<div class="ap-page-subtitle">Manage districts, verify employers, and monitor state activity</div>
+
+{% if not state %}
+<div class="ap-card" style="border-left:4px solid #f57f17;background:#fff8e1">
+  <p style="color:#f57f17;font-weight:600"><i class="fas fa-exclamation-triangle"></i> Your account has not been assigned to a state yet. Contact the Super Admin.</p>
+</div>
+{% endif %}
+
+<!-- Stats -->
+<div class="ap-stats">
+  <div class="ap-stat blue">
+    <div class="ap-stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+    <h3>{{ district_count }}</h3>
+    <p>Districts</p>
+  </div>
+  <div class="ap-stat green">
+    <div class="ap-stat-icon"><i class="fas fa-user-shield"></i></div>
+    <h3>{{ district_admins|length }}</h3>
+    <p>District Admins</p>
+  </div>
+  <div class="ap-stat orange">
+    <div class="ap-stat-icon"><i class="fas fa-building"></i></div>
+    <h3>{{ pending_employers }}</h3>
+    <p>Employers</p>
+  </div>
+  <div class="ap-stat red">
+    <div class="ap-stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+    <h3>{{ open_complaints }}</h3>
+    <p>Open Complaints</p>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="ap-card">
+  <div class="ap-card-header"><h3><i class="fas fa-bolt" style="color:#f3a000"></i> Quick Actions</h3></div>
+  <div class="ap-quick-grid">
+    <a href="/state-admin/district-admins/create/" class="ap-quick-card">
+      <i class="fas fa-user-plus" style="color:#0a66c2"></i>
+      <span>Add District Admin</span>
+    </a>
+    <a href="/state-admin/employers/" class="ap-quick-card">
+      <i class="fas fa-building" style="color:#2e7d32"></i>
+      <span>Verify Employers</span>
+    </a>
+    <a href="/state-admin/reports/" class="ap-quick-card">
+      <i class="fas fa-chart-bar" style="color:#e65100"></i>
+      <span>Reports</span>
+    </a>
+    <a href="/admin-panel/advertisers/" class="ap-quick-card">
+      <i class="fas fa-bullhorn" style="color:#6a1b9a"></i>
+      <span>Advertisers</span>
+    </a>
+  </div>
+</div>
+
+<div class="ap-two-col">
+
+  <!-- Districts -->
+  <div class="ap-card">
+    <div class="ap-card-header">
+      <h3><i class="fas fa-map-marker-alt" style="color:#0a66c2"></i> Districts</h3>
+    </div>
+    {% if districts %}
+    <table class="ap-table">
+      <thead><tr><th>District</th><th>Status</th><th>Admin</th></tr></thead>
+      <tbody>
+        {% for d in districts %}
+        <tr>
+          <td><strong>{{ d.name }}</strong></td>
+          <td><span class="status-pill {% if d.is_active %}pill-active{% else %}pill-inactive{% endif %}">
+            {{ d.is_active|yesno:"Active,Inactive" }}
+          </span></td>
+          <td>
+            {% if d.district_admin_profiles.exists %}
+              {{ d.district_admin_profiles.first.user.get_full_name }}
+            {% else %}
+              <span style="color:#bbb;font-size:12px">No admin</span>
+              <a href="/state-admin/district-admins/create/" class="ap-btn ap-btn-primary" style="font-size:11px;margin-left:6px">Assign</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="ap-empty"><i class="fas fa-map-marker-alt"></i><p>No districts in this state. Contact Super Admin.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- District Admins -->
+  <div class="ap-card">
+    <div class="ap-card-header">
+      <h3><i class="fas fa-user-shield" style="color:#2e7d32"></i> District Admins</h3>
+      <a href="/state-admin/district-admins/create/" class="ap-btn ap-btn-primary"><i class="fas fa-plus"></i> Add</a>
+    </div>
+    {% for admin in district_admins %}
+    <div class="ap-user-row" style="padding:10px 0;border-bottom:1px solid #f5f5f5">
+      <div class="ap-avatar" style="background:linear-gradient(135deg,#2e7d32,#1b5e20)">
+        {{ admin.user.get_full_name|default:admin.user.username|first|upper }}
+      </div>
+      <div>
+        <div class="ap-user-name">{{ admin.user.get_full_name|default:admin.user.username }}</div>
+        <div class="ap-user-meta">{{ admin.district.name|default:"Unassigned" }} · {{ admin.user.phone }}</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <span class="status-pill {% if admin.is_active %}pill-active{% else %}pill-suspended{% endif %}">
+          {{ admin.is_active|yesno:"Active,Suspended" }}
+        </span>
+        <a href="/super-admin/admins/{{ admin.pk }}/toggle/" class="ap-btn ap-btn-danger" style="font-size:11px">
+          {{ admin.is_active|yesno:"Suspend,Activate" }}
+        </a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="ap-empty"><i class="fas fa-user-shield"></i><p>No district admins assigned yet.</p></div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

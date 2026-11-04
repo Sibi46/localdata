@@ -1,0 +1,10 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/site-footer.css' %}?v=2">
+<footer class="local-footer shell">
+  <div class="local-footer-top">
+    <div class="local-footer-brand"><a href="/" aria-label="Local From home"><img src="{% static 'images/logo.png' %}" alt="" width="38" height="34"><span>Local<span>From</span><b>.</b></span></a><p>Good things, closer to home.</p><span class="footer-town"><span aria-hidden="true">&#9679;</span> Starting in Vandavasi</span></div>
+    <nav class="local-footer-links" aria-label="Footer navigation"><span>Explore Local From</span><a href="/about/">About us</a><a href="/messages/">Messages</a><a href="{{ local_from_instagram_url }}" target="_blank" rel="noopener noreferrer">Instagram &nearr;</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms &amp; conditions</a></nav>
+    <div class="local-footer-contact">{% include 'includes/site_contact.html' %}</div>
+  </div>
+  <div class="local-footer-bottom"><small>&copy; {% now 'Y' %} Local From</small><a class="footer-superadmin" href="{% url 'pilot_admin_login' %}" aria-label="Superadmin login" title="Superadmin login"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.2c0 4.4 3 7.9 7.5 9.8 4.5-1.9 7.5-5.4 7.5-9.8V6L12 3Z"/><path d="m8.5 12 2.3 2.3 4.7-4.6"/></svg></a></div>
+</footer>

@@ -1,0 +1,69 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}{{ activity.name }}{% endblock %}
+{% block content %}
+<div class="pcontent">
+  <div style="margin-bottom:14px"><a href="/portal/c/{{ activity.community.page_id }}/" style="font-size:12px;color:#1d4ed8;font-weight:700">← {{ activity.community.name }}</a></div>
+
+  <div class="pgrid">
+    <div>
+      <div class="pcard" style="margin-bottom:14px">
+        <div class="pcard-body">
+          <h1 style="font-size:20px;font-weight:900;color:#0f172a;margin-bottom:8px">{{ activity.name }}</h1>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#64748b;margin-bottom:14px">
+            <span><i class="fas fa-calendar" style="color:#1d4ed8"></i> {{ activity.date|date:"d F Y" }}</span>
+            {% if activity.location %}<span><i class="fas fa-map-marker-alt" style="color:#f97316"></i> {{ activity.location }}</span>{% endif %}
+            {% if activity.cause %}<span><i class="fas fa-heart" style="color:#ef4444"></i> {{ activity.cause.name }}</span>{% endif %}
+          </div>
+          <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:14px">{{ activity.description }}</p>
+
+          <div class="p2col" style="gap:12px;margin-bottom:14px">
+            <div style="background:#eff6ff;border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:28px;font-weight:900;color:#1d4ed8">{{ activity.participant_count }}</div>
+              <div style="font-size:11px;color:#64748b;font-weight:600">Participants</div>
+            </div>
+            <div style="background:#f0fdf4;border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:28px;font-weight:900;color:#059669">{{ activity.volunteer_count }}</div>
+              <div style="font-size:11px;color:#64748b;font-weight:600">Volunteers</div>
+            </div>
+          </div>
+
+          {% if activity.result_impact %}
+          <div style="background:#fffbeb;border-radius:10px;padding:12px 16px;border-left:4px solid #f59e0b">
+            <div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:4px">RESULT / IMPACT</div>
+            <p style="font-size:13px;color:#78350f">{{ activity.result_impact }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if activity.photos.exists %}
+      <div class="pcard">
+        <div class="pcard-head"><div class="pcard-title">Photos</div></div>
+        <div class="pcard-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">
+            {% for photo in activity.photos.all %}
+            <img src="{{ photo.image.url }}" alt="" style="width:100%;height:100px;object-fit:cover;border-radius:8px">
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div>
+      <div class="pcard">
+        <div class="pcard-head"><div class="pcard-title">Community</div></div>
+        <div class="pcard-body">
+          <a href="/portal/c/{{ activity.community.page_id }}/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+            <div style="width:40px;height:40px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#1d4ed8">{{ activity.community.name|first }}</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:#0f172a">{{ activity.community.name }}</div>
+              <div style="font-size:11px;color:#1d4ed8;font-family:monospace">{{ activity.community.page_id }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

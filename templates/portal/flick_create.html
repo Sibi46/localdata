@@ -1,0 +1,234 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Post a Flick{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:500px">
+  <div class="psec-header">
+    <div class="psec-title">🎬 Post a Flick</div>
+    <a href="/portal/flicks/" class="pbtn pbtn-outline pbtn-sm">← Back</a>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div class="palert palert-{% if msg.tags == 'error' %}error{% else %}success{% endif %}" style="margin-bottom:14px">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if not user_communities %}
+  <div class="pcard">
+    <div class="pcard-body" style="text-align:center;padding:32px">
+      <div style="font-size:48px;margin-bottom:14px">🏘️</div>
+      <div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:8px">Join a Community First</div>
+      <div style="font-size:13px;color:#64748b;margin-bottom:20px">You must be an approved member of a community to post a Flick.</div>
+      <a href="/portal/communities/" class="pbtn pbtn-primary">Browse Communities</a>
+    </div>
+  </div>
+  {% else %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="pcard" style="margin-bottom:14px">
+      <div class="pcard-body">
+        <!-- Media preview -->
+        <div id="mediaPreview" onclick="document.getElementById('mediaInput').click()"
+          style="width:100%;aspect-ratio:9/16;max-height:320px;background:#0f172a;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;margin-bottom:16px;border:2px dashed #334155;position:relative">
+          <div id="previewPlaceholder" style="text-align:center;color:rgba(255,255,255,.5)">
+            <div style="font-size:40px;margin-bottom:8px">🎬</div>
+            <div style="font-size:13px;font-weight:700">Tap to upload video or image</div>
+            <div style="font-size:11px;margin-top:4px">MP4, MOV, JPG, PNG · max 50MB · max 60s</div>
+          </div>
+          <video id="previewVideo" style="display:none;width:100%;height:100%;object-fit:cover" loop muted></video>
+          <img id="previewImage" style="display:none;width:100%;height:100%;object-fit:cover" alt="">
+        </div>
+        <input type="file" name="media" id="mediaInput" accept="video/*,image/*" required style="display:none" onchange="previewMedia(this)">
+
+        <div class="pform-group">
+          <label class="pform-label">Community *</label>
+          <select name="community" class="pform-input" required>
+            <option value="">Select community…</option>
+            {% for c in user_communities %}
+            <option value="{{ c.page_id }}" {% if preselect == c.page_id %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="pform-group">
+          <label class="pform-label">Title <span style="font-weight:400;color:#94a3b8">(max 60 chars)</span></label>
+          <input name="title" class="pform-input" type="text" placeholder="Give your flick a title…" maxlength="60" id="flickTitle" oninput="document.getElementById('titleCount').textContent=this.value.length+'/60'">
+          <div style="text-align:right;font-size:11px;color:#94a3b8;margin-top:3px"><span id="titleCount">0/60</span></div>
+        </div>
+        <div class="pform-group" style="margin-bottom:0">
+          <label class="pform-label">Caption <span style="font-weight:400;color:#94a3b8">(max 160 chars)</span></label>
+          <textarea name="caption" class="pform-input" rows="3" placeholder="Say something about this flick…" maxlength="160" id="flickCaption" oninput="document.getElementById('captionCount').textContent=this.value.length+'/160'"></textarea>
+          <div style="text-align:right;font-size:11px;color:#94a3b8;margin-top:3px"><span id="captionCount">0/160</span></div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" id="submitBtn" class="pbtn pbtn-primary pbtn-full" style="font-size:15px;padding:14px" onclick="openContentAgreement()">
+      🚀 Post Flick
+    </button>
+
+  </form>
+  {% endif %}
+</div>
+
+<!-- Content Agreement Modal -->
+<div id="contentModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:20px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-size:22px;text-align:center;margin-bottom:6px">📋</div>
+    <div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center;margin-bottom:4px">Content Agreement</div>
+    <div style="font-size:13px;color:#64748b;text-align:center;margin-bottom:20px">Please confirm before posting your Flick</div>
+
+    <label style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#fef2f2;border-radius:12px;margin-bottom:10px;cursor:pointer">
+      <input type="checkbox" id="chk1" style="width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:#ef4444">
+      <span style="font-size:13px;color:#374151;font-weight:600">🚫 This video contains <strong>no abusive</strong> or violent content</span>
+    </label>
+
+    <label style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#fefce8;border-radius:12px;margin-bottom:10px;cursor:pointer">
+      <input type="checkbox" id="chk2" style="width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:#f59e0b">
+      <span style="font-size:13px;color:#374151;font-weight:600">🏛️ This video contains <strong>no political</strong> content or propaganda</span>
+    </label>
+
+    <label style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#fdf4ff;border-radius:12px;margin-bottom:20px;cursor:pointer">
+      <input type="checkbox" id="chk3" style="width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:#a855f7">
+      <span style="font-size:13px;color:#374151;font-weight:600">🔞 This video contains <strong>no sexual</strong> or adult content</span>
+    </label>
+
+    <div style="display:flex;gap:10px">
+      <button type="button" onclick="closeModal()" style="flex:1;background:#f1f5f9;color:#64748b;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Cancel</button>
+      <button type="button" id="agreeBtn" onclick="submitFlick()" style="flex:2;background:#4f46e5;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;opacity:.4" disabled>✅ I Agree & Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- WhatsApp-style circular upload progress overlay -->
+<div id="flickUploadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99999;align-items:center;justify-content:center;flex-direction:column">
+  <svg width="110" height="110" viewBox="0 0 110 110">
+    <circle cx="55" cy="55" r="48" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="8"/>
+    <circle id="flickRing" cx="55" cy="55" r="48" fill="none" stroke="#25d366" stroke-width="8"
+      stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6"
+      transform="rotate(-90 55 55)" style="transition:stroke-dashoffset .4s ease"/>
+  </svg>
+  <div id="flickPct" style="position:absolute;font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">0%</div>
+  <div id="flickUploadMsg" style="margin-top:18px;font-size:14px;font-weight:700;color:rgba(255,255,255,.85)">Uploading…</div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openContentAgreement() {
+  var media = document.getElementById('mediaInput');
+  var community = document.querySelector('[name=community]');
+  if (!media.files || !media.files[0]) { alert('Please upload a video or image first.'); return; }
+  if (!community.value) { alert('Please select a community first.'); return; }
+  document.getElementById('contentModal').style.display = 'flex';
+  ['chk1','chk2','chk3'].forEach(function(id){
+    document.getElementById(id).checked = false;
+  });
+  document.getElementById('agreeBtn').disabled = true;
+  document.getElementById('agreeBtn').style.opacity = '.4';
+}
+function closeModal() {
+  document.getElementById('contentModal').style.display = 'none';
+}
+['chk1','chk2','chk3'].forEach(function(id){
+  document.addEventListener('change', function(e){
+    if(e.target.id && e.target.id.startsWith('chk')){
+      var all = document.getElementById('chk1').checked && document.getElementById('chk2').checked && document.getElementById('chk3').checked;
+      document.getElementById('agreeBtn').disabled = !all;
+      document.getElementById('agreeBtn').style.opacity = all ? '1' : '.4';
+    }
+  });
+});
+function setFlickProgress(pct) {
+  var circumference = 301.6;
+  document.getElementById('flickRing').style.strokeDashoffset = circumference - (circumference * pct / 100);
+  document.getElementById('flickPct').textContent = pct + '%';
+}
+function submitFlick() {
+  closeModal();
+  var form = document.querySelector('form');
+  var file = document.getElementById('mediaInput').files[0];
+  if (!file) return;
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  var overlay = document.getElementById('flickUploadOverlay');
+  overlay.style.display = 'flex';
+  setFlickProgress(0);
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', form.action || window.location.pathname);
+  xhr.upload.onprogress = function(e) {
+    if (e.lengthComputable) {
+      var pct = Math.round((e.loaded / e.total) * 100);
+      setFlickProgress(pct);
+      document.getElementById('flickUploadMsg').textContent = pct < 100 ? 'Uploading…' : 'Processing…';
+    }
+  };
+  xhr.onload = function() {
+    setFlickProgress(100);
+    document.getElementById('flickUploadMsg').textContent = 'Done! ✓';
+    if (xhr.status >= 200 && xhr.status < 400) {
+      setTimeout(function() {
+        document.open(); document.write(xhr.responseText); document.close();
+        window.history.replaceState({}, '', xhr.responseURL || window.location.pathname);
+      }, 400);
+    } else {
+      overlay.style.display = 'none';
+      btn.disabled = false;
+      alert('Upload failed. Please try again.');
+    }
+  };
+  xhr.onerror = function() {
+    overlay.style.display = 'none';
+    btn.disabled = false;
+    alert('Network error. Please try again.');
+  };
+  var formData = new FormData(form);
+  xhr.setRequestHeader('X-CSRFToken', formData.get('csrfmiddlewaretoken'));
+  xhr.send(formData);
+}
+
+function previewMedia(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var maxMB = 50;
+  if (file.size > maxMB * 1024 * 1024) {
+    var sizeMB = (file.size / (1024*1024)).toFixed(1);
+    alert('❌ File too large!\n\nYour file: ' + sizeMB + ' MB\nMaximum allowed: ' + maxMB + ' MB\n\nPlease upload a smaller video (compress it first).');
+    input.value = '';
+    return;
+  }
+  var placeholder = document.getElementById('previewPlaceholder');
+  var video = document.getElementById('previewVideo');
+  var img = document.getElementById('previewImage');
+  placeholder.style.display = 'none';
+  if (file.type.startsWith('video/')) {
+    var url = URL.createObjectURL(file);
+    var tmp = document.createElement('video');
+    tmp.preload = 'metadata';
+    tmp.onloadedmetadata = function() {
+      URL.revokeObjectURL(url);
+      if (tmp.duration > 60) {
+        alert('Video must be 60 seconds or less. Your video is ' + Math.round(tmp.duration) + 's.');
+        input.value = '';
+        placeholder.style.display = 'block';
+        video.style.display = 'none';
+        return;
+      }
+      video.src = URL.createObjectURL(file);
+      video.style.display = 'block';
+      img.style.display = 'none';
+      video.play();
+    };
+    tmp.src = url;
+  } else {
+    img.src = URL.createObjectURL(file);
+    img.style.display = 'block';
+    video.style.display = 'none';
+  }
+}
+
+</script>
+{% endblock %}

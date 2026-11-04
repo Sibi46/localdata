@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}My Offers{% endblock %}
+{% block content %}
+<main style="max-width:800px;margin:24px auto;padding:16px">
+<h1>My Offers</h1><a href="{% url 'offer_post' %}">Post an offer</a>
+{% for offer in offers %}<article style="padding:16px;border-bottom:1px solid #ddd">
+<h2>{{ offer.title }}</h2>{% if offer.image %}<img src="{{ offer.image.url }}" alt="{{ offer.title }}" width="160">{% endif %}
+<p>{{ offer.discount_text }} — {{ offer.description }}</p>
+<p>{% if offer.is_active %}Approved{% else %}Pending approval / inactive{% endif %}</p>
+{% if offer.is_active %}<form method="post">{% csrf_token %}<input type="hidden" name="offer_id" value="{{ offer.pk }}"><button type="submit">Withdraw offer</button></form>{% endif %}
+</article>{% empty %}<p>You have not posted any offers yet.</p>{% endfor %}
+</main>
+{% endblock %}

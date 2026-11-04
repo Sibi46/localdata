@@ -1,0 +1,25 @@
+{% load static %}
+<section class="hp-section hp-overview" aria-label="Explore your neighbourhood">
+  <div class="hp-heading"><div><p class="hp-eyebrow">MAKE YOURSELF AT HOME</p><h1>Everything nearby.</h1></div></div>
+  <div class="hp-shortcuts">
+    <a class="hp-tile hp-pink" href="/businesses/"><span>🛍️</span><strong>Shops</strong></a>
+    <a class="hp-tile hp-mint" href="/advertise/"><span>🏷️</span><strong>Offers</strong></a>
+
+    <a class="hp-tile hp-blue" href="/news/"><span>📰</span><strong>News</strong></a>
+
+  </div>
+  <button class="hp-explore-trigger" type="button" data-explore-open aria-haspopup="dialog"><span class="hp-explore-icon" aria-hidden="true">✦</span><span><strong>Explore more</strong><small>Shops, offers &amp; news</small></span><span aria-hidden="true">↗</span></button>
+  <aside class="hp-advertise"><span class="hp-megaphone" aria-hidden="true">📣</span><div><h2>Help your neighbourhood find you</h2><p>Share your business and offers with people in your local area.</p></div><a href="{% if request.user.is_authenticated and request.user.advertiser.status == 'approved' %}/advertiser/dashboard/{% else %}/advertise/register/{% endif %}">Get started <span aria-hidden="true">↗</span></a></aside>
+</section>
+<dialog id="home-explore" class="hp-dialog" aria-labelledby="hp-explore-title">
+  <div class="hp-dialog-header"><div><p class="hp-eyebrow">A LITTLE CLOSER TO HOME</p><h2 id="hp-explore-title">Explore your pincode</h2></div><button type="button" data-explore-close aria-label="Close Explore">✕</button></div>
+  <div class="hp-explore-grid">
+    <a class="hp-pink" href="/businesses/"><span>🛍️</span><strong>Shops</strong><small>Discover local businesses</small></a>
+    <a class="hp-mint" href="/advertise/"><span>🏷️</span><strong>Offers</strong><small>Find local deals</small></a>
+
+
+    <a class="hp-blue" href="/news/"><span>📰</span><strong>News</strong><small>Read your local edition</small></a>
+    <a class="hp-lilac" href="/flicks/"><span>🎬</span><strong>Flick</strong><small>Watch community posts</small></a>
+    <a class="hp-blue" href="/advertise/register/"><span>📣</span><strong>Advertise</strong><small>Promote your business</small></a>
+  </div>
+</dialog>

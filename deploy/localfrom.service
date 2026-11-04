@@ -1,0 +1,26 @@
+[Unit]
+Description=LOCALFROM Daphne ASGI
+After=network.target mysql.service redis-server.service
+
+[Service]
+Type=simple
+User=localfrom
+Group=www-data
+WorkingDirectory=/srv/localfrom/app
+EnvironmentFile=/etc/localfrom/localfrom.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStartPre=/srv/localfrom/venv/bin/python manage.py check --deploy --fail-level ERROR
+ExecStart=/srv/localfrom/venv/bin/daphne -b 127.0.0.1 -p 8001 --proxy-headers jobportal.asgi:application
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/srv/localfrom/storage
+UMask=0027
+LimitNOFILE=8192
+
+[Install]
+WantedBy=multi-user.target

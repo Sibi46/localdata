@@ -1,0 +1,924 @@
+{% extends 'base.html' %}
+{% block title %}Flicks — Local From{% endblock %}
+
+{% block content %}
+<style>
+body { overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+.navbar { display: none !important; }
+.bottom-nav { z-index: 1200 !important; }
+
+/* ── ROOT ── */
+#fk-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: #000;
+}
+
+/* ── FEED ── */
+.fk-feed {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.fk-feed::-webkit-scrollbar { display: none; }
+
+/* ── REEL ── */
+.fk-reel {
+  height: 100dvh;
+  position: relative;
+  scroll-snap-align: start;
+  overflow: hidden;
+  background: #000;
+  isolation: isolate;
+}
+@supports not (height: 100dvh) { .fk-reel { height: 100vh; } }
+
+/* gradient top/bottom overlays */
+.fk-reel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 140px;
+  background: linear-gradient(to bottom, rgba(0,0,0,.55), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+.fk-reel::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 300px;
+  background: linear-gradient(to top, rgba(0,0,0,.78), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ── MEDIA ── */
+.fk-reel-media {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+.fk-reel-media video,
+.fk-reel-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── FIXED TOP BAR ── */
+#fk-topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 48px 16px 14px;
+  background: linear-gradient(to bottom, rgba(0,0,0,.55), transparent);
+  pointer-events: none;
+}
+#fk-topbar > * { pointer-events: all; }
+.fk-topbar-title { font-size: 22px; font-weight: 900; color: #fff; letter-spacing: -.3px; }
+.fk-post-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1.5px solid rgba(255,255,255,.3);
+}
+
+/* ── SOUND CONTROL (center of the video) ── */
+.fk-mute-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 7;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.45);
+  border-radius: 24px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  min-height: 44px;
+  min-width: 48px;
+  transition: transform .12s;
+}
+.fk-mute-btn:active { transform: translate(-50%, -50%) scale(.95); }
+.fk-mute-btn:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.fk-mute-btn[hidden] { display: none; }
+.fk-mute-btn i {
+  font-size: 20px;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
+}
+.fk-mute-btn span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+
+/* ── RIGHT ACTIONS ── */
+.fk-actions {
+  position: absolute;
+  right: 10px;
+  bottom: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  z-index: 20;
+}
+.fk-act-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #fff;
+  min-width: 48px;
+  transition: transform .12s;
+}
+.fk-act-btn:active { transform: scale(0.82); }
+.fk-act-btn i {
+  font-size: 30px;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
+}
+.fk-act-btn span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+.fk-like-btn.liked i { color: #ed4956; }
+
+/* delete */
+.fk-delete-btn {
+  background: rgba(0,0,0,.45);
+  border: none;
+  color: rgba(255,255,255,.75);
+  cursor: pointer;
+  font-size: 16px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+/* ── BOTTOM INFO ── */
+.fk-reel-info {
+  position: absolute;
+  bottom: 78px;
+  left: 14px;
+  right: 76px;
+  z-index: 20;
+  color: #fff;
+}
+.fk-reel-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.fk-reel-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#0a66c2,#7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  border: 2.5px solid rgba(255,255,255,.9);
+  flex-shrink: 0;
+}
+.fk-reel-uname { font-size: 14px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.fk-reel-meta  { font-size: 11px; color: rgba(255,255,255,.75); margin-top: 2px; }
+.fk-reel-title { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 5px; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.fk-reel-caption {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255,255,255,.95);
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: pointer;
+}
+.fk-reel-caption.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+/* ── HEART BURST ── */
+.fk-heart-burst {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  font-size: 100px;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 30;
+}
+.fk-heart-burst.pop { animation: heartPop .7s ease forwards; }
+@keyframes heartPop {
+  0%   { transform: translate(-50%,-50%) scale(0);   opacity: 1; }
+  40%  { transform: translate(-50%,-50%) scale(1.4); opacity: 1; }
+  70%  { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(1.3); opacity: 0; }
+}
+
+/* ── PLAY/PAUSE INDICATOR ── */
+.fk-play-indicator {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #fff;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+}
+.fk-play-indicator.show { animation: playPop .5s ease forwards; }
+@keyframes playPop {
+  0%  { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+  60% { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+  100%{ transform: translate(-50%,-50%) scale(1);   opacity: 0; }
+}
+
+/* ── COMMENT SHEET ── */
+#fk-cmt-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s;
+}
+#fk-cmt-sheet.open { pointer-events: all; opacity: 1; }
+#fk-cmt-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.5);
+}
+#fk-cmt-panel {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  max-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.32,1,.23,1);
+}
+#fk-cmt-sheet.open #fk-cmt-panel { transform: translateY(0); }
+
+.cmt-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 10px auto 0; flex-shrink: 0; }
+.cmt-sheet-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid #efefef;
+  font-size: 15px;
+  font-weight: 800;
+  color: #111;
+  flex-shrink: 0;
+}
+.cmt-sheet-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; line-height: 1; padding: 0; }
+#fk-cmt-list-inner { overflow-y: auto; flex: 1; padding: 4px 0; }
+.cmt-empty { text-align: center; padding: 36px 20px; color: #bbb; }
+.cmt-empty i { font-size: 38px; display: block; margin-bottom: 10px; }
+.cmt-row { display: flex; gap: 10px; padding: 10px 16px; }
+.cmt-row-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg,#0a66c2,#004182);
+  color: #fff; font-size: 13px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cmt-row-body { flex: 1; }
+.cmt-row-name { font-size: 13px; font-weight: 800; color: #111; margin-bottom: 2px; }
+.cmt-row-text { font-size: 13px; color: #333; line-height: 1.45; }
+.cmt-sheet-inp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-top: 1px solid #efefef;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  background: #fff;
+  flex-shrink: 0;
+}
+.cmt-sheet-inp input {
+  flex: 1;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 22px;
+  padding: 10px 16px;
+  font-size: 13px;
+  outline: none;
+  background: #f8f9fa;
+  font-family: inherit;
+}
+.cmt-sheet-inp input:focus { border-color: #0a66c2; }
+.cmt-send-btn {
+  background: #0a66c2; color: #fff;
+  border: none; border-radius: 50%;
+  width: 38px; height: 38px; font-size: 15px;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── SHARE TOAST ── */
+#fk-toast {
+  position: fixed; bottom: 90px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.85); color: #fff;
+  padding: 10px 22px; border-radius: 24px;
+  font-size: 13px; font-weight: 700;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s; z-index: 9999;
+  white-space: nowrap;
+}
+#fk-toast.show { opacity: 1; }
+
+/* ── EMPTY ── */
+.fk-empty {
+  height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #fff; text-align: center; padding: 40px;
+}
+</style>
+
+<!-- Fixed top bar -->
+
+<!-- Category tabs -->
+<div style="position:sticky;top:52px;z-index:190;background:#111;padding:6px 12px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none">
+  <a href="/flicks/" style="flex-shrink:0;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;
+    {% if not active_cat %}background:#fff;color:#111{% else %}background:rgba(255,255,255,.12);color:#fff{% endif %}">All</a>
+  <a href="/flicks/?cat=health" style="flex-shrink:0;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;
+    {% if active_cat == 'health' %}background:#16a34a;color:#fff{% else %}background:rgba(255,255,255,.12);color:#fff{% endif %}">🌿 Health</a>
+  <a href="/flicks/?cat=job" style="flex-shrink:0;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;
+    {% if active_cat == 'job' %}background:#0a66c2;color:#fff{% else %}background:rgba(255,255,255,.12);color:#fff{% endif %}">💼 Job</a>
+  <a href="/flicks/?cat=business" style="flex-shrink:0;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;
+    {% if active_cat == 'business' %}background:#f3a000;color:#fff{% else %}background:rgba(255,255,255,.12);color:#fff{% endif %}">🏪 Business</a>
+</div>
+
+
+<div id="fk-root">
+  <div class="fk-feed" id="fkFeed">
+
+    {% for msg in messages %}{% if forloop.last %}
+    <div style="position:fixed;top:110px;left:50%;transform:translateX(-50%);z-index:200;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.2);white-space:nowrap;max-width:90vw;text-align:center;{% if msg.tags == 'error' %}background:#fee2e2;border:1.5px solid #ef4444;color:#b91c1c{% else %}background:#e8f5e9;border:1.5px solid #2e7d32;color:#2e7d32{% endif %}">
+      {% if msg.tags == 'error' %}<i class="fas fa-exclamation-circle"></i>{% else %}<i class="fas fa-check-circle"></i>{% endif %} {{ msg }}
+    </div>
+    {% endif %}{% endfor %}
+
+    {% if my_pending %}
+    <div style="position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:300;background:#1e293b;color:#fff;padding:10px 18px;border-radius:12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.4);max-width:90vw">
+      <span>⏳ {{ my_pending.count }} flick{{ my_pending.count|pluralize }} pending admin approval</span>
+    </div>
+    {% endif %}
+
+    {% for flick in flicks %}
+    <div class="fk-reel" id="fkr-{{ flick.pk }}" data-pk="{{ flick.pk }}">
+
+      <!-- Media -->
+      <div class="fk-reel-media" id="fkm-{{ flick.pk }}">
+        {% if flick.video %}
+        <video loop playsinline preload="metadata" data-fk-vid id="fkv-{{ flick.pk }}">
+          <source src="{{ flick.video.url }}">
+        </video>
+        {% elif flick.image %}
+        <img src="{{ flick.image.url }}" alt="">
+        {% else %}
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#0a66c2,#7c3aed);display:flex;align-items:center;justify-content:center;padding:24px">
+          <div style="font-size:22px;font-weight:800;color:#fff;text-align:center;line-height:1.5">{{ flick.title }}</div>
+        </div>
+        {% endif %}
+        <div class="fk-heart-burst" id="fk-hb-{{ flick.pk }}">❤️</div>
+        <div class="fk-play-indicator" id="fk-pi-{{ flick.pk }}"><i class="fas fa-pause"></i></div>
+      </div>
+
+      {% if flick.video %}
+      <button type="button" class="fk-mute-btn" onclick="fkToggleMute()" aria-label="Turn sound on" hidden>
+        <i class="fas fa-volume-mute fk-mute-icon" aria-hidden="true"></i>
+        <span class="fk-mute-label">Tap for sound</span>
+      </button>
+      {% endif %}
+
+      <!-- Right actions -->
+      <div class="fk-actions">
+        <!-- Like -->
+        <button class="fk-act-btn fk-like-btn {% if flick.pk in liked_ids %}liked{% endif %}"
+          id="fk-lb-{{ flick.pk }}"
+          onclick="fkLike({{ flick.pk }}, this)">
+          <i class="{% if flick.pk in liked_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+          <span id="fk-lc-{{ flick.pk }}">{{ flick.like_count }}</span>
+        </button>
+        <!-- Comment -->
+        <button class="fk-act-btn" onclick="fkOpenCmt({{ flick.pk }})">
+          <i class="far fa-comment"></i>
+          <span id="fk-cc-{{ flick.pk }}">{{ flick.comments.count }}</span>
+        </button>
+        <!-- Share -->
+        <button class="fk-act-btn" onclick="fkShare({{ flick.pk }}, '{{ flick.title|default:flick.user.get_full_name|escapejs }}')">
+          <i class="far fa-paper-plane"></i>
+          <span>Share</span>
+        </button>
+        <!-- Advertise own flick -->
+        {% if flick.user == request.user %}
+        <a href="/flicks/{{ flick.pk }}/advertise/" class="fk-act-btn" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:2px">
+          <i class="fas fa-bolt" style="color:#f59e0b"></i>
+          <span style="font-size:10px;color:#f59e0b">Boost</span>
+        </a>
+        {% endif %}
+        <!-- Delete own -->
+        {% if flick.user == request.user or request.user.admin_role == 'super_admin' %}
+        <form method="post" action="/flicks/{{ flick.pk }}/delete/" onsubmit="return confirm('Delete this flick?')" style="display:flex;justify-content:center">
+          {% csrf_token %}
+          <button type="submit" class="fk-delete-btn"><i class="fas fa-trash-alt"></i></button>
+        </form>
+        {% endif %}
+        <!-- Report (only for others' flicks) -->
+        {% if flick.user != request.user and request.user.is_authenticated %}
+        <button class="fk-act-btn fk-report-btn" id="fk-rep-{{ flick.pk }}"
+          onclick="fkOpenReport({{ flick.pk }})"
+          style="color:#ff4444">
+          <i class="fas fa-flag"></i>
+          <span style="font-size:10px">Report</span>
+        </button>
+        {% endif %}
+      </div>
+
+      <!-- Bottom info -->
+      <div class="fk-reel-info">
+        {% if flick.is_active_promoted %}
+        <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(124,58,237,0.85);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;margin-bottom:6px;backdrop-filter:blur(4px)">
+          <i class="fas fa-bolt"></i> Sponsored
+        </div>
+        {% endif %}
+        <div class="fk-reel-user">
+          <div class="fk-reel-avatar">{{ flick.user.get_full_name|default:flick.user.username|first|upper }}</div>
+          <div>
+            <div class="fk-reel-uname">{{ flick.user.get_full_name|default:flick.user.username }}</div>
+            <div class="fk-reel-meta">{{ flick.created_at|timesince }} ago</div>
+          </div>
+        </div>
+        {% if flick.title %}<div class="fk-reel-title">{{ flick.title }}</div>{% endif %}
+        {% if flick.caption %}
+        <div class="fk-reel-caption" onclick="this.classList.toggle('expanded')">{{ flick.caption }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Hidden comment data for sheet -->
+      <div id="fk-cd-{{ flick.pk }}" style="display:none">
+        {% for c in flick.comments.all %}
+        <div class="cmt-row">
+          <div class="cmt-row-av">{{ c.user.get_full_name|default:c.user.username|first|upper }}</div>
+          <div class="cmt-row-body">
+            <div class="cmt-row-name">{{ c.user.get_full_name|default:c.user.username }}</div>
+            <div class="cmt-row-text">{{ c.text }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+    {% empty %}
+    <div class="fk-empty">
+      <div style="font-size:64px;margin-bottom:20px">⚡</div>
+      <div style="font-size:22px;font-weight:800;margin-bottom:12px">No Flicks yet</div>
+      <p style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:28px">Be the first to share a Flick!</p>
+      <a href="/flicks/post/" style="background:#0a66c2;color:#fff;padding:13px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:15px">Post a Flick</a>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+<!-- Comment sheet -->
+<div id="fk-cmt-sheet">
+  <div id="fk-cmt-backdrop" onclick="fkCloseCmt()"></div>
+  <div id="fk-cmt-panel">
+    <div class="cmt-handle"></div>
+    <div class="cmt-sheet-hdr">
+      <span>Comments</span>
+      <button class="cmt-sheet-close" onclick="fkCloseCmt()">×</button>
+    </div>
+    <div id="fk-cmt-list-inner"></div>
+    <div class="cmt-sheet-inp">
+      <input type="text" id="fk-cmt-inp" placeholder="Add a comment…"
+        onkeydown="if(event.key==='Enter'){fkPostCmt();event.preventDefault()}">
+      <button class="cmt-send-btn" onclick="fkPostCmt()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<div id="fk-toast">Link copied!</div>
+
+<script>
+const _fcsrf = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+let _fkActivePk = null;
+let _fkMuted    = false;
+let _fkCmtPk    = null;
+const _fkNewCmts = {};
+
+/* dismiss banner */
+setTimeout(function(){ var b=document.getElementById('fk-msg-banner'); if(b) b.remove(); }, 3000);
+
+/* ── MUTE ── */
+function fkSyncSound() {
+  document.querySelectorAll('[data-fk-vid]').forEach(function(v){ v.muted = _fkMuted; });
+  document.querySelectorAll('.fk-mute-btn').forEach(function(button){
+    button.hidden = !_fkMuted;
+  });
+}
+
+async function fkPlay(vid) {
+  const attempt = (vid._fkPlayAttempt || 0) + 1;
+  vid._fkPlayAttempt = attempt;
+  const isCurrent = () => vid._fkPlayAttempt === attempt &&
+    vid.closest('.fk-reel').dataset.pk === String(_fkActivePk) && !_fkCmtPk;
+  vid.muted = _fkMuted;
+  try {
+    await vid.play();
+    if (isCurrent()) fkSyncSound();
+  } catch (error) {
+    // Browsers may require a gesture before allowing audible autoplay.
+    // A scroll/pause abort or an invalid video must not change the sound setting.
+    if (!isCurrent() || error.name !== 'NotAllowedError' || vid.muted) return;
+    _fkMuted = true;
+    fkSyncSound();
+    try { await vid.play(); } catch (_) {}
+  }
+}
+
+function fkToggleMute() {
+  const vid = document.querySelector('#fkr-' + _fkActivePk + ' [data-fk-vid]');
+  if (!vid) return;
+  _fkMuted = false;
+  // Keep the fallback button until play succeeds in this user gesture.
+  fkPlay(vid);
+}
+
+/* ── AUTO-PLAY via IntersectionObserver ── */
+const fkIO = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    const vid = entry.target.querySelector('[data-fk-vid]');
+    if (entry.isIntersecting) {
+      _fkActivePk = parseInt(entry.target.dataset.pk);
+      if (vid) fkPlay(vid);
+    } else {
+      if (vid) vid.pause();
+    }
+  });
+}, { threshold: 0.6 });
+document.querySelectorAll('.fk-reel').forEach(function(r){ fkIO.observe(r); });
+
+/* ── TAP: single = play/pause, double = like ── */
+let _tapTimer = null, _tapPk = null;
+document.querySelectorAll('.fk-reel-media').forEach(function(el) {
+  el.addEventListener('click', function(e) {
+    if (e.target.closest('button, a, form')) return;
+    const pk = parseInt(el.closest('.fk-reel').dataset.pk);
+    if (_tapTimer && _tapPk === pk) {
+      clearTimeout(_tapTimer); _tapTimer = null;
+      fkDblTap(pk, el);
+    } else {
+      _tapPk = pk;
+      _tapTimer = setTimeout(function() {
+        _tapTimer = null;
+        const vid = el.querySelector('[data-fk-vid]');
+        if (vid) {
+          if (vid.paused) { fkPlay(vid); fkShowPI(pk, false); }
+          else            { vid.pause();                    fkShowPI(pk, true);  }
+        }
+      }, 220);
+    }
+  });
+});
+
+function fkShowPI(pk, pause) {
+  var pi = document.getElementById('fk-pi-' + pk);
+  if (!pi) return;
+  pi.querySelector('i').className = pause ? 'fas fa-pause' : 'fas fa-play';
+  pi.classList.remove('show'); void pi.offsetWidth; pi.classList.add('show');
+}
+
+/* ── LIKE ── */
+function fkLike(pk, btn) {
+  {% if not request.user.is_authenticated %}
+  window.location.href = '/login/?next=/flicks/'; return;
+  {% endif %}
+  fetch('/flicks/' + pk + '/like/', { method: 'POST', headers: { 'X-CSRFToken': _fcsrf } })
+    .then(function(r){ return r.json(); }).then(function(d) {
+      if (!d.success) return;
+      var icon = btn.querySelector('i');
+      var lc   = document.getElementById('fk-lc-' + pk);
+      if (d.liked) { icon.className = 'fas fa-heart'; btn.classList.add('liked'); }
+      else         { icon.className = 'far fa-heart';  btn.classList.remove('liked'); }
+      if (lc) lc.textContent = d.count;
+    });
+}
+
+/* ── DOUBLE-TAP ── */
+function fkDblTap(pk, mediaEl) {
+  var btn = document.getElementById('fk-lb-' + pk);
+  if (btn && !btn.classList.contains('liked')) fkLike(pk, btn);
+  var burst = document.getElementById('fk-hb-' + pk);
+  if (burst) { burst.classList.remove('pop'); void burst.offsetWidth; burst.classList.add('pop'); }
+}
+
+/* ── COMMENTS ── */
+function fkOpenCmt(pk) {
+  _fkCmtPk = pk;
+  var list    = document.getElementById('fk-cmt-list-inner');
+  var dataDiv = document.getElementById('fk-cd-' + pk);
+  var html    = dataDiv ? dataDiv.innerHTML.trim() : '';
+
+  if (_fkNewCmts[pk]) {
+    _fkNewCmts[pk].forEach(function(c) {
+      html += '<div class="cmt-row"><div class="cmt-row-av">' + (c.name||'?')[0].toUpperCase() + '</div>' +
+              '<div class="cmt-row-body"><div class="cmt-row-name">' + c.name + '</div>' +
+              '<div class="cmt-row-text">' + c.text + '</div></div></div>';
+    });
+  }
+
+  list.innerHTML = html ||
+    '<div class="cmt-empty"><i class="far fa-comment"></i>No comments yet<br><span style="font-size:12px;color:#ccc">Be the first!</span></div>';
+
+  document.getElementById('fk-cmt-sheet').classList.add('open');
+  var vid = document.querySelector('#fkr-' + pk + ' [data-fk-vid]');
+  if (vid) vid.pause();
+  setTimeout(function(){ document.getElementById('fk-cmt-inp').focus(); }, 340);
+}
+
+function fkCloseCmt() {
+  document.getElementById('fk-cmt-sheet').classList.remove('open');
+  document.getElementById('fk-cmt-inp').value = '';
+  _fkCmtPk = null;
+  if (_fkActivePk) {
+    var vid = document.querySelector('#fkr-' + _fkActivePk + ' [data-fk-vid]');
+    if (vid) fkPlay(vid);
+  }
+}
+
+function fkPostCmt() {
+  var inp  = document.getElementById('fk-cmt-inp');
+  var text = inp.value.trim();
+  if (!text || !_fkCmtPk) return;
+  {% if not request.user.is_authenticated %}
+  window.location.href = '/login/?next=/flicks/'; return;
+  {% endif %}
+  var pk = _fkCmtPk;
+  inp.disabled = true;
+  fetch('/flicks/' + pk + '/comment/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': _fcsrf, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: text })
+  }).then(function(r){ return r.json(); }).then(function(d) {
+    inp.disabled = false;
+    if (!d.success) return;
+    inp.value = '';
+    if (!_fkNewCmts[pk]) _fkNewCmts[pk] = [];
+    _fkNewCmts[pk].push({ name: d.name, text: d.text });
+
+    var list = document.getElementById('fk-cmt-list-inner');
+    var emptyEl = list.querySelector('.cmt-empty');
+    if (emptyEl) emptyEl.remove();
+
+    var div = document.createElement('div');
+    div.className = 'cmt-row';
+    div.innerHTML = '<div class="cmt-row-av">' + (d.name||'?')[0].toUpperCase() + '</div>' +
+      '<div class="cmt-row-body"><div class="cmt-row-name">' + d.name + '</div>' +
+      '<div class="cmt-row-text">' + d.text + '</div></div>';
+    list.appendChild(div);
+    list.scrollTop = list.scrollHeight;
+
+    var cc = document.getElementById('fk-cc-' + pk);
+    if (cc) cc.textContent = parseInt(cc.textContent||0) + 1;
+  }).catch(function(){ inp.disabled = false; });
+}
+
+/* ── SHARE ── */
+function fkShare(pk, title) {
+  var url = window.location.origin + '/flicks/';
+  var shareTitle = title || 'Flick on Local From';
+
+  function showToast(msg) {
+    var t = document.getElementById('fk-toast');
+    if (!t) return;
+    t.textContent = msg || 'Link copied!';
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function execCopy() {
+    var el = document.createElement('textarea');
+    el.value = url;
+    el.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(el);
+    el.focus(); el.select();
+    try { document.execCommand('copy'); showToast('Link copied!'); }
+    catch(e) { prompt('Copy link:', url); }
+    document.body.removeChild(el);
+  }
+
+  function copyFallback() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url)
+        .then(function(){ showToast('Link copied!'); })
+        .catch(execCopy);
+    } else {
+      execCopy();
+    }
+  }
+
+  if (navigator.share) {
+    navigator.share({ title: shareTitle, url: url })
+      .catch(function(e){ if (e.name !== 'AbortError') copyFallback(); });
+  } else {
+    copyFallback();
+  }
+}
+
+/* ── SAFETY: pause all others ── */
+document.addEventListener('play', function(e) {
+  document.querySelectorAll('[data-fk-vid]').forEach(function(v){
+    if (v !== e.target) v.pause();
+  });
+}, true);
+</script>
+
+<style>
+/* ── REPORT MODAL ── */
+#fk-report-overlay {
+  display:none;position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:20px;
+}
+#fk-report-overlay.open { display:flex; }
+#fk-report-box {
+  background:#1a1a1a;border-radius:16px;width:100%;max-width:360px;
+  padding:24px;color:#fff;
+}
+#fk-report-box h3 { font-size:16px;font-weight:800;margin:0 0 6px;color:#ff4444; }
+#fk-report-box p  { font-size:12px;color:#aaa;margin:0 0 16px; }
+.fk-reason-btn {
+  display:block;width:100%;text-align:left;padding:11px 14px;
+  background:#2a2a2a;border:1.5px solid #333;color:#fff;
+  border-radius:10px;margin-bottom:8px;font-size:13px;cursor:pointer;transition:.2s;
+}
+.fk-reason-btn:hover,.fk-reason-btn.selected { background:#ff4444;border-color:#ff4444; }
+#fk-report-note {
+  width:100%;background:#2a2a2a;border:1.5px solid #333;border-radius:10px;
+  color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;
+  resize:none;outline:none;box-sizing:border-box;margin-bottom:12px;
+}
+#fk-report-submit {
+  width:100%;padding:12px;background:#ff4444;color:#fff;border:none;
+  border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;
+}
+#fk-report-cancel {
+  width:100%;padding:10px;background:none;color:#aaa;border:none;
+  font-size:13px;cursor:pointer;margin-top:6px;
+}
+</style>
+
+<!-- Report Modal -->
+<div id="fk-report-overlay">
+  <div id="fk-report-box">
+    <h3><i class="fas fa-flag"></i> Report Flick</h3>
+    <p>Why are you reporting this?</p>
+    <div id="fk-reason-list">
+      <button class="fk-reason-btn" onclick="fkSelectReason(this,'inappropriate')">🚫 Inappropriate Content</button>
+      <button class="fk-reason-btn" onclick="fkSelectReason(this,'spam')">📢 Spam or Misleading</button>
+      <button class="fk-reason-btn" onclick="fkSelectReason(this,'violence')">⚠️ Violence or Dangerous</button>
+      <button class="fk-reason-btn" onclick="fkSelectReason(this,'harassment')">😡 Harassment or Bullying</button>
+      <button class="fk-reason-btn" onclick="fkSelectReason(this,'misinformation')">❌ False Information</button>
+      <button class="fk-reason-btn" onclick="fkSelectReason(this,'other')">🔖 Other</button>
+    </div>
+    <textarea id="fk-report-note" rows="2" placeholder="Add details (optional)..."></textarea>
+    <button id="fk-report-submit" onclick="fkSubmitReport()">Submit Report</button>
+    <button id="fk-report-cancel" onclick="fkCloseReport()">Cancel</button>
+  </div>
+</div>
+
+<script>
+var _fkReportPk = null;
+var _fkReportReason = '';
+
+function fkOpenReport(pk) {
+  _fkReportPk = pk;
+  _fkReportReason = '';
+  document.querySelectorAll('.fk-reason-btn').forEach(function(b){ b.classList.remove('selected'); });
+  document.getElementById('fk-report-note').value = '';
+  document.getElementById('fk-report-overlay').classList.add('open');
+}
+function fkCloseReport() {
+  document.getElementById('fk-report-overlay').classList.remove('open');
+  _fkReportPk = null;
+  _fkReportReason = '';
+}
+function fkSelectReason(btn, reason) {
+  document.querySelectorAll('.fk-reason-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  _fkReportReason = reason;
+}
+function fkSubmitReport() {
+  if (!_fkReportReason) {
+    alert('Please select a reason.');
+    return;
+  }
+  var note = document.getElementById('fk-report-note').value.trim();
+  var fd = new FormData();
+  fd.append('reason', _fkReportReason);
+  fd.append('note', note);
+  fd.append('csrfmiddlewaretoken', _fcsrf);
+  fetch('/flicks/' + _fkReportPk + '/report/', { method:'POST', body:fd })
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      fkCloseReport();
+      var btn = document.getElementById('fk-rep-' + _fkReportPk);
+      if (d.success) {
+        if (btn) { btn.querySelector('i').className = 'fas fa-flag'; btn.style.opacity = '.5'; btn.disabled = true; }
+        fkToast('✅ Reported. We will review this.');
+      } else if (d.already) {
+        fkToast('⚠️ You already reported this flick.');
+      } else {
+        fkToast('❌ ' + (d.error || 'Could not report.'));
+      }
+    });
+}
+function fkToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;white-space:nowrap;';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3000);
+}
+// Close overlay on backdrop click
+document.getElementById('fk-report-overlay').addEventListener('click', function(e){
+  if (e.target === this) fkCloseReport();
+});
+</script>
+{% endblock %}
+
+{% block site_bottom_nav %}
+<style>
+.fk-botnav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;box-shadow:0 -2px 16px rgba(0,0,0,.10);z-index:9999;padding:6px 0 4px}
+.fk-botnav-inner{display:flex;align-items:flex-end;justify-content:space-around;max-width:640px;margin:0 auto}
+.fk-bn{display:flex;flex-direction:column;align-items:center;gap:3px;color:#888;text-decoration:none;font-size:10px;font-weight:600;flex:1;padding:6px 4px;position:relative}
+.fk-bn i{font-size:19px}
+.fk-bn.active{color:#1d4ed8}
+.fk-bn-burst{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#ef4444;color:#fff;font-size:6px;font-weight:900;letter-spacing:.3px;clip-path:polygon(50% 0%,54% 7%,61% 2%,63% 10%,71% 6%,71% 14%,79% 12%,77% 20%,86% 20%,82% 27%,91% 29%,85% 35%,93% 39%,86% 44%,93% 50%,86% 56%,93% 61%,85% 65%,91% 71%,82% 73%,86% 80%,77% 80%,79% 88%,71% 86%,71% 94%,63% 90%,61% 98%,54% 93%,50% 100%,46% 93%,39% 98%,37% 90%,29% 94%,29% 86%,21% 88%,23% 80%,14% 80%,18% 73%,9% 71%,15% 65%,7% 61%,14% 56%,7% 50%,14% 44%,7% 39%,15% 35%,9% 29%,18% 27%,14% 20%,23% 20%,21% 12%,29% 14%,29% 6%,37% 10%,39% 2%,46% 7%);line-height:1;text-align:center}
+.fk-bn-fab{margin-top:-22px}
+@media(max-width:768px){.fk-botnav{display:block}}
+</style>
+<nav class="fk-botnav">
+  <div class="fk-botnav-inner">
+
+    <a href="/advertise/" class="fk-bn"><span class="fk-bn-burst">OFFER</span><span>Offers</span></a>
+    <a href="/flicks/" class="fk-bn fk-bn-fab active">
+      <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;box-shadow:0 4px 14px rgba(124,58,237,.35)">
+        <img src="/static/images/reel.png" style="width:100%;height:100%;object-fit:cover;display:block">
+      </div>
+      <span>Flick</span>
+    </a>
+
+
+  </div>
+</nav>
+{% endblock %}

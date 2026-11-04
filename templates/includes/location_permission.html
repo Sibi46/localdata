@@ -1,0 +1,17 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/location-permission.css' %}?v=1">
+<dialog id="locationPermission" class="location-permission" aria-labelledby="location-permission-title">
+  <button type="button" class="location-dismiss" data-location-dismiss aria-label="Not now">×</button>
+  <span class="location-permission-icon" aria-hidden="true">⌖</span>
+  <h2 id="location-permission-title">See what’s near you</h2>
+  <p>Allow location access to find nearby jobs. Choose your pincode for local shops, offers and communities.</p>
+  <button type="button" class="location-allow" data-use-location>Use my location</button>
+  <p class="location-status" data-location-status role="status" aria-live="polite"></p>
+  <a class="location-nearby" data-location-jobs hidden>Find jobs near me →</a>
+  <div class="location-divider">or enter your pincode</div>
+  <form method="post" action="{% url 'select_area' %}" class="location-manual">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><label for="welcome-location-pin">Pincode</label><input data-area-lookup id="welcome-location-pin" name="pincode" value="{{ active_area }}" inputmode="numeric" pattern="[1-9][0-9]{5}" maxlength="6" autocomplete="postal-code" placeholder="6-digit pincode" required><button type="submit">Explore my area</button></form>
+  <button type="button" class="location-later" data-location-dismiss>Not now</button>
+</dialog>
+<script src="{% static 'js/location-permission.js' %}?v=1" defer></script>
+
+<script src="{% static 'js/area-names.js' %}?v=1" defer></script>

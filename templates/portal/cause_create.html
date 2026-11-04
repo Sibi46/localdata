@@ -1,0 +1,28 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Create Cause{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:680px">
+  <div class="psec-header">
+    <div class="psec-title">❤️ Create a Cause</div>
+    <a href="/portal/c/{{ community.page_id }}/dashboard/" class="pbtn pbtn-outline pbtn-sm">← Dashboard</a>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="pcard">
+      <div class="pcard-body">
+        <div class="pform-group"><label class="pform-label">Cause Name *</label><input type="text" name="name" class="pform-input" required placeholder="e.g. Clean Ukkadam Lake"></div>
+        <div class="pform-group"><label class="pform-label">Description *</label><textarea name="description" class="pform-input" required placeholder="What is this cause about?"></textarea></div>
+        <div class="pform-group"><label class="pform-label">Objective *</label><textarea name="objective" class="pform-input" required placeholder="What do you want to achieve?"></textarea></div>
+        <div class="pform-group"><label class="pform-label">Target Goal</label><input type="text" name="target_goal" class="pform-input" placeholder="e.g. 500 volunteers, Plant 1000 trees"></div>
+        <div class="p2col">
+          <div class="pform-group"><label class="pform-label">Start Date *</label><input type="date" name="start_date" class="pform-input" required></div>
+          <div class="pform-group"><label class="pform-label">End Date</label><input type="date" name="end_date" class="pform-input"></div>
+          <div class="pform-group"><label class="pform-label">Location</label><input type="text" name="location" class="pform-input" placeholder="Where is this cause based?"></div>
+          <div class="pform-group"><label class="pform-label">Cause Image</label><input type="file" name="image" accept="image/*" class="pform-input" style="padding:6px"></div>
+        </div>
+        <button type="submit" class="pbtn pbtn-green pbtn-full">Create Cause</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

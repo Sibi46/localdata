@@ -1,0 +1,57 @@
+{% extends 'portal/base_portal.html' %}
+{% block title %}Add Office Bearer{% endblock %}
+{% block content %}
+<div class="pcontent" style="max-width:700px">
+  <div class="psec-header">
+    <div class="psec-title">👑 Add Office Bearer</div>
+    <a href="/portal/c/{{ community.page_id }}/dashboard/" class="pbtn pbtn-outline pbtn-sm">← Dashboard</a>
+  </div>
+
+  <div class="pcard" style="margin-bottom:16px">
+    <div class="pcard-head"><div class="pcard-title">Current Leaders</div></div>
+    <div class="pcard-body" style="padding:0">
+      {% for leader in leaders %}
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f1f5f9">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:#0f172a">{{ leader.user.get_full_name }}</div>
+          <div style="font-size:11px;color:#64748b">{{ leader.get_role_label }}</div>
+        </div>
+        <span class="pbadge {% if leader.status == 'accepted' %}pbadge-green{% elif leader.status == 'pending' %}pbadge-orange{% else %}pbadge-red{% endif %}">{{ leader.get_status_display }}</span>
+      </div>
+      {% empty %}
+      <div class="pempty"><div class="pempty-text" style="font-size:13px">No leaders yet.</div></div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="pcard-head"><div class="pcard-title">Nominate New Office Bearer</div></div>
+    <div class="pcard-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="pform-group">
+          <label class="pform-label">Role *</label>
+          <select name="role" class="pform-input" id="role-select" onchange="document.getElementById('custom-role').style.display=this.value=='other'?'block':'none'">
+            {% for val, label in roles %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="pform-group" id="custom-role" style="display:none">
+          <label class="pform-label">Custom Role Title</label>
+          <input type="text" name="custom_role" class="pform-input" placeholder="e.g. Cultural Coordinator">
+        </div>
+        <div class="pform-group">
+          <label class="pform-label">Nominee Email *</label>
+          <input type="email" name="email" class="pform-input" required placeholder="Registered email of the person">
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">They must have an account on Local From. Nomination link will be sent to this email.</div>
+        </div>
+        <div class="pform-group">
+          <label class="pform-label">Nominee Phone (WhatsApp)</label>
+          <input type="text" name="phone" class="pform-input" placeholder="+91 98765 43210">
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">Optional — nomination details will also be sent via WhatsApp.</div>
+        </div>
+        <button type="submit" class="pbtn pbtn-primary pbtn-full">Send Nomination</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

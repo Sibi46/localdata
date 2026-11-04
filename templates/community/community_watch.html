@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Community Watch – Local From{% endblock %}
+{% block content %}
+<style>
+  nav.navbar{display:none!important}
+  body{background:#f1f5f9}
+  #cwTopBar{position:sticky;top:0;z-index:200;background:#1e293b;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  #cwTopBar a.back{color:#94a3b8;text-decoration:none;font-size:20px}
+  #cwTopBar h2{font-size:16px;font-weight:900;color:#fff;margin:0;flex:1}
+
+  .cw-hero{background:linear-gradient(135deg,#1e293b,#374151);padding:18px 16px;color:#fff;text-align:center}
+  .cw-hero h1{font-size:18px;font-weight:900;margin:0 0 4px}
+  .cw-hero p{font-size:12px;color:#94a3b8;margin:0}
+
+  .cw-filters{background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 16px;display:flex;flex-direction:column;gap:8px}
+  .cw-filter-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .cw-filter-row::-webkit-scrollbar{display:none}
+  .cw-chip{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;background:#f1f5f9;color:#374151;border:1.5px solid transparent;white-space:nowrap}
+  .cw-chip.active{background:#e2e8f0;color:#1e293b;border-color:#94a3b8}
+
+  .cw-fab{position:fixed;bottom:80px;right:16px;z-index:100;background:#dc2626;color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,.4);display:flex;align-items:center;justify-content:center;text-decoration:none;font-weight:900}
+
+  .cw-feed{padding:14px 16px 100px;max-width:600px;margin:0 auto}
+  .cw-card{background:#fff;border-radius:14px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07);border:1.5px solid #e2e8f0}
+  .cw-card-strip{height:4px}
+  .cw-card-img{width:100%;max-height:160px;object-fit:cover;display:block}
+  .cw-card-body{padding:12px 14px}
+  .cw-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+  .cw-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;background:#f1f5f9;color:#374151}
+  .cw-sev-badge{font-size:10px;font-weight:900;padding:3px 10px;border-radius:8px;color:#fff}
+  .cw-resolved-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;background:#dcfce7;color:#16a34a;margin-left:auto}
+  .cw-title{font-size:15px;font-weight:900;color:#111;margin-bottom:4px}
+  .cw-desc{font-size:12px;color:#6b7280;line-height:1.5}
+  .cw-meta{font-size:11px;color:#9ca3af;margin-top:6px}
+  .cw-actions{display:flex;border-top:1px solid #f1f5f9;margin-top:10px}
+  .cw-action{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 0;background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;color:#6b7280;font-family:inherit;text-decoration:none}
+  .cw-action.confirmed{color:#dc2626}
+  .cw-divider{width:1px;background:#f1f5f9;height:32px;flex-shrink:0;align-self:center}
+  .cw-empty{text-align:center;padding:3rem 1rem;color:#9ca3af}
+</style>
+
+<div id="cwTopBar">
+  <a href="/community/" class="back">&#8592;</a>
+  <h2>👁️ Community Watch</h2>
+</div>
+
+<div class="cw-hero">
+  <h1>👁️ Community Watch</h1>
+  <p>Report incidents · Alert neighbours · Keep your area safe</p>
+</div>
+
+<div class="cw-filters">
+  <div class="cw-filter-row">
+    <a href="/community/community-watch/{% if active_sev %}?sev={{ active_sev }}{% endif %}" class="cw-chip {% if not active_cat %}active{% endif %}">📋 All</a>
+    {% for val, label in categories %}
+    <a href="/community/community-watch/?cat={{ val }}{% if active_sev %}&sev={{ active_sev }}{% endif %}" class="cw-chip {% if active_cat == val %}active{% endif %}" data-cat="{{ val }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+  <div class="cw-filter-row">
+    <a href="/community/community-watch/{% if active_cat %}?cat={{ active_cat }}{% endif %}" class="cw-chip {% if not active_sev %}active{% endif %}">All Severity</a>
+    {% for val, label in severities %}
+    <a href="/community/community-watch/?sev={{ val }}{% if active_cat %}&cat={{ active_cat }}{% endif %}" class="cw-chip {% if active_sev == val %}active{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if request.user.is_authenticated %}
+<a href="/community/community-watch/post/" class="cw-fab">⚠️</a>
+{% endif %}
+
+<div class="cw-feed">
+  {% if reports %}
+  {% for report in reports %}
+  <div class="cw-card">
+    <div class="cw-card-strip" style="background:{% if report.severity == 'high' %}#dc2626{% elif report.severity == 'medium' %}#d97706{% else %}#16a34a{% endif %}"></div>
+    {% if report.image %}<img class="cw-card-img" src="{{ report.image.url }}" alt="{{ report.title }}">{% endif %}
+    <div class="cw-card-body">
+      <div class="cw-card-top">
+        <span class="cw-badge" data-cat="{{ report.category }}">{{ report.get_category_display }}</span>
+        <span class="cw-sev-badge" style="background:{% if report.severity == 'high' %}#dc2626{% elif report.severity == 'medium' %}#d97706{% else %}#16a34a{% endif %}">
+          {{ report.get_severity_display }}
+        </span>
+        {% if report.is_resolved %}<span class="cw-resolved-badge">✅ Resolved</span>{% endif %}
+      </div>
+      <div class="cw-title"><a href="/community/community-watch/{{ report.pk }}/" style="color:inherit;text-decoration:none">{{ report.title }}</a></div>
+      <div class="cw-desc">{{ report.description|truncatewords:20 }}</div>
+      <div class="cw-meta">{{ report.created_at|timesince }} ago · {{ report.user.get_full_name|default:report.user.username }}{% if report.pincode %} · 📍 {{ report.pincode }}{% endif %}</div>
+    </div>
+    <div class="cw-actions">
+      <button class="cw-action {% if report.pk in confirm_ids %}confirmed{% endif %}" onclick="doConfirm({{ report.pk }}, this)">
+        🚨 <span id="cfc-{{ report.pk }}">{{ report.confirm_count }}</span> Confirm
+      </button>
+      <div class="cw-divider"></div>
+      <a href="/community/community-watch/{{ report.pk }}/" class="cw-action">💬 {{ report.comment_count }}</a>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="cw-empty">
+    <div style="font-size:3rem;margin-bottom:8px">👁️</div>
+    <p style="font-weight:700;color:#374151;margin-bottom:4px">All clear in your area!</p>
+    <p style="font-size:13px">No reports yet. Stay alert and report anything suspicious.</p>
+    {% if request.user.is_authenticated %}
+    <a href="/community/community-watch/post/" style="display:inline-block;margin-top:12px;background:#dc2626;color:#fff;padding:10px 24px;border-radius:24px;font-weight:800;font-size:13px;text-decoration:none">File a Report</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  var catIcons={theft:'🚨',suspicious:'👁️',hazard:'⚠️',lost_found:'🔍',noise:'📢',stray:'🐕',infra:'🏗️',other:'📋'};
+  document.querySelectorAll('.cw-chip[data-cat]').forEach(function(el){
+    var v=el.getAttribute('data-cat');if(catIcons[v])el.textContent=catIcons[v]+' '+el.textContent.trim();
+  });
+  document.querySelectorAll('.cw-badge[data-cat]').forEach(function(el){
+    var v=el.getAttribute('data-cat');if(catIcons[v])el.textContent=catIcons[v]+' '+el.textContent.trim();
+  });
+})();
+function doConfirm(pk,btn){
+  fetch('/community/community-watch/'+pk+'/confirm/',{
+    method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}
+  }).then(r=>r.json()).then(d=>{
+    btn.classList.toggle('confirmed',d.confirmed);
+    document.getElementById('cfc-'+pk).textContent=d.count;
+  });
+}
+</script>
+{% endblock %}

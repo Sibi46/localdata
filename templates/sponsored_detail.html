@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}{{ sponsor_title }} - Sponsored - Local From{% endblock %}
+{% block content %}
+<main style="max-width:760px;margin:30px auto;padding:20px">
+  <a href="/advertise/">Back to Offers</a>
+  <p style="margin:18px 0">Sponsored</p><h1>{{ sponsor_title }}</h1>
+  {% if sponsor_image %}<img src="{{ sponsor_image.url }}" alt="{{ sponsor_title }}" style="display:block;width:100%;max-height:450px;object-fit:contain;margin:20px 0;border-radius:16px">{% endif %}
+  <div style="line-height:1.7">{{ sponsor_description|linebreaks }}</div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;margin:24px 0">
+    {% if sponsor_company %}<a href="{% url 'business_profile' sponsor_company.company_id %}">Visit business profile</a>{% endif %}
+    {% if sponsor_website %}<a href="{{ sponsor_website }}" target="_blank" rel="noopener noreferrer">Visit website</a>{% endif %}
+    {% if sponsor_phone %}<a href="tel:{{ sponsor_phone }}">Call {{ sponsor_phone }}</a>{% endif %}
+  </div>
+</main>
+{% endblock %}

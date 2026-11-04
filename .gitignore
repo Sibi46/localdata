@@ -1,0 +1,66 @@
+# Python
+.venv/
+.local-data/
+venv/
+.cache/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Django
+*.sqlite3
+local_settings.py
+media/
+staticfiles/
+.env
+.env.*
+!.env.example
+
+# Secrets / credentials
+cookies_admin.txt
+cookies_adv.txt
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Claude Code session data
+.claude/
+
+# Disposable local audit tools, databases, fixtures and browser evidence
+/.audit-tools/
+
+# Stray root-level image dumps (images belong in static/images/)
+/Community.jpg
+/adds.jpg
+/adsnew.jpg
+/advertise.jpg
+/communityfooter.png
+/events.jpg
+/giftvoucher.jpg
+/reel.png
+
+# Misplaced static root image
+/static/communityfooter.png
+
+# Unreferenced orphan images in static/images/
+/static/images/adds.jpg
+/static/images/ads.jpg

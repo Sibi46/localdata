@@ -1,0 +1,7 @@
+{% extends 'newsdesk/base.html' %}{% load static %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'newsdesk/public-news.css' %}?v=1">{% endblock %}
+{% block news_content %}<section class="nd-panel nd-share-panel"><p class="nd-eyebrow">YOUR NEWS SUBMISSION</p><h1>{{ submission.topic }}</h1><p><strong>{{ submission.get_status_display }}</strong></p><p>Submission ID: <strong class="nd-reference">{{ submission.reference }}</strong></p><p>Contributor ID: <strong class="nd-reference">{{ submission.contributor.reference }}</strong></p><p class="nd-muted">Submitted {{ submission.created_at|date:'d M Y, H:i' }}</p>
+{% if submission.status == 'pending' %}<p>Your news has been sent to the editor. It is not public yet. Return here after review, or verify the same mobile number from Share your news to find it again.</p>{% endif %}
+{% if submission.review_note %}<h2>Editor note</h2><p>{{ submission.review_note|linebreaksbr }}</p>{% endif %}
+{% if public_story %}<a class="nd-btn" href="{% url 'newsdesk:detail' public_story.pk %}">Read your published news</a>{% elif submission.status == 'published' %}<p>The published story is currently unavailable in the public feed.</p>{% endif %}
+<p><a href="{% url 'newsdesk:share' %}">Your submissions / share another story</a></p><form method="post" action="{% url 'newsdesk:share_finish' %}">{% csrf_token %}<button class="nd-btn nd-secondary" type="submit">Finish / verify a different number</button></form></section>{% endblock %}

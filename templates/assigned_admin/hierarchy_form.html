@@ -1,0 +1,3 @@
+{% extends 'admin_base.html' %}
+{% block extra_css %}{% include 'assigned_admin/styles.html' %}{% endblock %}
+{% block content %}<div class="team-wrap"><header class="team-hero"><h1>{{ heading }}</h1><a class="team-button light" href="{% url 'hierarchy_workspace' %}">Back to team</a></header><section class="team-card"><form method="post" class="team-field">{% csrf_token %}{{ form.as_p }}<button class="team-button">Save changes</button></form></section></div>{% endblock %}
