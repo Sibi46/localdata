@@ -5,6 +5,38 @@ from .models import AdPost,CompanyProfile,Country,District,PinCode,Product,ShopP
 
 @override_settings(DEMO_SIGNUP_OTP=True, DEBUG=True)
 class OnboardingTests(TestCase):
+    @staticmethod
+    def home_header(response):
+        from html.parser import HTMLParser
+
+        class HeaderParser(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.depth, self.parts = 0, []
+
+            def handle_starttag(self, tag, attrs):
+                if tag == 'header':
+                    if self.depth:
+                        self.depth += 1
+                    elif dict(attrs).get('class') == 'site-header':
+                        self.depth = 1
+                if self.depth:
+                    self.parts.append(self.get_starttag_text())
+
+            def handle_endtag(self, tag):
+                if self.depth:
+                    self.parts.append(f'</{tag}>')
+                    if tag == 'header':
+                        self.depth -= 1
+
+            def handle_data(self, data):
+                if self.depth:
+                    self.parts.append(data)
+
+        parser = HeaderParser()
+        parser.feed(response.content.decode())
+        return ''.join(parser.parts)
+
     @classmethod
     def setUpTestData(cls):
         country,_=Country.objects.get_or_create(code='IN',defaults={'name':'India'})
@@ -29,6 +61,47 @@ class OnboardingTests(TestCase):
         self.assertContains(response,'data-account-pincode')
         self.assertContains(response,'data-account-city')
         self.assertContains(response,'js/account-location.js')
+
+    def test_guest_home_shows_create_account_and_no_flicks_navigation(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        header = self.home_header(response)
+        self.assertIn('href="/register/"', header)
+        self.assertIn('Create account', header)
+        self.assertNotIn('href="/login/"', header)
+        self.assertNotIn('aria-label="My account"', header)
+        self.assertNotIn('href="/flicks/"', html)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_member_home_replaces_create_account_with_profile_icon(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/')
+        html = response.content.decode()
+        header = self.home_header(response)
+        self.assertIn('href="/account/"', header)
+        self.assertIn('aria-label="My account"', header)
+        self.assertIn('<svg', header)
+        self.assertNotIn('Create account', header)
+        self.assertNotIn('href="/flicks/"', html)
+
+    def test_shared_and_shop_headers_distinguish_guest_and_member(self):
+        from django.contrib.auth.models import AnonymousUser
+        from django.template.loader import render_to_string
+        from django.test import RequestFactory
+
+        request = RequestFactory().get('/')
+        for template in ('includes/account_header.html', 'shop/header.html'):
+            with self.subTest(template=template):
+                request.user = AnonymousUser()
+                html = render_to_string(template, {'request': request})
+                self.assertIn('href="/register/"', html)
+                self.assertIn('Create account', html)
+                self.assertNotIn('class="account-profile-icon"', html)
+                request.user = self.user
+                html = render_to_string(template, {'request': request})
+                self.assertNotIn('Create account', html)
+                self.assertIn('<svg', html)
 
     def test_signup_collects_location_and_shows_shop_registration(self):
         response=self.client.post('/register/',{'name':'New Member','phone':'9876503399','pincode':'604408','city':'Vandavasi'})

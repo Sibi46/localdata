@@ -115,3 +115,8 @@
 @media(max-width:900px){.studio-home .pilot-section{gap:20px}.pilot-story{padding:26px}.studio-home .pilot-story h2{font-size:29px}.pilot-link{padding:20px;gap:12px}.studio-home .pilot-link h3{font-size:15px}.pilot-link-icon{width:39px;height:39px;font-size:17px}}
 @media(max-width:640px){.studio-home .site-footer{grid-template-columns:minmax(0,1fr)}.studio-home .site-footer nav{display:flex;flex-wrap:wrap;align-items:center;gap:15px 20px}}
 @media(max-width:640px){.studio-home .pilot-section{grid-template-columns:1fr;padding:28px 0;gap:16px}.pilot-story{padding:27px 24px;border-radius:22px}.studio-home .pilot-story h2{font-size:30px}.pilot-badge{font-size:8px;letter-spacing:.7px}.pilot-discover{gap:12px}.pilot-link{padding:21px 17px;border-radius:19px;gap:13px}.studio-home .pilot-link h3{font-size:16px}.pilot-link small{font-size:6px}.pilot-link p{font-size:10px}.pilot-link-icon{width:40px;height:40px}.studio-home .site-footer nav{flex-wrap:wrap}.studio-home .site-footer .footer-superadmin{font-size:10px}}
+
+/* Keep the guest account action readable when shared shop styles collapse icons. */
+.studio-home .header-actions .account-create-button{width:auto}
+.studio-home .header-actions .account-create-button span{display:inline}
+@media(max-width:370px){.studio-home .header-actions .account-create-button{max-width:66px;white-space:normal;text-align:center;justify-content:center;font-size:10px;line-height:1.2;padding:6px 8px}}

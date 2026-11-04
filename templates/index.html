@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/home-local.css' %}?v=1">
   <link rel="stylesheet" href="{% static 'css/shop.css' %}?v=1">
-  <link rel="stylesheet" href="{% static 'css/home-studio.css' %}?v=3">
+  <link rel="stylesheet" href="{% static 'css/home-studio.css' %}?v=4">
   <link rel="stylesheet" href="{% static 'css/home-showcase.css' %}?v=2">
   <script src="{% static 'js/home-showcase.js' %}?v=3" defer></script>
   {% if not request.user.is_authenticated %}<script src="{% static 'js/home-registration.js' %}?v=3" defer></script>{% endif %}
@@ -25,11 +25,11 @@
   <div class="header-inner shell">
     <a class="brand" href="/" aria-label="Local From home"><img class="site-brand-logo" src="/static/images/logo.png" alt="" width="44" height="36"><span>Local{% include 'includes/brand_word.html' %}</span></a>
     <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="/products/">Products</a><a href="/businesses/">Shops</a><a href="/advertise/">Offers</a><a href="/news/">News</a><a href="/flicks/">Flicks</a>
+      <a href="/products/">Products</a><a href="/businesses/">Shops</a><a href="/advertise/">Offers</a><a href="/news/">News</a>
     </nav>
     <div class="header-actions">{% include 'includes/notification_bell.html' %}
       <button class="area-button" type="button" data-area-open aria-haspopup="dialog"><i class="fas fa-map-marker-alt" aria-hidden="true"></i><span>{% if active_area %}{{ active_area }}{% else %}Set your area{% endif %}</span><i class="fas fa-chevron-down" aria-hidden="true"></i></button>
-      {% if request.user.is_authenticated %}<a class="icon-button header-messages" href="/messages/" aria-label="Messages"><i class="far fa-comment-dots" aria-hidden="true"></i></a><a class="account-button" href="/account/"><i class="far fa-user" aria-hidden="true"></i><span>My account</span></a>{% else %}<a class="account-button" href="/login/"><i class="far fa-user" aria-hidden="true"></i><span>Sign in</span></a>{% endif %}
+      {% if request.user.is_authenticated %}<a class="icon-button header-messages" href="/messages/" aria-label="Messages"><i class="far fa-comment-dots" aria-hidden="true"></i></a><a class="icon-button" href="/account/" aria-label="My account" title="My account">{% include 'includes/profile_icon.html' %}</a>{% else %}<a class="account-button account-create-button" href="/register/"><span>Create account</span></a>{% endif %}
     </div>
   </div>
 </header>
@@ -91,7 +91,7 @@
 
 {% include 'includes/site_footer.html' %}
 
-<nav class="mobile-nav" aria-label="Mobile navigation"><a href="/" aria-current="page"><i class="fas fa-home" aria-hidden="true"></i><span>Home</span></a><a href="/businesses/"><i class="fas fa-store" aria-hidden="true"></i><span>Shops</span></a><a href="/advertise/"><i class="fas fa-tags" aria-hidden="true"></i><span>Offers</span></a><a href="/news/"><i class="far fa-newspaper" aria-hidden="true"></i><span>News</span></a><a href="{% if request.user.is_authenticated %}/account/{% else %}/login/{% endif %}"><i class="far fa-user" aria-hidden="true"></i><span>Account</span></a></nav>
+<nav class="mobile-nav" aria-label="Mobile navigation"><a href="/" aria-current="page"><i class="fas fa-home" aria-hidden="true"></i><span>Home</span></a><a href="/businesses/"><i class="fas fa-store" aria-hidden="true"></i><span>Shops</span></a><a href="/advertise/"><i class="fas fa-tags" aria-hidden="true"></i><span>Offers</span></a><a href="/news/"><i class="far fa-newspaper" aria-hidden="true"></i><span>News</span></a><a href="{% if request.user.is_authenticated %}/account/{% else %}/register/{% endif %}"><i class="far fa-user" aria-hidden="true"></i><span>{% if request.user.is_authenticated %}Account{% else %}Create account{% endif %}</span></a></nav>
 
 <dialog id="area-dialog" class="area-dialog" aria-labelledby="area-title"><div class="area-dialog-inner"><button class="dialog-close icon-button" data-area-close type="button" aria-label="Close area selector"><i class="fas fa-times" aria-hidden="true"></i></button><span class="dialog-pin" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span><p class="eyebrow">LET'S MAKE IT LOCAL</p><h2 id="area-title">Where's your little<br>corner of the world?</h2><p>Enter your pincode to find businesses and offers around you.</p><form action="{% url 'select_area' %}" method="post">{% csrf_token %}<input type="hidden" name="next" value="/"><label for="local-pincode">Your pincode</label><div class="pin-input-row"><input id="local-pincode" name="pincode" type="text" inputmode="numeric" pattern="[1-9][0-9]{5}" minlength="6" maxlength="6" placeholder="e.g. 600001" value="{{ active_area }}" autocomplete="postal-code" required><button class="button button-green" type="submit">Explore <span aria-hidden="true">↗</span></button></div></form>{% if saved_areas %}<div class="saved-areas"><p>Your saved areas</p>{% for code in saved_areas %}<form method="post" action="{% url 'select_area' %}">{% csrf_token %}<input type="hidden" name="next" value="/"><button name="pincode" value="{{ code }}">{{ code }}</button></form>{% endfor %}</div>{% endif %}<a class="all-areas" href="/businesses/?pincode=">Just looking? Explore all businesses ↗</a></div></dialog>
 </body>
