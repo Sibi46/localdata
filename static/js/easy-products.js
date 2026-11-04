@@ -18,6 +18,10 @@
     feedback.textContent = message;
     feedback.dataset.error = String(error);
   }
+  function showLimit() {
+    const dialog = document.getElementById('product-limit-dialog');
+    if (dialog && !dialog.open) dialog.showModal();
+  }
   function node(tag, text, className) {
     const element = document.createElement(tag);
     if (text) element.textContent = text;
@@ -172,6 +176,7 @@
   }
   picker.onchange = async () => {
     const files = Array.from(picker.files); picker.value = ''; review.hidden = true;
+    if (remaining <= 0) { showLimit(); return; }
     if (files.length + entries.length > MAX_PRODUCTS) return say('Choose up to 20 products per batch. Clear completed drafts to start another batch.', true);
     busy = true; render();
     try {
@@ -187,7 +192,10 @@
     event.preventDefault(); if (busy || !form.reportValidity()) return;
     const pending = entries.filter(entry => entry.status !== 'published');
     if (!pending.length) return;
-    if (pending.length > remaining) return say(`Only ${remaining} product slots remain. Remove extra drafts or request more slots.`, true);
+    if (pending.length > remaining) {
+      showLimit();
+      return say(`Only ${remaining} product slots remain. Remove extra drafts or request more slots.`, true);
+    }
     const list = $('[data-review-list]'); list.replaceChildren();
     pending.forEach(entry => {
       const row = node('div', '', 'easy-review-row'), img = node('img');
@@ -224,6 +232,7 @@
           }
           const result = await response.json();
           if (!response.ok) {
+            if (result.limit_reached) showLimit();
             const details = Object.values(result.errors || {}).flat().map(item => item.message).join(' ');
             throw new Error(details || result.error || 'Upload failed. Check My products before retrying.');
           }

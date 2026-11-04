@@ -5,17 +5,21 @@
     event.preventDefault();
     event.stopImmediatePropagation();
     const params = new URLSearchParams({next});
-    window.location.assign('/register/?' + params);
+    const dialog = document.getElementById('guest-account-dialog');
+    if (!dialog) return window.location.assign('/register/?' + params);
+    dialog.querySelector('[data-guest-create]').href = '/register/?' + params;
+    if (!dialog.open) dialog.showModal();
   }
   document.addEventListener('click', event => {
     const control = event.target.closest('a, button, input[type="submit"]');
-    if (!control || control.closest('.skip-link')) return;
+    if (!control || control.closest('.skip-link, #guest-account-dialog')) return;
     let next = '/';
     if (control.matches('a')) {
       const url = new URL(control.href, location.href);
       if (url.protocol === 'mailto:' || url.protocol === 'tel:') return;
       if (url.origin === 'https://www.instagram.com' && url.pathname === '/local_from97/') return;
       if (url.origin === location.origin && allowed.includes(url.pathname)) return;
+      if (url.origin === location.origin && url.pathname === '/' && !url.search) return;
       if (url.origin === location.origin) next = url.pathname + url.search;
     }
     register(event, next);

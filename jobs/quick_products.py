@@ -22,9 +22,11 @@ RECEIPT_TTL = 7 * 24 * 60 * 60
 @require_GET
 def editor(request):
     shop = owner_shop(request)
+    count = shop.products.count()
     return render(request, 'shop/easy_products.html', {
         'company': shop,
-        'remaining': max(0, shop.product_limit - shop.products.count()),
+        'remaining': max(0, shop.product_limit - count),
+        'at_limit': count >= shop.product_limit,
     })
 
 
