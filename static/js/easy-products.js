@@ -3,6 +3,10 @@
   'use strict';
   const root = document.querySelector('[data-easy-products]');
   if (!root) return;
+  const locale = window.LocalfromProductLanguage;
+  const t = (key, params) => locale.t(key, params);
+  let feedbackState = null;
+  let draftMessage = 'Drafts stay in this browser on this device. Use one tab. Clear drafts on shared devices.';
   const $ = selector => root.querySelector(selector);
   const cards = $('[data-cards]'), picker = $('#easy-photo-picker');
   const form = $('[data-entry-form]'), review = $('[data-review-panel]');
@@ -14,10 +18,12 @@
   const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
   let recognition = null, saveTimer = null;
 
-  function say(message, error = false) {
-    feedback.textContent = message;
+  function say(message, error = false, params = {}) {
+    feedbackState = {message, error, params};
+    feedback.textContent = error ? locale.error(message) : t(message, params);
     feedback.dataset.error = String(error);
   }
+  function setDraftStatus(message) { draftMessage = message; draftStatus.textContent = t(message); }
   function showLimit() {
     const dialog = document.getElementById('product-limit-dialog');
     if (dialog && !dialog.open) dialog.showModal();
@@ -42,9 +48,9 @@
       tx.onerror = () => reject(tx.error);
       tx.onabort = () => reject(tx.error);
     })).then(() => {
-      draftStatus.textContent = 'Draft saved on this device / Draft சேமிக்கப்பட்டது. Clear it on shared devices.';
+      setDraftStatus('Draft saved on this device. Clear it on shared devices.');
     }).catch(() => {
-      draftStatus.textContent = 'Draft could not be saved. Keep this page open until you publish.';
+      setDraftStatus('Draft could not be saved. Keep this page open until you publish.');
     });
     return saveQueue;
   }
@@ -68,10 +74,10 @@
         // An interrupted upload has an unknown outcome. Retry its original ID;
         // the server receipt returns the existing product if it was committed.
         entries.forEach(entry => { if (entry.status === 'uploading') entry.status = 'pending'; });
-        if (entries.length) say('Saved draft restored / Draft மீண்டும் திறக்கப்பட்டது.');
+        if (entries.length) say('Saved draft restored.');
       }
     } catch (_) {
-      draftStatus.textContent = 'Draft saving is unavailable in this browser. Keep this page open until you publish.';
+      setDraftStatus('Draft saving is unavailable in this browser. Keep this page open until you publish.');
     }
     render();
   }
@@ -95,7 +101,7 @@
   function listen(entry, input, button) {
     if (!Speech) return;
     if (recognition) recognition.abort();
-    recognition = new Speech(); recognition.lang = 'ta-IN'; recognition.interimResults = false;
+    recognition = new Speech(); recognition.lang = locale.language === 'ta' ? 'ta-IN' : 'en-IN'; recognition.interimResults = false;
     button.textContent = '…';
     recognition.onresult = event => {
       entry.name = event.results[0][0].transcript.slice(0, 160);
@@ -113,10 +119,12 @@
     Object.entries(attributes).forEach(([name, value]) => input.setAttribute(name, value));
     input.disabled = busy || entry.status === 'published';
     input.addEventListener('input', () => { entry[key] = input.value; review.hidden = true; scheduleSave(); });
+    input.addEventListener('invalid', () => input.setCustomValidity(t(key === 'name' ? 'Enter a product name.' : key === 'price' ? 'Enter a valid price greater than zero.' : 'Enter a whole discount percentage from 0 to 100.')));
+    input.addEventListener('input', () => input.setCustomValidity(''));
     row.append(input);
     if (key === 'name' && Speech && entry.status !== 'published') {
       const mic = node('button', '🎤', 'easy-mic'); mic.type = 'button'; mic.disabled = busy;
-      mic.title = 'Speak product name in Tamil'; mic.setAttribute('aria-label', 'Speak product name in Tamil');
+      mic.title = t('Speak product name'); mic.setAttribute('aria-label', t('Speak product name'));
       mic.onclick = () => listen(entry, input, mic); row.append(mic);
     }
     box.append(row); return box;
@@ -126,26 +134,26 @@
     $('[data-slots]').textContent = remaining;
     entries.forEach((entry, index) => {
       const card = node('article', '', 'easy-card'); card.dataset.published = entry.status === 'published';
-      card.append(node('h2', `பொருள் / Product ${index + 1}`));
+      card.append(node('h2', t('Product {number}', {number: index + 1})));
       const photos = node('div', '', 'easy-photos');
       entry.photos.forEach((photo, position) => {
         const box = node('div', '', 'easy-photo'), img = node('img');
-        img.src = imageURL(photo); img.alt = `Product ${index + 1}, image ${position + 1}`; box.append(img);
+        img.src = imageURL(photo); img.alt = t('Product {number}, image {image}', {number: index + 1, image: position + 1}); box.append(img);
         if (!busy && entry.status !== 'published' && entry.photos.length > 1) {
           const remove = node('button', '×'); remove.type = 'button';
-          remove.setAttribute('aria-label', `Remove image ${position + 1}`);
+          remove.setAttribute('aria-label', t('Remove image {number}', {number: position + 1}));
           remove.onclick = () => { entry.photos.splice(position, 1); save(); render(); }; box.append(remove);
         }
         photos.append(box);
       });
       card.append(photos);
-      card.append(field(entry, 'name', 'பெயர் / Product name', 'text', {required:'', maxlength:'160', autocomplete:'off'}));
+      card.append(field(entry, 'name', t('Product name'), 'text', {required:'', maxlength:'160', autocomplete:'off'}));
       const prices = node('div', '', 'easy-prices');
-      prices.append(field(entry, 'price', 'விலை / Price ₹', 'number', {required:'', min:'0.01', max:'9999999999.99', step:'0.01', inputmode:'decimal'}));
-      prices.append(field(entry, 'discount', 'தள்ளுபடி % / Optional', 'number', {min:'0', max:'100', step:'1', inputmode:'numeric'}));
+      prices.append(field(entry, 'price', t('Price ₹'), 'number', {required:'', min:'0.01', max:'9999999999.99', step:'0.01', inputmode:'decimal'}));
+      prices.append(field(entry, 'discount', t('Discount % (optional)'), 'number', {min:'0', max:'100', step:'1', inputmode:'numeric'}));
       card.append(prices);
       if (entry.status !== 'published') {
-        const label = node('label', `மேலும் படங்கள் / Extra views (${entry.photos.length}/6)`);
+        const label = node('label', t('Extra views ({number}/6)', {number: entry.photos.length}));
         const extra = node('input'); extra.type = 'file'; extra.accept = picker.accept; extra.multiple = true;
         extra.disabled = busy || entry.photos.length >= 6; label.append(extra); card.append(label);
         extra.onchange = async () => {
@@ -157,16 +165,16 @@
           } catch (error) { say(error.message, true); }
           finally { busy = false; render(); }
         };
-        const remove = node('button', 'பொருளை நீக்கு / Remove', 'easy-secondary');
+        const remove = node('button', t('Remove product'), 'easy-secondary');
         remove.type = 'button'; remove.disabled = busy;
         remove.onclick = () => { entries = entries.filter(item => item !== entry); save(); render(); };
         card.append(remove);
       } else {
-        const link = node('a', '✓ வெளியிடப்பட்டது / View product');
+        const link = node('a', t('✓ View product'));
         link.href = `/products/${Number(entry.productId)}/`; card.append(link);
       }
-      if (entry.error) card.append(node('p', entry.error, 'easy-card-error'));
-      if (entry.status === 'uploading') card.append(node('p', 'Uploading… / பதிவேற்றுகிறது…', 'easy-card-status'));
+      if (entry.error) card.append(node('p', locale.error(entry.error), 'easy-card-error'));
+      if (entry.status === 'uploading') card.append(node('p', t('Uploading…'), 'easy-card-status'));
       cards.append(card);
     });
     picker.disabled = busy || entries.length >= MAX_PRODUCTS;
@@ -184,30 +192,34 @@
         const photo = await preparePhoto(file);
         entries.push({id: crypto.randomUUID(), name:'', price:'', discount:'', photos:[photo], status:'pending'});
       }
-      await save(); say('படங்கள் தயார். பெயர் மற்றும் விலை கொடுங்கள் / Enter a name and price below.');
+      await save(); say('Photos ready. Enter a name and price below.');
     } catch (error) { await save(); say(error.message, true); }
     finally { busy = false; render(); }
   };
+  function renderReview() {
+    const pending = entries.filter(entry => entry.status !== 'published');
+    const list = $('[data-review-list]'); list.replaceChildren();
+    pending.forEach(entry => {
+      const row = node('div', '', 'easy-review-row'), img = node('img');
+      img.src = imageURL(entry.photos[0]); img.alt = entry.name;
+      const price = (Number(entry.price) * (100 - Number(entry.discount || 0)) / 100).toFixed(2);
+      row.append(img, node('p', `${entry.name} · ₹${price}${entry.discount ? ` (${t('{number}% off', {number: entry.discount})})` : ''}`)); list.append(row);
+    });
+  }
   form.onsubmit = event => {
     event.preventDefault(); if (busy || !form.reportValidity()) return;
     const pending = entries.filter(entry => entry.status !== 'published');
     if (!pending.length) return;
     if (pending.length > remaining) {
       showLimit();
-      return say(`Only ${remaining} product slots remain. Remove extra drafts or request more slots.`, true);
+      return say('Only {number} product slots remain. Remove extra drafts or request more slots.', false, {number: remaining});
     }
-    const list = $('[data-review-list]'); list.replaceChildren();
-    pending.forEach(entry => {
-      const row = node('div', '', 'easy-review-row'), img = node('img');
-      img.src = imageURL(entry.photos[0]); img.alt = entry.name;
-      const price = (Number(entry.price) * (100 - Number(entry.discount || 0)) / 100).toFixed(2);
-      row.append(img, node('p', `${entry.name} · ₹${price}${entry.discount ? ` (${entry.discount}% off)` : ''}`)); list.append(row);
-    });
+    renderReview();
     review.hidden = false; review.scrollIntoView({behavior:'smooth', block:'center'});
   };
   $('[data-back]').onclick = () => { review.hidden = true; cards.scrollIntoView({behavior:'smooth'}); };
   $('[data-clear]').onclick = async () => {
-    if (busy || !confirm('Clear the draft photos and details on this device? Published products will remain in your shop.')) return;
+    if (busy || !confirm(t('Clear the draft photos and details on this device? Published products will remain in your shop.'))) return;
     entries = []; review.hidden = true; await save(); render(); say('Draft cleared. You can choose more photos.');
   };
   $('[data-publish]').onclick = async () => {
@@ -219,7 +231,7 @@
     try {
       for (const entry of pending) {
         entry.error = ''; entry.status = 'uploading'; await save(); render();
-        say(`Uploading ${completed + 1} / ${pending.length}… Keep this page open.`);
+        say('Uploading {number} / {total}… Keep this page open.', false, {number: completed + 1, total: pending.length});
         const data = new FormData();
         data.set('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
         data.set('draft_id', entry.id); data.set('name', entry.name); data.set('price', entry.price);
@@ -243,11 +255,20 @@
           throw error;
         }
       }
-      say(`✓ ${completed} products published / பொருட்கள் வெளியிடப்பட்டன. Clear this draft to add the next batch.`);
+      say('✓ {number} products published. Clear this draft to add the next batch.', false, {number: completed});
     } catch (error) { say(error.message, true); }
     finally { busy = false; render(); }
   };
   window.addEventListener('beforeunload', event => { if (busy) { event.preventDefault(); event.returnValue = ''; } });
+  document.addEventListener('product-language-change', () => {
+    if (recognition) recognition.abort();
+    const previewOpen = !review.hidden;
+    render();
+    if (previewOpen) renderReview();
+    setDraftStatus(draftMessage);
+    if (feedbackState) say(feedbackState.message, feedbackState.error, feedbackState.params);
+  });
+  setDraftStatus(draftMessage);
   picker.disabled = true;
   openDraft();
 })();
