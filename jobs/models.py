@@ -73,7 +73,7 @@ class CompanyProfile(models.Model):
     company_id   = models.CharField(max_length=20, unique=True, blank=True, db_index=True)
     logo         = models.ImageField(upload_to='business_logos/', blank=True, null=True)
     banner_image = models.ImageField(upload_to='business_banners/', blank=True, null=True)
-    product_limit = models.PositiveIntegerField(default=10)
+    product_limit = models.PositiveIntegerField(default=5)
     requested_product_limit = models.PositiveIntegerField(null=True, blank=True)
     product_access_status = models.CharField(max_length=12, choices=PRODUCT_ACCESS_STATUS, blank=True, default='')
     product_access_requested_at = models.DateTimeField(null=True, blank=True)
@@ -123,6 +123,22 @@ class AnalyticsEvent(models.Model):
 
     class Meta:
         indexes=[models.Index(fields=['event_type','created_at'],name='analytics_type_time')]
+
+
+class PromotionEvent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    offer = models.ForeignKey('LocalOffer', null=True, blank=True, on_delete=models.CASCADE, related_name='engagement_events')
+    ad = models.ForeignKey('AdPost', null=True, blank=True, on_delete=models.CASCADE, related_name='engagement_events')
+    action = models.CharField(max_length=5, choices=[('view', 'View'), ('click', 'Click')])
+    visitor = models.UUIDField()
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='+')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        constraints = [models.CheckConstraint(
+            condition=(models.Q(offer__isnull=False, ad__isnull=True) | models.Q(offer__isnull=True, ad__isnull=False)),
+            name='promotion_exactly_one_target',
+        )]
 
 
 class LocalFromFollow(models.Model):

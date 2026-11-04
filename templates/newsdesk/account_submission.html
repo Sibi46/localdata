@@ -1,0 +1,2 @@
+{% extends 'newsdesk/base.html' %}
+{% block news_content %}<section class="nd-panel"><h1>Your news submission</h1><h2>{{ item.title }}</h2><p>{% if public %}Published{% else %}Waiting for editor review / not public{% endif %}</p>{{ item.body|linebreaksbr }}{% if item.photo %}<p>Your photo was received and is stored privately.</p>{% endif %}{% if public %}<p><a href="{% url 'newsdesk:detail' item.pk %}">Read published news</a></p>{% endif %}<p><a href="{% url 'newsdesk:share' %}">My submissions / share more news</a></p></section>{% endblock %}

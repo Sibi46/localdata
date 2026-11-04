@@ -17,6 +17,7 @@ from jobs import local_from
 from jobs import analytics
 from jobs import chat_attachments
 from jobs import quick_products
+from jobs import promotion_metrics
 from django.contrib.sitemaps import views as sitemap_views
 from .seo import SITEMAPS, robots, sitemap_index
 
@@ -82,6 +83,8 @@ urlpatterns = [
     path('products/<int:pk>/', shop.product_detail, name='product_detail'),
     path('shop/products/add/', shop.product_form, name='product_add'),
     path('shop/products/easy/', quick_products.editor, name='product_easy_add'),
+    path('shop/performance/', promotion_metrics.dashboard, name='shop_performance'),
+    path('analytics/collect/promotions/', promotion_metrics.collect, name='promotion_collect'),
     path('shop/products/easy/publish/', quick_products.publish, name='product_easy_publish'),
     path('shop/products/<int:pk>/edit/', shop.product_form, name='product_edit'),
     path('shop/products/<int:pk>/delete/', shop.product_delete, name='product_delete'),

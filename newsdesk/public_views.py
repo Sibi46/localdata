@@ -113,6 +113,9 @@ def verify_otp(request):
 @never_cache
 @require_http_methods(['GET', 'POST'])
 def share(request):
+    if request.user.is_authenticated:
+        from .account_submissions import share as account_share
+        return account_share(request)
     phone = verified_phone(request)
     if not phone:
         if request.method == 'POST':

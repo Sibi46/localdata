@@ -19,8 +19,8 @@ class TenProductAllowanceTests(TestCase):
         cls.owner = User.objects.create_user('ten-product-owner', user_type='shop')
         cls.shop = CompanyProfile.objects.create(user=cls.owner, company_name='Ten Product Shop')
 
-    def test_new_shop_starts_with_ten_free_slots(self):
-        self.assertEqual(self.shop.product_limit, 10)
+    def test_new_shop_starts_with_five_free_slots(self):
+        self.assertEqual(self.shop.product_limit, 5)
 
     def test_migration_only_raises_lower_limits_and_preserves_requests_and_products(self):
         self.shop.product_limit = 3
@@ -42,7 +42,7 @@ class TenProductAllowanceTests(TestCase):
         self.assertEqual(CompanyProfile.objects.get(pk=self.shop.pk).product_limit, 10)
 
     def test_limit_page_has_both_call_buttons_and_automatic_popup(self):
-        for index in range(10):
+        for index in range(5):
             Product.objects.create(shop=self.shop, name=f'Product {index}', price=100, image='products/kept.jpg')
         self.client.force_login(self.owner)
         for route in ('product_add', 'product_easy_add'):
@@ -52,7 +52,7 @@ class TenProductAllowanceTests(TestCase):
             self.assertContains(response, 'href="tel:+917305675201"')
             self.assertContains(response, 'href="tel:+919361240355"')
         dashboard = self.client.get(reverse('employer_dashboard'))
-        self.assertContains(dashboard, 'data-product-count="10" data-product-limit="10"')
+        self.assertContains(dashboard, 'data-product-count="5" data-product-limit="5"')
 
     def test_guest_home_popup_is_present_without_changing_server_gate(self):
         response = self.client.get('/')

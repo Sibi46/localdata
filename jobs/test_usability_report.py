@@ -62,7 +62,7 @@ class UsabilityReportTests(TestCase):
         self.client.force_login(self.owner)
         response = self.client.get('/advertiser/dashboard/')
         for expected in ('aria-label="Site header"', 'aria-label="Local From home"',
-                         'aria-label="My profile and features"', 'href="/employer/dashboard/#my-profile"',
+                         'aria-label="My account"', 'href="/account/"',
                          'href="/ads/post/"'):
             self.assertContains(response, expected)
         self.assertNotContains(response, 'href="/advertise/dashboard/"')

@@ -118,7 +118,7 @@ def profile_features(user):
              {'name': 'Create business / shop', 'url': '/business/create/'},
              {'name': 'Following businesses', 'url': '/businesses/?following=1&pincode='},
              {'name': 'My accounts', 'url': '/my-accounts/'}]
-    if user.is_employer() or CompanyProfile.objects.filter(user=user).exists():
+    if CompanyProfile.objects.filter(user=user, user__is_active=True).exists():
         links += [{'name': 'Business dashboard', 'url': '/employer/dashboard/'},
                   {'name': 'My products', 'url': '/employer/dashboard/#products'},
                   {'name': 'Shop videos', 'url': '/employer/dashboard/#videos'},

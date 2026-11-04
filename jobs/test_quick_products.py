@@ -33,7 +33,7 @@ class QuickProductTests(TemporaryMediaMixin, TestCase):
     def test_editor_and_dashboard_offer_photo_entry(self):
         response = self.client.get(reverse('product_easy_add'))
         self.assertContains(response, 'data-easy-products')
-        self.assertContains(response, 'data-remaining="10"')
+        self.assertContains(response, 'data-remaining="5"')
         self.assertContains(response, reverse('product_add'))
         self.assertContains(self.client.get(reverse('employer_dashboard')), reverse('product_easy_add'))
 
@@ -66,13 +66,13 @@ class QuickProductTests(TemporaryMediaMixin, TestCase):
     def test_limit_cannot_be_bypassed_and_replay_works_when_full(self):
         token = str(uuid4())
         first = self.client.post(self.url, self.payload(draft_id=token))
-        for _ in range(9):
+        for _ in range(4):
             self.assertEqual(self.client.post(self.url, self.payload()).status_code, 200)
         response = self.client.post(self.url, self.payload())
         self.assertEqual(response.status_code, 403)
         self.assertTrue(response.json()['limit_reached'])
         self.assertEqual(self.client.post(self.url, self.payload(draft_id=token)).json(), first.json())
-        self.assertEqual(self.shop.products.count(), 10)
+        self.assertEqual(self.shop.products.count(), 5)
 
     def test_approved_allowance_is_respected(self):
         self.shop.product_limit = 12

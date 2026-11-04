@@ -230,7 +230,7 @@ def personal_account(request):
         request.session['active_pincode']=request.user.pincode
         messages.success(request,'Your local area is updated.')
         return redirect('personal_account')
-    ads=AdPost.objects.filter(user=request.user).order_by('-created_at')
+    ads=AdPost.objects.filter(user=request.user).order_by('-created_at') if company else AdPost.objects.none()
     return render(request,'accounts/account.html',{'has_business':bool(company),'company':company,'my_ads':ads[:5],'my_ad_count':ads.count(),'location_form':form})
 
 

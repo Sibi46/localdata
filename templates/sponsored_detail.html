@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}{{ sponsor_title }} - Sponsored - Local From{% endblock %}
 {% block content %}
-<main style="max-width:760px;margin:30px auto;padding:20px">
+<main {% if promotion_ad_id %}data-promotion-kind="ad" data-promotion-id="{{ promotion_ad_id }}"{% endif %} style="max-width:760px;margin:30px auto;padding:20px">
   <a href="/advertise/">Back to Offers</a>
   <p style="margin:18px 0">Sponsored</p><h1>{{ sponsor_title }}</h1>
   {% if sponsor_image %}<img src="{{ sponsor_image.url }}" alt="{{ sponsor_title }}" style="display:block;width:100%;max-height:450px;object-fit:contain;margin:20px 0;border-radius:16px">{% endif %}

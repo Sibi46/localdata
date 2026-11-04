@@ -23,10 +23,11 @@ class AuthenticationBoundaryTests(TestCase):
                     self.assertEqual(response.status_code, 302)
                     self.assertTrue(response.url.startswith('/register/?next='))
 
-    def test_authenticated_unverified_reader_reaches_otp_and_validation(self):
+    def test_authenticated_reader_reaches_account_news_and_legacy_otp_validation(self):
         reader = User.objects.create_user('phase1b-reader')
         self.client.force_login(reader)
-        self.assertContains(self.client.get('/news/share/'), 'Verify your mobile number')
+        self.assertContains(self.client.get('/news/share/'), 'Share your news')
+        self.assertNotContains(self.client.get('/news/share/'), 'name="phone"')
         with patch('newsdesk.public_views.deliver_otp', return_value=False):
             response = self.client.post('/news/share/otp/send/',
                 '{"phone":"9876543210"}', content_type='application/json')

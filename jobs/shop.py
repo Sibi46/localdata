@@ -37,7 +37,8 @@ def product_list(request):
     ordering = {'price_low': ['current_price', '-pk'], 'price_high': ['-current_price', '-pk']}.get(sort, ['-created_at', '-pk'])
     page = Paginator(products.order_by(*ordering), 24).get_page(request.GET.get('page'))
     return render(request, 'shop/products.html', {'products': page, 'query': query, 'category': category, 'sort': sort,
-                  'matching_shops': shops[:6] if query else [], 'product_count': page.paginator.count})
+                  'matching_shops': shops[:6] if query else [], 'product_count': page.paginator.count,
+                  'owns_shop': request.user.is_authenticated and CompanyProfile.objects.filter(user=request.user, user__is_active=True).exists()})
 
 
 def owner_shop(request):

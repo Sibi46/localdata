@@ -1,7 +1,9 @@
 /* Explicit translations for this screen. Shop and product data stay unchanged. */
 (() => {
   'use strict';
-  if (!document.querySelector('[data-easy-products]')) return;
+  if (!document.querySelector('[data-easy-products], [data-home-language]')) return;
+  const home = document.querySelector('[data-home-language]');
+  const originalTitle = document.title;
   const tamil = {
     'Language':'மொழி', 'Page language':'பக்கத்தின் மொழி', 'Add products':'பொருட்களைச் சேர்',
     'My products':'என் பொருட்கள்', 'Add photos. Enter a name & price. Publish.':'படங்களைத் தேர்வு செய்து, பெயர் மற்றும் விலை கொடுத்து வெளியிடுங்கள்.',
@@ -41,9 +43,9 @@
     'Reload this page before publishing.':'வெளியிடும் முன் இந்தப் பக்கத்தை மீண்டும் திறக்கவும்.',
     '✓ {number} products published. Clear this draft to add the next batch.':'✓ {number} பொருட்கள் வெளியிடப்பட்டன. அடுத்த தொகுப்பைச் சேர்க்க இந்த வரைவை நீக்குங்கள்.',
     'Enter a product name.':'பொருளின் பெயரை உள்ளிடுங்கள்.', 'Enter a valid price greater than zero.':'பூஜ்ஜியத்தைவிட அதிகமான சரியான விலையை உள்ளிடுங்கள்.',
-    'Enter a whole discount percentage from 0 to 100.':'0 முதல் 100 வரை முழு எண்ணில் தள்ளுபடி சதவீதத்தை உள்ளிடுங்கள்.',
+    'Enter a whole discount percentage from 0 to 100.':'0 முதல் 50 வரை முழு எண்ணில் தள்ளுபடி சதவீதத்தை உள்ளிடுங்கள்.',
     'Need more product slots?':'மேலும் பொருட்கள் சேர்க்க வேண்டுமா?',
-    'Your first 10 products are free. Your current product slots are full.':'முதல் 10 பொருட்கள் இலவசம். உங்களுக்கான பொருட்கள் சேர்க்கும் அனுமதி முடிந்தது.',
+    'Your first 5 products are free. Your current product slots are full.':'முதல் 5 பொருட்கள் இலவசம். உங்களுக்கான பொருட்கள் சேர்க்கும் அனுமதி முடிந்தது.',
     'Call an admin for more product slots.':'மேலும் பொருட்கள் சேர்க்க நிர்வாகியை அழையுங்கள்.',
     'Admin · 7305675201':'நிர்வாகி · 7305675201', 'Admin · 9361240355':'நிர்வாகி · 9361240355', '☎ Call':'☎ அழைக்கவும்',
     'Send a request':'கோரிக்கை அனுப்பு', 'Admin approval is required to increase your allowance.':'மேலும் பொருட்கள் சேர்க்க நிர்வாகியின் அனுமதி தேவை.',
@@ -57,6 +59,7 @@
     'YOUR LOCAL UPDATES':'உங்கள் உள்ளூர் தகவல்கள்', 'Mark all as read':'அனைத்தையும் படித்ததாகக் குறி', 'Loading your updates…':'தகவல்கள் ஏற்றப்படுகின்றன…',
     'View all notifications →':'அனைத்து அறிவிப்புகளையும் பார் →',
   };
+  Object.assign(tamil, window.LocalfromHomeTranslations || {});
   let language = 'en';
   try { if (localStorage.getItem('localfrom-product-language') === 'ta') language = 'ta'; } catch (_) {}
   const originals = new WeakMap();
@@ -67,16 +70,18 @@
   }
   function apply() {
     document.documentElement.lang = language;
-    document.title = `${t('Add products')} | ${document.querySelector('.easy-intro .eyebrow').textContent}`;
+    document.title = home ? (language === 'ta' ? 'Local From | வந்தவாசி' : originalTitle) : `${t('Add products')} | ${document.querySelector('.easy-intro .eyebrow').textContent}`;
     document.querySelectorAll('[data-product-text]').forEach(element => { element.textContent = t(element.dataset.productText); });
-    document.querySelectorAll('.easy-products, .site-header, .market-mobile-nav, .local-footer, .skip-link, #product-limit-dialog').forEach(scope => {
+    document.querySelectorAll('.easy-products, [data-home-language-scope], .site-header, .market-mobile-nav, .local-footer, .skip-link, #product-limit-dialog, #guest-account-dialog').forEach(scope => {
       const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         const text = walker.currentNode;
-        if (text.parentElement.closest('.brand, .local-footer-brand a, .easy-cards, [data-review-list], select, .eyebrow, [data-feedback], [data-draft-status]')) continue;
+        if (text.parentElement.closest('.brand, .local-footer-brand a, .easy-cards, [data-review-list], select, .easy-intro .eyebrow, [data-feedback], [data-draft-status], .business-card, .notices, script, style')) continue;
+        if (text.parentElement.closest('.product-card, .spotlight-card') && !text.parentElement.closest('.product-shop-link, .discount-badge, .sponsor-label, .spotlight-card .text-link')) continue;
         if (!originals.has(text)) originals.set(text, text.textContent);
         const source = originals.get(text), key = source.trim();
         if (tamil[key]) text.textContent = source.replace(key, t(key));
+        else if (text.parentElement.closest('.discount-badge') && /^\d+% off$/.test(key)) text.textContent = source.replace(key, t('{number}% off', {number: key.split('%')[0]}));
       }
     });
     document.querySelectorAll('[aria-label], [placeholder], [title]').forEach(element => {
@@ -89,6 +94,11 @@
       });
     });
     selector.value = language;
+    const greeting = home && document.querySelector('.home-greeting h2');
+    if (greeting) {
+      if (!greeting.dataset.originalGreeting) greeting.dataset.originalGreeting = greeting.textContent;
+      greeting.textContent = language === 'ta' ? greeting.dataset.originalGreeting.replace(/^Hello, neighbour$/, 'வணக்கம்').replace(/^Hello,/, 'வணக்கம்,') : greeting.dataset.originalGreeting;
+    }
   }
   window.LocalfromProductLanguage = {t, apply, get language() { return language; },
     error(message) { return language === 'ta' && !tamil[message] ? t('Check the product details.') : t(message); }};

@@ -127,7 +127,8 @@ class OnboardingTests(TestCase):
         self.assertEqual(ShopProfile.objects.get(user=self.user).owner_name,'Sandra')
         self.assertContains(self.client.get('/account/'),'Sandra Store')
 
-    def test_my_ads_are_limited_to_the_signed_in_user(self):
+    def test_my_ads_are_limited_to_the_signed_in_shop_owner(self):
+        CompanyProfile.objects.create(user=self.user, company_name="My Shop")
         AdPost.objects.create(user=self.user,company_name='My Shop',title='My local ad',description='Own application',image='ad_posts/test.png')
         AdPost.objects.create(user=self.other,company_name='Other Shop',title='Other private ad',description='Not mine',image='ad_posts/other.png')
         self.client.force_login(self.user)

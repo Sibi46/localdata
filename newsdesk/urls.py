@@ -1,11 +1,13 @@
 from django.urls import path
 from . import views
 from . import public_views
+from . import account_submissions
 
 app_name = 'newsdesk'
 urlpatterns = [
     path('', views.feed, name='feed'),
     path('share/', public_views.share, name='share'),
+    path('share/mine/<int:pk>/', account_submissions.status, name='account_submission'),
     path('share/otp/send/', public_views.send_otp, name='share_send_otp'),
     path('share/otp/verify/', public_views.verify_otp, name='share_verify_otp'),
     path('share/finish/', public_views.finish, name='share_finish'),

@@ -1,0 +1,10 @@
+{% extends 'shop/base.html' %}
+{% block title %}Promotion performance | {{ company.company_name }}{% endblock %}
+{% block content %}
+<a href="/employer/dashboard/">← My shop</a><h1>Offers &amp; ads performance</h1>
+<p>Views count cards at least half visible for one second. Clicks count interactions with those cards. Your own visits and admin visits are excluded.</p>
+<p>Members reached means distinct signed-in accounts; browser reach also includes guests. Counts begin after tracking is enabled and may be reduced by privacy settings or blocked JavaScript.</p>
+<h2>My offers</h2>{% for item in offers %}<article class="shop-form"><h3>{{ item.title }}</h3><p>{{ item.measured_views }} views · {{ item.measured_clicks }} clicks · {{ item.member_reach }} members reached · {{ item.browser_reach }} browsers reached</p>{% if not item.is_active %}<p>Awaiting approval / inactive</p>{% endif %}</article>{% empty %}<p>No offers yet.</p>{% endfor %}
+<h2>My ads</h2>{% for item in ads %}<article class="shop-form"><h3>{{ item.title|default:item.company_name }}</h3><p>{{ item.get_status_display }}</p><p>{{ item.measured_views }} views · {{ item.measured_clicks }} clicks · {{ item.member_reach }} members reached · {{ item.browser_reach }} browsers reached</p><p>Previous counters: {{ item.views }} impressions · {{ item.clicks }} clicks. These older counters use a different measurement and are not added to the new totals.</p></article>{% empty %}<p>No ads yet.</p>{% endfor %}
+{% if legacy_ads %}<h2>Earlier banner ads</h2>{% for item in legacy_ads %}<article class="shop-form"><h3>{{ item.title }}</h3><p>{{ item.views }} recorded impressions · {{ item.clicks }} recorded clicks. Unique reach was not recorded for these earlier ads.</p></article>{% endfor %}{% endif %}
+{% endblock %}

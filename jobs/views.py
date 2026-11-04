@@ -274,7 +274,7 @@ def dashboard(request):
         return redirect('state_admin_dashboard')
     if role == 'district_admin':
         return redirect('district_admin_dashboard')
-    if request.user.user_type in User.EMPLOYER_TYPES or CompanyProfile.objects.filter(user=request.user).exists():
+    if CompanyProfile.objects.filter(user=request.user).exists():
         return redirect('employer_dashboard')
     if request.user.user_type == 'advertiser' or hasattr(request.user, 'advertiser'):
         return redirect('advertiser_dashboard')
@@ -368,6 +368,8 @@ def business_profile(request, company_id):
 # ── DASHBOARDS ────────────────────────────────────────────────────────────────
 @login_required
 def employer_dashboard(request, profile_editor=None):
+    if not CompanyProfile.objects.filter(user=request.user, user__is_active=True).exists():
+        return redirect('personal_account')
     if request.method == 'POST' and profile_editor is None:
         return profile_edit(request)
     from .account import dashboard_profile_context
@@ -375,7 +377,7 @@ def employer_dashboard(request, profile_editor=None):
     from .shop_forms import ShopPhotosForm
     company = getattr(request.user, 'company', None)
     if not company:
-        return redirect('profile_edit')
+        return redirect('personal_account')
     context = dashboard_profile_context(request.user, company)
     products = company.products.all()
     videos = company.videos.all()
@@ -1063,6 +1065,7 @@ def sponsored_detail(request, ad_id, kind):
         phone = ad.advertiser.phone
     return render(request, 'sponsored_detail.html', {
         'sponsor_title': title, 'sponsor_description': description, 'sponsor_image': image,
+        'promotion_ad_id': ad.pk if kind == 'post' else None,
         'sponsor_company': getattr(owner, 'company', None),
         'sponsor_website': _sponsor_website(request, website), 'sponsor_phone': phone,
     })
