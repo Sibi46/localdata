@@ -60,10 +60,13 @@ class PublicDemoSignupTests(TestCase):
         return User.objects.create_user(self.phone, phone=self.phone, password=self.password)
 
     def test_browser_signup_discloses_demo_and_password_login_is_required(self):
+        response = self.client.get('/register/')
+        self.assertNotContains(response, 'Temporary demo signup')
+        self.assertNotContains(response, 'Testing code only')
         details = {'name': 'Local Person', 'phone': self.phone, 'pincode': '604408'}
         self.assertEqual(self.client.post('/register/', details).status_code, 302)
         response = self.client.get('/register/')
-        self.assertContains(response, 'Temporary demo signup')
+        self.assertNotContains(response, 'Temporary demo signup')
         self.assertContains(response, 'does not verify phone ownership')
         self.assertContains(response, 'Demo OTP')
         code = self.client.session['simple_signup']['code']
