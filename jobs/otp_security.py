@@ -26,8 +26,28 @@ def store():
 
 
 def demo_enabled(purpose):
+    if getattr(settings, 'PUBLIC_DEMO_SIGNUP', False):
+        return purpose == 'signup'
     flag = 'DEMO_PASSWORD_RESET_OTP' if purpose == 'reset' else 'DEMO_SIGNUP_OTP'
     return settings.DEBUG and getattr(settings, flag, False)
+
+
+def require_available(purpose):
+    if purpose == 'reset' and getattr(settings, 'PUBLIC_DEMO_SIGNUP', False):
+        raise OTPError('Password recovery is unavailable during demo signup. Sign in with your password.')
+
+
+def response_metadata(pending=None):
+    """Label visible codes explicitly; they never prove phone ownership."""
+    pending = pending or {}
+    result = {'otp': pending['code']} if 'code' in pending else {}
+    if getattr(settings, 'PUBLIC_DEMO_SIGNUP', False):
+        result.update({
+            'demo': True,
+            'phone_ownership_verified': False,
+            'message': 'Testing code only. This does not verify ownership of your mobile number.',
+        })
+    return result
 
 
 def deliver_code(phone, code):
@@ -59,6 +79,7 @@ def _key(kind, value):
 def issue(request, phone, purpose):
     if purpose not in {'signup', 'reset'} or not PHONE.fullmatch(phone or ''):
         raise OTPError('Enter a valid 10-digit mobile number.')
+    require_available(purpose)
     # A new challenge invalidates an earlier challenge and verified proof.
     previous = request.session.pop('account_otp_' + purpose, None)
     try:
@@ -78,7 +99,8 @@ def issue(request, phone, purpose):
             raise OTPError('OTP delivery is unavailable. Please try again later.')
         nonce = secrets.token_urlsafe(32)
         record = {'phone': phone, 'purpose': purpose, 'created': time.time(),
-                  'hash': make_password(code), 'verified': False, 'demo': demo_enabled(purpose)}
+                  'hash': make_password(code), 'verified': False, 'demo': demo_enabled(purpose),
+                  'phone_ownership_verified': False}
         backend.set(_key('proof', nonce), record, TTL)
         backend.set(_key('latest', purpose + ':' + phone), nonce, TTL)
         pending = {'phone': phone, 'purpose': purpose, 'nonce': nonce,
@@ -95,6 +117,7 @@ def issue(request, phone, purpose):
 
 
 def _record(request, phone, purpose):
+    require_available(purpose)
     pending = request.session.get('account_otp_' + purpose, {})
     if (not isinstance(pending, dict) or pending.get('phone') != phone
             or pending.get('purpose') != purpose or not pending.get('nonce')):
@@ -123,6 +146,7 @@ def verify(request, phone, purpose, code):
         if not store().add(_key('verified', nonce), True, TTL):
             raise OTPError('That OTP is already used.')
         record['verified'] = True
+        record['phone_ownership_verified'] = not record.get('demo', False)
         store().set(_key('proof', nonce), record, max(1, int(TTL - (time.time() - record['created']))))
         request.session['account_otp_' + purpose] = {**pending, 'verified': True}
         return True

@@ -1,6 +1,7 @@
 """Session-bound pilot OTP recovery for personal and shop accounts."""
 import time
 from django import forms
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.db import transaction
@@ -35,6 +36,10 @@ def issue_code(request,user,phone):
 @sensitive_post_parameters('password','confirm_password','otp')
 @require_http_methods(['GET','POST'])
 def recover(request):
+    if getattr(settings, 'PUBLIC_DEMO_SIGNUP', False):
+        request.session.pop('password_recovery', None)
+        request.session.pop('account_otp_reset', None)
+        return render(request, 'accounts/recovery_unavailable.html', status=503)
     pending=request.session.get('password_recovery')
     if pending and not demo_enabled('reset'):
         pending.pop('code', None)

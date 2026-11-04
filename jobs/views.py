@@ -452,7 +452,7 @@ def _account_payload(request):
 
 
 def _quick_register_data(request, data, password_hash=None):
-    from .otp_security import consume, OTPError, PHONE
+    from .otp_security import consume, response_metadata, OTPError, PHONE
     from .simple_accounts import PasswordForm
     import re
     name = str(data.get('name', '')).strip()
@@ -480,14 +480,14 @@ def _quick_register_data(request, data, password_hash=None):
         return JsonResponse({'success': False, 'error': 'This phone number is already registered.'}, status=400)
     request.session.pop('reg_data', None)
     login(request, user, backend='jobs.backends.PhoneOrEmailBackend')
-    return JsonResponse({'success': True, 'redirect': '/'})
+    return JsonResponse({'success': True, 'redirect': '/', **response_metadata()})
 
 
 @never_cache
 @sensitive_post_parameters('password', 'confirm_password', 'otp')
 @require_POST
 def send_otp(request):
-    from .otp_security import issue, OTPError
+    from .otp_security import issue, response_metadata, OTPError
     try:
         data = _account_payload(request)
         phone = str(data.get('phone', '')).strip()
@@ -502,8 +502,8 @@ def send_otp(request):
         elif User.objects.filter(Q(phone=phone) | Q(username=phone) | Q(business_phone=phone)).exists():
             return JsonResponse({'success': False, 'error': 'This phone number is already registered. Please sign in.'}, status=400)
         pending = issue(request, phone, purpose)
-        # Only development responses may include a code. Production never does.
-        return JsonResponse({'success': True, **({'otp': pending['code']} if 'code' in pending else {})})
+        # Visible codes are limited to development or explicit public demo signup.
+        return JsonResponse({'success': True, **response_metadata(pending)})
     except (OTPError, ValueError) as error:
         return JsonResponse({'success': False, 'error': str(error)}, status=400)
 
@@ -513,7 +513,7 @@ def send_otp(request):
 @sensitive_post_parameters('password', 'confirm_password', 'otp')
 @require_POST
 def verify_otp(request):
-    from .otp_security import verify, OTPError
+    from .otp_security import verify, response_metadata, OTPError
     try:
         data = _account_payload(request)
         # No fallback between purposes: legacy callers default to reset only.
@@ -521,7 +521,7 @@ def verify_otp(request):
         pending = request.session.get('account_otp_' + str(purpose), {})
         phone = str(data.get('phone', pending.get('phone', ''))).strip()
         verify(request, phone, purpose, str(data.get('otp', '')).strip())
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True, **response_metadata()})
     except (OTPError, ValueError) as error:
         return JsonResponse({'success': False, 'error': str(error)}, status=400)
 
@@ -596,7 +596,7 @@ def phone_login(request):
     # Try personal phone first, then business phone
     user = User.objects.filter(phone=phone).first() or \
            User.objects.filter(business_phone=phone).first()
-    if user and user.check_password(password):
+    if user and user.is_active and user.check_password(password):
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         if user.is_employer() or CompanyProfile.objects.filter(user=user).exists():
             redirect_url = '/employer/dashboard/'
@@ -610,7 +610,7 @@ def phone_login(request):
 @sensitive_post_parameters('password', 'confirm_password', 'otp')
 @require_POST
 def send_register_otp(request):
-    from .otp_security import issue, OTPError
+    from .otp_security import issue, response_metadata, OTPError
     try:
         data = _account_payload(request)
         phone = str(data.get('phone', '')).strip()
@@ -626,7 +626,7 @@ def send_register_otp(request):
             if not form.is_valid():
                 raise ValueError('Use matching passwords of at least 8 characters.')
             request.session['reg_data']['password_hash'] = make_password(form.cleaned_data['password'])
-        return JsonResponse({'success': True, 'otp_sent': True, **({'otp': pending['code']} if 'code' in pending else {})})
+        return JsonResponse({'success': True, 'otp_sent': True, **response_metadata(pending)})
     except (OTPError, ValueError) as error:
         return JsonResponse({'success': False, 'error': str(error)}, status=400)
 
@@ -636,7 +636,7 @@ def send_register_otp(request):
 @sensitive_post_parameters('password', 'confirm_password', 'otp')
 @require_POST
 def verify_register_otp(request):
-    from .otp_security import verify, OTPError
+    from .otp_security import verify, response_metadata, OTPError
     try:
         data = _account_payload(request)
         pending = request.session.get('account_otp_signup', {})
@@ -649,7 +649,7 @@ def verify_register_otp(request):
         staged = request.session.get('reg_data', {})
         if staged.get('phone') == phone and staged.get('password_hash'):
             return _quick_register_data(request, staged, password_hash=staged['password_hash'])
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True, **response_metadata()})
     except (OTPError, ValueError) as error:
         return JsonResponse({'success': False, 'error': str(error)}, status=400)
 

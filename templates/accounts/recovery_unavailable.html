@@ -1,0 +1,14 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Password recovery unavailable{% endblock %}
+{% block content %}
+<div class="auth-intro">
+  <span class="auth-kicker">LOCALFROM</span>
+  <h1>Sign in with your password.</h1>
+  <p>Keep the password you created when signing up.</p>
+</div>
+<section class="auth-card">
+  <h2>Password recovery is temporarily unavailable</h2>
+  <p class="auth-subtitle">Demo signup codes do not verify phone ownership and cannot reset an existing account's password.</p>
+  <a class="auth-primary" href="{% url 'login' %}">Back to sign in</a>
+</section>
+{% endblock %}

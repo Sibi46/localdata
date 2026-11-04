@@ -391,6 +391,9 @@ CHANNEL_LAYERS = {
 # Pilot recovery uses an on-screen OTP only when explicitly enabled.
 DEMO_PASSWORD_RESET_OTP = env_bool('DJANGO_DEMO_PASSWORD_RESET_OTP', DEBUG)
 DEMO_SIGNUP_OTP = env_bool('DJANGO_DEMO_SIGNUP_OTP', DEBUG)
+# Explicit temporary onboarding mode. Its visible code is not SMS verification;
+# password recovery is unavailable while this mode is active.
+PUBLIC_DEMO_SIGNUP = env_bool('DJANGO_PUBLIC_DEMO_SIGNUP', False)
 OTP_CACHE_ALIAS = 'otp'
 CACHES['otp'] = ({'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
                   'LOCATION': 'development-account-otp'} if DEBUG else {

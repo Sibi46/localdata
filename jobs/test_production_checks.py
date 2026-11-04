@@ -48,3 +48,17 @@ class ProductionGuardTests(SimpleTestCase):
     def test_errors_never_contain_credentials(self):
         with override_settings(TWO_FACTOR_API_KEY='CHANGE_ME_secret-marker'):
             self.assertNotIn('secret-marker', str(production_configuration(None)))
+
+    @override_settings(PUBLIC_DEMO_SIGNUP=True, TWO_FACTOR_API_KEY='', TWO_FACTOR_OTP_TEMPLATE='')
+    def test_explicit_public_demo_reports_warning_without_requiring_sms_credentials(self):
+        self.assertEqual(self.ids(), {'localfrom.W001'})
+        self.assertIn('do not verify phone ownership', str(production_configuration(None)))
+
+    @override_settings(PUBLIC_DEMO_SIGNUP=True, DEBUG=True, DEMO_PASSWORD_RESET_OTP=True)
+    def test_public_demo_still_rejects_debug_and_legacy_demo_reset(self):
+        self.assertEqual(self.ids(), {'localfrom.W001', 'localfrom.E001', 'localfrom.E008'})
+
+    @override_settings(PUBLIC_DEMO_SIGNUP=True, SESSION_COOKIE_SECURE=False,
+                       CACHES={'otp': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+    def test_public_demo_still_requires_secure_cookies_and_shared_otp_cache(self):
+        self.assertEqual(self.ids(), {'localfrom.W001', 'localfrom.E005', 'localfrom.E006'})

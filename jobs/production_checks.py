@@ -2,7 +2,7 @@
 from urllib.parse import urlsplit
 
 from django.conf import settings
-from django.core.checks import Error, Tags, register
+from django.core.checks import Error, Tags, Warning, register
 
 
 def configured(value):
@@ -20,9 +20,16 @@ def production_configuration(app_configs, **kwargs):
 
     require(not settings.DEMO_SIGNUP_OTP and not settings.DEMO_PASSWORD_RESET_OTP,
             1, 'Production must disable both demo OTP settings.')
-    require(configured(settings.TWO_FACTOR_API_KEY)
-            and configured(settings.TWO_FACTOR_OTP_TEMPLATE),
+    public_demo = getattr(settings, 'PUBLIC_DEMO_SIGNUP', False)
+    require(public_demo or (configured(settings.TWO_FACTOR_API_KEY)
+            and configured(settings.TWO_FACTOR_OTP_TEMPLATE)),
             2, 'Configure real OTP delivery credentials and an approved template before launch.')
+    if public_demo:
+        errors.append(Warning(
+            'Public demo signup is active: visible testing codes do not verify phone ownership. '
+            'Password recovery is disabled; existing accounts still require their password.',
+            id='localfrom.W001',
+        ))
     secret = settings.SECRET_KEY
     require(configured(secret) and len(secret) >= 50 and len(set(secret)) >= 5
             and not secret.startswith('django-insecure-'),

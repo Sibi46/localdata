@@ -3,6 +3,7 @@ import time
 import unicodedata
 
 from django import forms
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -123,7 +124,10 @@ def signup(request):
             except OTPError as error:
                 request.session.pop('simple_signup', None)
                 form.add_error(None, str(error))
-                return render(request, 'accounts/signup.html', {'form': form, 'step': step, 'pending': None}, status=400)
+                return render(request, 'accounts/signup.html', {
+                    'form': form, 'step': step, 'pending': None,
+                    'public_demo_signup': getattr(settings, 'PUBLIC_DEMO_SIGNUP', False),
+                }, status=400)
             except IntegrityError:
                 request.session.pop('simple_signup', None)
                 messages.error(request, 'This phone is already registered. Please sign in.')
@@ -134,7 +138,10 @@ def signup(request):
             login(request, user, backend='jobs.backends.PhoneOrEmailBackend')
             messages.success(request, 'Your personal account is ready.')
             return redirect('/business/create/?type=' + business_type if business_type else 'personal_account')
-    return render(request, 'accounts/signup.html', {'form': form, 'step': step, 'pending': pending})
+    return render(request, 'accounts/signup.html', {
+        'form': form, 'step': step, 'pending': pending,
+        'public_demo_signup': getattr(settings, 'PUBLIC_DEMO_SIGNUP', False),
+    })
 
 
 class BusinessForm(forms.Form):
