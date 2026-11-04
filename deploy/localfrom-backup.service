@@ -1,0 +1,21 @@
+[Unit]
+Description=LocalFrom encrypted database and media backup
+After=mysql.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/usr/local/sbin/localfrom-backup
+UMask=0077
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=GOMAXPROCS=1
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/localfrom-backup /var/cache/localfrom-backup /var/backups/localfrom-restic
+TimeoutStartSec=1h

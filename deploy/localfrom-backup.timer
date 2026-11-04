@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily LocalFrom encrypted backup
+
+[Timer]
+OnCalendar=*-*-* 03:10:00 Asia/Kolkata
+RandomizedDelaySec=10m
+Persistent=true
+Unit=localfrom-backup.service
+
+[Install]
+WantedBy=timers.target
