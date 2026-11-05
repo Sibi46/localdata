@@ -3,3 +3,10 @@
 html[lang=ta] .studio-home .pilot-story,html[lang=ta] .studio-home .pilot-discover,html[lang=ta] .studio-home .pilot-link>div{min-width:0}html[lang=ta] .studio-home .pilot-section{overflow-wrap:anywhere}html[lang=ta] .studio-home .pilot-link{grid-template-columns:44px minmax(0,1fr) 18px}
 
 @media(max-width:600px){html[lang=ta] .studio-home .header-actions .account-create-button{max-width:70px;white-space:normal;text-align:center;justify-content:center;font-size:10px;line-height:1.4;padding:7px 8px}}
+
+[data-home-language-mobile]:empty{display:none}
+@media(max-width:640px){
+  [data-home-language-mobile] .home-language-bar{justify-content:flex-start;margin-top:14px;padding:0}
+  [data-home-language-mobile] .home-language-bar label{gap:12px;padding:5px 6px 5px 14px;border:1px solid #e2d7f3;border-radius:16px;background:#eee6ff;font-size:12px}
+  [data-home-language-mobile] .home-language-bar select{font-size:13px;border-color:#d6c4ee;max-width:160px}
+}
