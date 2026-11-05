@@ -7,6 +7,7 @@
   const selected=form.querySelector('[name="directory_entry"]');
   let timer,controller;
   function choose(entry){
+    if(!entry.can_select)return;
     for(const key of ['name','category','pincode','city','address']){
       if(entry[key])form.elements[key].value=entry[key];
     }
@@ -26,11 +27,14 @@
       if(!response.ok)throw Error('Search unavailable');
       const data=await response.json();
       if(search.value.trim()!==query)return;
-      status.textContent=data.results.length?'Select your shop to fill its details.':'No matching shop for your account phone. You can enter your shop details below.';
+      status.textContent=data.results.length?'Choose your shop. Selection requires your account phone to match an imported contact.':'No matching shop name found. You can enter your shop details below.';
       data.results.forEach(entry=>{
         const button=document.createElement('button');button.type='button';
         const info=document.createElement('span'),name=document.createElement('strong'),detail=document.createElement('small'),action=document.createElement('span');
-        name.textContent=entry.name;detail.textContent=[entry.phone,entry.city].filter(Boolean).join(' / ');action.textContent='Use this shop';
+        name.textContent=entry.name;
+        detail.textContent=entry.can_select?[entry.phone,entry.city].filter(Boolean).join(' / '):'Contact admin if this is your shop: its contact must match your account phone.';
+        action.textContent=entry.can_select?'Use this shop':'Phone must match';
+        button.disabled=!entry.can_select;
         info.append(name,detail);button.append(info,action);button.addEventListener('click',()=>choose(entry));results.append(button);
       });
     }catch(error){if(error.name!=='AbortError')status.textContent='Search is unavailable. You can still enter your shop details below.';}

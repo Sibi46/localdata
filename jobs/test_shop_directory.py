@@ -87,12 +87,14 @@ class ShopDirectoryTests(TestCase):
         self.assertEqual(response.status_code,302)
         self.assertEqual(ShopDirectoryEntry.objects.get().phone,self.owner.phone)
 
-    def test_search_by_name_or_phone_only_returns_account_matches(self):
+    def test_name_search_suggests_names_but_phone_lookup_only_returns_account_matches(self):
         own=self.entry();self.entry(name='Other Priya Store',normalized_name='other priya store',phone=self.other.phone)
         self.client.force_login(self.owner)
         for query in ['Priya','9876501122','+91 98765 01122']:
             response=self.client.get(reverse('shop_directory_search'),{'q':query})
-            self.assertEqual([entry['id'] for entry in response.json()['results']],[own.pk])
+            self.assertEqual([entry['id'] for entry in response.json()['results'] if entry['can_select']],[own.pk])
+            if query=='Priya':
+                self.assertIn({'name':'Other Priya Store','can_select':False},response.json()['results'])
             self.assertIn('no-store',response['Cache-Control'])
         self.assertEqual(self.client.get(reverse('shop_directory_search'),{'q':self.other.phone}).json()['results'],[])
 
@@ -157,7 +159,11 @@ class ShopDirectoryTests(TestCase):
         self.assertEqual(response.context['review_count'],2)
         entry=ShopDirectoryEntry.objects.get(name='Blank Shop')
         self.client.force_login(self.owner)
-        self.assertEqual(self.client.get(reverse('shop_directory_search'),{'q':'Shop'}).json()['results'],[])
+        suggestions=self.client.get(reverse('shop_directory_search'),{'q':'Shop'}).json()['results']
+        self.assertEqual(len(suggestions),2)
+        for result in suggestions:
+            self.assertEqual(set(result),{'name','can_select'})
+            self.assertFalse(result['can_select'])
         self.assertContains(self.client.post(reverse('business_create'),self.business_data(entry)),'unavailable for your account')
         self.assertFalse(CompanyProfile.objects.exists())
 
@@ -221,3 +227,28 @@ class ShopDirectoryTests(TestCase):
     def test_same_name_invalid_sources_merge_without_unique_constraint_error(self):
         self.upload([['Shop Name','Phone'],['No Contact','123'],['No Contact','456']])
         self.assertEqual(ShopDirectoryEntry.objects.count(),1)
+
+    def test_two_letter_name_autocomplete_and_selection_details(self):
+        own=self.entry(name='Modern Menswear',normalized_name='modern menswear')
+        self.entry(name='Menswear Market',normalized_name='menswear market',phone=self.other.phone,source_phone='private source',address='Private imported address')
+        self.client.force_login(self.owner)
+        self.assertEqual(self.client.get(reverse('shop_directory_search'),{'q':'m'}).json()['results'],[])
+        results=self.client.get(reverse('shop_directory_search'),{'q':'me'}).json()['results']
+        self.assertEqual(results[0]['id'],own.pk)
+        self.assertTrue(results[0]['can_select'])
+        self.assertEqual(results[1],{'name':'Menswear Market','can_select':False})
+        self.assertNotIn(self.other.phone,str(results))
+        self.assertNotIn('Private imported address',str(results))
+
+    def test_autocomplete_prioritizes_own_shop_and_limits_results(self):
+        for index in range(12):
+            self.entry(name=f'Menswear {index:02}',normalized_name=f'menswear {index:02}',phone=self.other.phone)
+        own=self.entry(name='Z Menswear',normalized_name='z menswear')
+        self.client.force_login(self.owner)
+        results=self.client.get(reverse('shop_directory_search'),{'q':'me'}).json()['results']
+        self.assertEqual(len(results),10)
+        self.assertEqual(results[0]['id'],own.pk)
+
+    def test_guest_cannot_read_imported_shop_suggestions(self):
+        self.entry()
+        self.assertEqual(self.client.get(reverse('shop_directory_search'),{'q':'pr'}).status_code,302)

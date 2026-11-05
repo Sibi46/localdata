@@ -262,8 +262,24 @@ def template(request):
 def search(request):
     query=request.GET.get('q','').strip()[:150]
     phone=normalize_phone(request.user.phone)
-    if len(query)<2 or not phone:return JsonResponse({'results':[]})
-    entries=ShopDirectoryEntry.objects.filter(phone_query([phone]),registered_shop__isnull=True)
-    if normalize_phone(query)!=phone:entries=entries.filter(name__icontains=query)
-    results=[{**{key:getattr(entry,key) for key in ('id','name','pincode','city','address','category')}, 'phone':phone} for entry in entries[:10]]
+    if len(query)<2:return JsonResponse({'results':[]})
+    entries=ShopDirectoryEntry.objects.filter(registered_shop__isnull=True)
+    query_phone=normalize_phone(query)
+    if query_phone:
+        # Phone lookup must never reveal another account's imported contacts.
+        if not phone or query_phone!=phone:return JsonResponse({'results':[]})
+        entries=entries.filter(phone_query([phone]))
+    else:
+        entries=entries.filter(name__icontains=query)
+    # Show matching names to help owners discover their listing, but expose
+    # contact/detail data and selection only for the account's own phone.
+    entries=entries.annotate(account_match=phone_query([phone]) if phone else Q(pk__isnull=True)).order_by('-account_match','name','pk')
+    results=[]
+    for entry in entries[:10]:
+        can_select=entry_accepts_phone(entry,phone)
+        result={'name':entry.name,'can_select':can_select}
+        if can_select:
+            result.update({key:getattr(entry,key) for key in ('id','pincode','city','address','category')})
+            result['phone']=phone
+        results.append(result)
     return JsonResponse({'results':results})
