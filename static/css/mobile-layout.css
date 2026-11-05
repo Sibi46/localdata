@@ -1,0 +1,107 @@
+/* Comfortable phone layouts; desktop layout and application behavior stay intact. */
+@media (max-width:640px) {
+  html {scroll-padding-bottom:110px}
+  .studio-home .shell,.market-page .shell {width:calc(100% - 32px)}
+  .studio-home .header-inner,.market-page .header-inner {min-height:72px;height:auto;gap:10px;padding-block:10px}
+  .studio-home .header-actions,.market-page .header-actions {gap:7px;flex-shrink:0}
+  .studio-home .brand,.market-page .brand {min-width:0}
+  .studio-home .notification-bell,.market-page .notification-bell,
+  .studio-home .icon-button,.market-page .icon-button {min-width:44px;min-height:44px;width:44px;height:44px}
+  .studio-home .header-actions .account-create-button {min-height:44px;padding:8px 12px;font-size:11px;line-height:1.5;max-width:105px;white-space:normal;text-align:center;justify-content:center}
+  .studio-home .home-greeting {gap:10px;margin:12px 0 18px}
+  .studio-home .home-greeting h2 {font-size:21px;line-height:1.5}
+  .studio-home .greeting-shop-link {font-size:11px;min-height:44px;padding:9px 12px;max-width:150px;white-space:normal}
+  .studio-home .daily-banner {min-height:246px;padding:24px 18px;border-radius:24px}
+  .studio-home .daily-banner .daily-banner-copy {max-width:calc(100% - 126px)}
+  .studio-home .catalog-hero .hometown-heading {font-size:32px!important;line-height:1.18;letter-spacing:-1px}
+  .studio-home .catalog-hero .hero-description {font-size:12px;line-height:1.8;max-width:none;margin-top:10px}
+  .studio-home .banner-link {font-size:12px;min-height:44px;line-height:1.5;padding:10px 13px;gap:8px}
+  .studio-home .product-showcase {width:126px;right:4px;top:18px;bottom:16px;justify-content:center}
+  .studio-home .showcase-slide svg {height:112px}
+  .studio-home .showcase-slide>span {font-size:11px;line-height:1.6}
+  .studio-home .showcase-controls {gap:3px;margin-top:12px}
+  .studio-home .showcase-controls button {width:44px;height:44px;flex-shrink:0}
+  .studio-home .showcase-controls>span {font-size:10px}
+  .studio-home .discovery-search {min-height:58px;padding:6px 6px 6px 14px;margin-top:18px}
+  .studio-home .discovery-search input {font-size:16px;min-height:44px}
+  .studio-home .discovery-search input::placeholder {font-size:13px}
+  .studio-home .discovery-search button {min-width:44px;min-height:44px;padding:12px}
+  .studio-home .search-utility-row {gap:12px;align-items:center;margin-top:10px}
+  .studio-home .search-note {min-width:0;flex:1;line-height:1.7}
+  .studio-home .search-note,.studio-home .search-note button {font-size:12px}
+  .studio-home .search-note button {min-height:44px;text-align:left;line-height:1.7}
+  .studio-home .post-ad-button {min-height:44px;font-size:12px;padding:10px 14px;flex-shrink:0}
+  .studio-home .catalog-hero .primary-shortcuts {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+  .studio-home .catalog-hero .primary-shortcuts a {min-height:66px;display:flex;flex-direction:row;justify-content:flex-start;gap:12px;padding:14px;border-radius:18px;min-width:0}
+  .studio-home .catalog-hero .primary-shortcuts a>i {font-size:19px;flex-shrink:0}
+  .studio-home .catalog-hero .primary-shortcuts a>span:not(.shortcut-arrow) {font-size:14px;line-height:1.6;min-width:0;white-space:normal;overflow-wrap:anywhere}
+  html[lang=ta] .studio-home .catalog-hero .primary-shortcuts a>span:not(.shortcut-arrow) {font-size:13px}
+  .studio-home .section-heading {flex-wrap:wrap;gap:10px;align-items:flex-start}
+  .studio-home .section-heading>div {min-width:0;flex:1 1 180px}
+  .studio-home .section-heading h2,.studio-home .home-product-section .section-heading h2 {font-size:24px;line-height:1.5;letter-spacing:-.6px}
+  .studio-home .section-heading .text-link {font-size:12px;min-height:44px;display:inline-flex;align-items:center}
+  .studio-home .product-grid,.market-page .product-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .studio-home .product-copy,.market-page .product-copy {padding:13px;min-width:0}
+  .studio-home .product-copy h3,.market-page .product-copy h3 {font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+  .studio-home .product-shop,.market-page .product-shop {font-size:12px;line-height:1.6;min-width:0;overflow-wrap:anywhere}
+  .studio-home .product-prices,.market-page .product-prices {flex-wrap:wrap}
+  .studio-home .product-prices strong,.market-page .product-prices strong {font-size:18px}
+  .studio-home .product-prices del,.market-page .product-prices del {font-size:11px}
+  .studio-home .product-location,.market-page .product-location {font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+  .studio-home .product-shop-link,.market-page .product-shop-link {font-size:12px;line-height:1.6;min-height:44px}
+  .studio-home .market-empty p,.studio-home .pilot-story p,.studio-home .pilot-link p,.studio-home .invite-copy>p:not(.eyebrow) {font-size:14px;line-height:1.9}
+  .studio-home .pilot-story h2 {font-size:29px;line-height:1.45}
+  .studio-home .pilot-link h3 {font-size:18px;line-height:1.5}
+  .studio-home .pilot-join,.studio-home .button,.studio-home .invite-secondary {font-size:13px;min-height:44px;line-height:1.6}
+  .studio-home .site-footer nav {gap:10px 20px}
+  .studio-home .site-footer nav a {font-size:13px;min-height:44px;display:inline-flex;align-items:center}
+  .studio-home .site-footer p {font-size:12px;line-height:1.8}
+  .studio-home .site-footer,.market-page .market-footer {padding-bottom:130px}
+  .studio-home .mobile-nav,.studio-theme .market-page .market-mobile-nav {bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 24px);max-width:460px;padding:6px;box-sizing:border-box;border-radius:28px}
+  .studio-home .mobile-nav a,.studio-theme .market-page .market-mobile-nav a {min-width:0;min-height:58px;gap:4px;padding:5px 2px;font-size:10px;line-height:1.5;box-sizing:border-box;text-align:center}
+  .studio-home .mobile-nav a span,.studio-theme .market-page .market-mobile-nav a span {white-space:normal;overflow-wrap:anywhere;max-width:100%}
+  .studio-home .mobile-nav i,.studio-theme .market-page .market-mobile-nav i {font-size:18px}
+  .studio-home .mobile-nav [aria-current] {width:100%;border-radius:20px}
+  .studio-home .mobile-nav [aria-current] span {font-size:10px}
+  .studio-theme .opc-bottom-nav {bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 20px);padding:6px;border-radius:24px;box-sizing:border-box}
+  .studio-theme .opc-bottom-nav>a {min-width:0;min-height:54px;font-size:10px;line-height:1.5;text-align:center}
+  .studio-theme .opc-bottom-nav>a span {white-space:normal;overflow-wrap:anywhere}
+  .auth-header {padding:14px 16px;gap:10px}
+  .auth-header .auth-brand {font-size:18px;min-width:0}
+  .auth-header .account-header-actions {gap:8px;flex-shrink:0}
+  .auth-header .account-header-actions>a {font-size:11px;max-width:76px;white-space:normal;line-height:1.5;text-align:right;min-height:44px;display:inline-flex;align-items:center}
+  .auth-main {padding:12px 16px 32px}
+  .auth-main .auth-intro>p {font-size:14px;line-height:1.8}
+  .auth-main .auth-card {padding:24px 18px;border-radius:22px}
+  .auth-main .auth-card h2 {font-size:25px;line-height:1.4}
+  .auth-main .auth-subtitle,.auth-main .auth-field label {font-size:14px;line-height:1.7}
+  .auth-main .auth-field input,.auth-main .auth-field textarea,.auth-main .auth-field select {min-height:48px;font-size:16px}
+  .auth-main .auth-field small,.auth-main .shop-lookup p,.auth-main .shop-lookup small {font-size:12px;line-height:1.8}
+  .auth-main .shop-lookup {padding:16px}
+  .auth-main .shop-lookup-results button {min-height:56px;gap:8px;flex-wrap:wrap;white-space:normal}
+  .auth-main .shop-lookup-results strong {font-size:14px}
+  .auth-main .shop-lookup-results small {font-size:12px}
+  .auth-main .auth-primary {min-height:48px;font-size:15px;line-height:1.6}
+  .auth-main .auth-switch,.auth-main .back-account,.auth-main .forgot-link {font-size:13px;line-height:1.8}
+  .auth-footer {flex-wrap:wrap;gap:12px 24px;padding:22px 16px;font-size:12px}
+  .market-page .shop-form label,.market-page .shop-form legend {font-size:14px;line-height:1.7}
+  .market-page .shop-form small,.market-page .shop-form .helptext {font-size:12px;line-height:1.8}
+  .market-page .shop-form .button,.market-page .dashboard-top-actions .button {min-height:46px;font-size:13px;line-height:1.6}
+  .studio-theme .dashboard-action-grid strong {font-size:16px;line-height:1.5}
+  .studio-theme .dashboard-action-grid span {font-size:12px;line-height:1.8}
+  .studio-theme .nd .story-excerpt,.studio-theme .nd .edition-empty p {font-size:14px;line-height:1.9}
+}
+@media (max-width:359px) {
+  .studio-home .shell,.market-page .shell {width:calc(100% - 24px)}
+  .studio-home .header-actions {gap:4px}
+  .studio-home .header-actions .account-create-button {max-width:80px;padding:7px 9px}
+  .studio-home .daily-banner {padding:22px 16px}
+  .studio-home .catalog-hero .hometown-heading {font-size:27px!important}
+  .studio-home .daily-banner .daily-banner-copy {max-width:calc(100% - 112px)}
+  .studio-home .product-showcase {width:112px;right:0}
+  .studio-home .showcase-controls {gap:0}
+  .studio-home .showcase-controls button {width:40px}
+  .studio-home .catalog-hero .primary-shortcuts a {padding:12px;gap:9px}
+  .studio-home .catalog-hero .primary-shortcuts a>span:not(.shortcut-arrow) {font-size:13px}
+  .auth-header .auth-brand {font-size:16px}
+}
