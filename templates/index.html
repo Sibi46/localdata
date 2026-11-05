@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="{% static 'css/home-studio.css' %}?v=4">
   <link rel="stylesheet" href="{% static 'css/home-showcase.css' %}?v=2">
   <script src="{% static 'js/home-showcase.js' %}?v=3" defer></script>
-  {% if not request.user.is_authenticated %}<script src="{% static 'js/home-registration.js' %}?v=4" defer></script>{% endif %}
+  {% if not request.user.is_authenticated %}<script src="{% static 'js/home-registration.js' %}?v=5" defer></script>{% endif %}
   <script src="{% static 'js/home-local.js' %}?v=1" defer></script>
 <link rel="stylesheet" href="{% static 'css/account-onboarding.css' %}?v=2"><script src="{% static 'js/area-names.js' %}?v=2" defer></script><link rel="stylesheet" href="{% static 'css/home-greeting.css' %}?v=2">{% include 'includes/brand_rotation_assets.html' %}</head>
 <body class="studio-home" data-home-language data-home-language-scope>
@@ -62,6 +62,7 @@
         <a class="primary-offers" href="{% url 'ads_gallery' %}"><i class="fas fa-tags" aria-hidden="true"></i><span>Offers</span><span class="shortcut-arrow" aria-hidden="true">↗</span></a>
         <a class="primary-news" href="{% url 'newsdesk:feed' %}"><i class="far fa-newspaper" aria-hidden="true"></i><span>News</span><span class="shortcut-arrow" aria-hidden="true">↗</span></a>
       </nav>
+      {% include 'includes/new_features.html' %}
     </div>
 
   </section>
@@ -95,5 +96,5 @@
 <nav class="mobile-nav" aria-label="Mobile navigation"><a href="/" aria-current="page"><i class="fas fa-home" aria-hidden="true"></i><span>Home</span></a><a href="/businesses/"><i class="fas fa-store" aria-hidden="true"></i><span>Shops</span></a><a href="/advertise/"><i class="fas fa-tags" aria-hidden="true"></i><span>Offers</span></a><a href="/news/"><i class="far fa-newspaper" aria-hidden="true"></i><span>News</span></a><a href="{% if request.user.is_authenticated %}/account/{% else %}/register/{% endif %}"><i class="far fa-user" aria-hidden="true"></i><span>{% if request.user.is_authenticated %}Account{% else %}Create account{% endif %}</span></a></nav>
 
 <dialog id="area-dialog" class="area-dialog" aria-labelledby="area-title"><div class="area-dialog-inner"><button class="dialog-close icon-button" data-area-close type="button" aria-label="Close area selector"><i class="fas fa-times" aria-hidden="true"></i></button><span class="dialog-pin" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span><p class="eyebrow">LET'S MAKE IT LOCAL</p><h2 id="area-title">Where's your little<br>corner of the world?</h2><p>Enter your pincode to find businesses and offers around you.</p><form action="{% url 'select_area' %}" method="post">{% csrf_token %}<input type="hidden" name="next" value="/"><label for="local-pincode">Your pincode</label><div class="pin-input-row"><input id="local-pincode" name="pincode" type="text" inputmode="numeric" pattern="[1-9][0-9]{5}" minlength="6" maxlength="6" placeholder="e.g. 600001" value="{{ active_area }}" autocomplete="postal-code" required><button class="button button-green" type="submit">Explore <span aria-hidden="true">↗</span></button></div></form>{% if saved_areas %}<div class="saved-areas"><p>Your saved areas</p>{% for code in saved_areas %}<form method="post" action="{% url 'select_area' %}">{% csrf_token %}<input type="hidden" name="next" value="/"><button name="pincode" value="{{ code }}">{{ code }}</button></form>{% endfor %}</div>{% endif %}<a class="all-areas" href="/businesses/?pincode=">Just looking? Explore all businesses ↗</a></div></dialog>
-{% if not request.user.is_authenticated %}{% include 'includes/guest_account_dialog.html' %}<link rel="stylesheet" href="{% static 'css/local-prompts.css' %}?v=1"><script src="{% static 'js/local-prompts.js' %}?v=1" defer></script>{% endif %}{% include 'includes/promotion_tracking.html' %}<link rel="stylesheet" href="{% static 'css/home-language.css' %}?v=3">{% include 'includes/mobile_layout.html' %}<script src="{% static 'js/home-language.js' %}?v=1" defer></script><script src="{% static 'js/product-language.js' %}?v=3" defer></script></body>
+{% if not request.user.is_authenticated %}{% include 'includes/guest_account_dialog.html' %}<link rel="stylesheet" href="{% static 'css/local-prompts.css' %}?v=1"><script src="{% static 'js/local-prompts.js' %}?v=1" defer></script>{% endif %}{% include 'includes/promotion_tracking.html' %}<link rel="stylesheet" href="{% static 'css/home-language.css' %}?v=3">{% include 'includes/mobile_layout.html' %}<script src="{% static 'js/home-language.js' %}?v=2" defer></script><script src="{% static 'js/product-language.js' %}?v=3" defer></script></body>
 </html>

@@ -1,0 +1,5 @@
+{% extends 'shop/base.html' %}{% load static %}
+{% block title %}Local Ride | Local From{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/local-ride.css' %}?v=1">{% endblock %}
+{% block extra_js %}<script src="{% static 'js/local-ride.js' %}?v=1" defer></script>{% endblock %}
+{% block content %}<div class="ride-shell"><nav class="ride-nav" aria-label="Local Ride navigation"><a href="{% url 'ride_feed' %}"><i class="fas fa-route" aria-hidden="true"></i> Local Ride</a><div><a href="{% url 'ride_mine' %}">My journeys &amp; requests</a><a class="ride-primary" href="{% url 'ride_create' %}">+ Post a journey</a></div></nav>{% block ride_content %}{% endblock %}</div>{% endblock %}

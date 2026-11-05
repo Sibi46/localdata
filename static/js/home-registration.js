@@ -12,7 +12,7 @@
   }
   document.addEventListener('click', event => {
     const control = event.target.closest('a, button, input[type="submit"]');
-    if (!control || control.closest('.skip-link, #guest-account-dialog')) return;
+    if (!control || control.closest('.skip-link, #guest-account-dialog, [data-hospital-launch], #hospital-launch-dialog')) return;
     let next = '/';
     if (control.matches('a')) {
       const url = new URL(control.href, location.href);

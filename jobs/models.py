@@ -1,6 +1,66 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
+
+
+class RideTrip(models.Model):
+    VEHICLES = [('bike', 'Bike'), ('car', 'Car')]
+    STATUSES = [('open', 'Open'), ('full', 'Full'), ('completed', 'Completed'), ('cancelled', 'Cancelled')]
+    owner = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ride_trips')
+    origin = models.CharField(max_length=80)
+    destination = models.CharField(max_length=80)
+    departure_at = models.DateTimeField(db_index=True)
+    vehicle = models.CharField(max_length=4, choices=VEHICLES)
+    seats = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(7)])
+    meeting_area = models.CharField(max_length=120)
+    notes = models.CharField(max_length=500, blank=True)
+    status = models.CharField(max_length=10, choices=STATUSES, default='open', db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['departure_at', 'pk']
+        indexes = [models.Index(fields=['status', 'departure_at'], name='ride_status_departure_idx')]
+        constraints = [
+            models.CheckConstraint(condition=models.Q(seats__gte=1, seats__lte=7), name='ride_seats_range'),
+            models.CheckConstraint(condition=~models.Q(vehicle='bike') | models.Q(seats=1), name='ride_bike_one_passenger'),
+            models.CheckConstraint(condition=models.Q(vehicle__in=['bike', 'car']), name='ride_vehicle_valid'),
+            models.CheckConstraint(condition=models.Q(status__in=['open', 'full', 'completed', 'cancelled']), name='ride_status_valid'),
+        ]
+
+    @property
+    def available_seats(self):
+        count = self.accepted_count if hasattr(self, 'accepted_count') else self.requests.filter(status='accepted').count()
+        return max(0, self.seats - count)
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('ride_detail', args=[self.pk])
+
+    def __str__(self):
+        return f'{self.origin} to {self.destination}'
+
+
+class RideRequest(models.Model):
+    STATUSES = [('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Declined'), ('withdrawn', 'Withdrawn'), ('cancelled', 'Trip cancelled')]
+    trip = models.ForeignKey(RideTrip, on_delete=models.CASCADE, related_name='requests')
+    requester = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ride_requests')
+    note = models.CharField(max_length=300, blank=True)
+    status = models.CharField(max_length=10, choices=STATUSES, default='pending')
+    conversation = models.ForeignKey('Conversation', on_delete=models.SET_NULL, null=True, blank=True, related_name='ride_requests')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created_at', 'pk']
+        constraints = [
+            models.UniqueConstraint(fields=['trip', 'requester'], name='ride_unique_requester'),
+            models.CheckConstraint(condition=models.Q(status__in=['pending', 'accepted', 'rejected', 'withdrawn', 'cancelled']), name='ride_request_status_valid'),
+        ]
+
+    def __str__(self):
+        return f'Ride request {self.pk}: {self.status}'
 
 
 class User(AbstractUser):

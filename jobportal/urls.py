@@ -18,6 +18,7 @@ from jobs import analytics
 from jobs import chat_attachments
 from jobs import quick_products
 from jobs import promotion_metrics
+from jobs import local_ride
 from django.contrib.sitemaps import views as sitemap_views
 from .seo import SITEMAPS, robots, sitemap_index
 
@@ -28,6 +29,8 @@ urlpatterns = [
     path('sitemap.xml', sitemap_index, name='sitemap'),
     path('sitemaps/<section>.xml', sitemap_views.sitemap, {'sitemaps': SITEMAPS}, name='seo_sitemap'),
     path('news/', include('newsdesk.urls')),
+    path('rides/', include('jobs.ride_urls')),
+    path('super-admin/rides/', local_ride.admin_rides, name='ride_admin'),
     path('admin/',                  admin.site.urls),
     path('',                        views.home,               name='home'),
     path('favicon.ico',             views.favicon,            name='favicon'),

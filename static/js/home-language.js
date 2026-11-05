@@ -1,4 +1,10 @@
 window.LocalfromHomeTranslations = {
+  'Local Ride':'வழித்துணை', 'Find a travel companion':'உடன் பயணிக்க ஒருவரைக் கண்டறியுங்கள்',
+  'Hospital tokens':'மருத்துவ டோக்கன்', 'Coming soon':'விரைவில்',
+  'Hospital token booking':'மருத்துவ டோக்கன் முன்பதிவு', 'Launching':'அறிமுகம்',
+  'January 1, 2027':'ஜனவரி 1, 2027',
+  'Book your hospital token here when we launch.':'அறிமுகமானதும் இங்கே மருத்துவ டோக்கனை முன்பதிவு செய்யலாம்.',
+  'Got it':'சரி', 'More from Local From':'Local From-இல் மேலும்',
   'Set your area':'உங்கள் பகுதியைத் தேர்வு செய்', 'Register your shop':'உங்கள் கடையைப் பதிவு செய்', 'News':'செய்திகள்',
   'A LITTLE MORE LOCAL':'நம்ம ஊருக்கு இன்னும் அருகில்', 'I':'நான்', 'Vandavasi':'வந்தவாசி',
   'View shop & all products':'கடையையும் அனைத்துப் பொருட்களையும் பார்', 'Advertisement':'விளம்பரம்', 'Take a closer look ↗':'மேலும் பார் ↗',
