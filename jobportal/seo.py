@@ -13,6 +13,12 @@ from django.views.decorators.http import require_safe
 from django.shortcuts import render
 
 
+# Shops, products and news require an account under the current access policy.
+# Keep this allowlist aligned with actual anonymous-page access, never user-agent
+# exceptions. A sitemap must not advertise registration redirects as landing pages.
+PUBLIC_SEARCH_ROUTES = frozenset({'home', 'about'})
+
+
 def origin():
     return settings.SITE_URL.rstrip('/')
 
@@ -42,13 +48,16 @@ def metadata(request):
     name = match.view_name if match else ''
     data = {
         'title': 'Local From',
-        'description': 'Discover local businesses, offers, news and community connections on Local From.',
+        'description': 'Discover local shops, products, offers and news in Vandavasi on Local From.',
         'canonical': origin() + request.path, 'indexable': False, 'type': 'website',
-        'image': origin() + '/static/images/local-form.svg',
+        'image': origin() + '/static/images/logo.png',
     }
     if name == 'home':
-        data.update(title='Local From | Local Businesses & Community',
-                    description='Discover nearby businesses, local offers and community news. Connect with your neighbourhood by pincode on Local From.', indexable=True)
+        data.update(title='Local From | Shops, Products & Offers in Vandavasi',
+                    description='Discover shops, products, discounts and local news in Vandavasi, Tamil Nadu. Join Local From, a pilot platform connecting our neighbourhood.', indexable=True)
+    elif name == 'about':
+        data.update(title='About Local From & EVOXU | Local Business Platform',
+                    description='Learn about Local From, the hyperlocal business platform from EVOXU connecting people, local shops and products by pincode.', indexable=True)
     elif name == 'business_list':
         data.update(title='Local Businesses & Shops Near You | Local From',
                     description='Discover businesses and shops in your pincode. Explore local business profiles, offers and opportunities on Local From.', indexable=public_businesses().exists())
@@ -57,20 +66,37 @@ def metadata(request):
         if business:
             place = business.user.city or business.user.pincode
             data.update(title=f'{business.company_name} in {place} | Local From',
-                        description=summary(f'Explore {business.company_name}, {business.industry} in {place}, pincode {business.user.pincode}. View its business profile, local offers and community updates.'), indexable=True)
+                        description=summary(f'Explore {business.company_name}, {business.industry} in {place}, pincode {business.user.pincode}. View its shop profile, products and local offers.'), indexable=True)
     elif name == 'newsdesk:detail':
         story = public_stories().filter(pk=match.kwargs['pk']).first()
         if story:
             data.update(title=f'{story.title} | Local From News', description=summary(story.body), indexable=True, type='article')
+    data['indexable'] = data['indexable'] and name in PUBLIC_SEARCH_ROUTES
     # Search/filter/pagination variants remain crawlable but are not search landing pages.
     # Tracking-only URLs consolidate to the clean URL without a conflicting noindex.
     if any(not (key.startswith('utm_') or key in {'gclid', 'fbclid'}) for key in request.GET):
         data['indexable'] = False
     data['robots'] = 'index,follow' if data['indexable'] else 'noindex,follow'
-    if name == 'home':
+    if name in PUBLIC_SEARCH_ROUTES:
         graph = {'@context': 'https://schema.org', '@graph': [
-            {'@type': 'Organization', '@id': origin() + '/#organization', 'name': 'Local From', 'url': origin() + '/', 'logo': data['image']},
-            {'@type': 'WebSite', '@id': origin() + '/#website', 'name': 'Local From', 'url': origin() + '/', 'publisher': {'@id': origin() + '/#organization'}},
+            {'@type': 'Organization', '@id': origin() + '/#organization',
+             'name': 'Local From', 'alternateName': 'LOCALFROM',
+             'url': origin() + '/', 'logo': data['image'],
+             'email': 'localfrom8@gmail.com',
+             'sameAs': ['https://www.instagram.com/local_from97/'],
+             'contactPoint': [
+                 {'@type': 'ContactPoint', 'telephone': number, 'contactType': 'customer support',
+                  'availableLanguage': ['English', 'Tamil'], 'areaServed': 'IN'}
+                 for number in ('+917305675201', '+919361240355')
+             ]},
+            {'@type': 'WebSite', '@id': origin() + '/#website', 'name': 'Local From',
+             'alternateName': 'LOCALFROM', 'url': origin() + '/',
+             'inLanguage': ['en-IN', 'ta-IN'],
+             'publisher': {'@id': origin() + '/#organization'}},
+            {'@type': 'AboutPage' if name == 'about' else 'WebPage',
+             '@id': data['canonical'] + '#webpage', 'url': data['canonical'],
+             'name': data['title'], 'description': data['description'],
+             'inLanguage': 'en-IN', 'isPartOf': {'@id': origin() + '/#website'}},
         ]}
         # Safe inside a script element even if configurable values contain HTML.
         data['json_ld'] = json.dumps(graph).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
@@ -125,10 +151,7 @@ class CanonicalSitemap(Sitemap):
 
 class PublicPagesSitemap(CanonicalSitemap):
     def items(self):
-        pages = ['home']
-        if public_businesses().exists():
-            pages.append('business_list')
-        return pages
+        return ['home', 'about']
 
     def location(self, item):
         return reverse(item)
@@ -136,6 +159,8 @@ class PublicPagesSitemap(CanonicalSitemap):
 
 class BusinessesSitemap(CanonicalSitemap):
     def items(self):
+        if 'business_profile' not in PUBLIC_SEARCH_ROUTES:
+            return public_businesses().none()
         return public_businesses().order_by('pk')
 
     def location(self, item):
@@ -144,6 +169,8 @@ class BusinessesSitemap(CanonicalSitemap):
 
 class NewsSitemap(CanonicalSitemap):
     def items(self):
+        if 'newsdesk:detail' not in PUBLIC_SEARCH_ROUTES:
+            return public_stories().none()
         return public_stories().order_by('pk')
 
     def location(self, item):
