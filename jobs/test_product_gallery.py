@@ -13,29 +13,53 @@ class ProductGalleryTests(TemporaryMediaMixin, TestCase):
         cls.other = User.objects.create_user('gallery-other', user_type='shop')
         CompanyProfile.objects.create(user=cls.other, company_name='Another Store')
 
-    def upload(self, count=6, url=None):
+    def upload(self, count=2, url=None):
         self.client.force_login(self.owner)
         return self.client.post(url or reverse('product_add'), {'name': 'Everyday bag', 'description': 'A roomy cotton bag for everyday use.', 'price': '1000', 'discount_percent': '20', 'is_active': 'on', 'images': [image_file(f'view-{i}.png') for i in range(count)]})
 
-    def test_six_images_create_detail_and_shop_link(self):
+    def test_two_images_create_detail_and_shop_link(self):
         self.assertEqual(self.upload().status_code, 302)
         product = Product.objects.get()
-        self.assertEqual(product.images.count(), 5)
-        self.assertEqual(list(product.images.values_list('position', flat=True)), [1,2,3,4,5])
+        self.assertEqual(product.images.count(), 1)
+        self.assertEqual(list(product.images.values_list('position', flat=True)), [1])
         self.client.force_login(self.other)
         response = self.client.get(product.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['gallery']), 6)
+        self.assertEqual(len(response.context['gallery']), 2)
         self.assertContains(response, '₹800.00')
         self.assertContains(response, self.shop.logo.url)
         self.assertContains(response, self.shop.get_absolute_url())
-        self.assertContains(response, 'Show product image 6')
+        self.assertContains(response, 'Show product image 2')
 
-    def test_seven_images_rejected_without_creating_product(self):
-        response = self.upload(7)
-        self.assertContains(response, 'maximum of 6 product images')
+    def test_three_images_rejected_without_creating_product(self):
+        response = self.upload(3)
+        self.assertContains(response, 'maximum of 2 product images')
         self.assertFalse(Product.objects.exists())
         self.assertFalse(ProductImage.objects.exists())
+
+    def test_three_image_edit_does_not_change_existing_gallery(self):
+        self.upload()
+        product=Product.objects.get()
+        cover=product.image.name
+        extras=list(product.images.values_list('pk','image'))
+        response=self.upload(3,reverse('product_edit',args=[product.pk]))
+        self.assertContains(response,'maximum of 2 product images')
+        product.refresh_from_db()
+        self.assertEqual(product.image.name,cover)
+        self.assertEqual(list(product.images.values_list('pk','image')),extras)
+
+    def test_legacy_six_image_gallery_survives_edit_without_new_uploads(self):
+        self.client.force_login(self.owner)
+        product=Product.objects.create(shop=self.shop,name='Legacy product',price=100,image=image_file())
+        for position in range(1,6):
+            ProductImage.objects.create(product=product,image=image_file(f'legacy-{position}.png'),position=position)
+        paths=[product.image.path]+[item.image.path for item in product.images.all()]
+        response=self.client.post(reverse('product_edit',args=[product.pk]),{'name':'Updated legacy product','price':'150','is_active':'on'})
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(product.images.count(),5)
+        self.assertEqual(len(self.client.get(product.get_absolute_url()).context['gallery']),6)
+        from pathlib import Path
+        self.assertTrue(all(Path(path).exists() for path in paths))
 
     def test_edit_preserves_or_replaces_gallery(self):
         self.upload()
@@ -43,7 +67,7 @@ class ProductGalleryTests(TemporaryMediaMixin, TestCase):
         url = reverse('product_edit', args=[product.pk])
         self.client.post(url, {'name':'New name', 'price':'1000', 'is_active':'on'})
         product.refresh_from_db()
-        self.assertEqual(product.images.count(), 5)
+        self.assertEqual(product.images.count(), 1)
         self.upload(2, url)
         product.refresh_from_db()
         self.assertEqual(product.images.count(), 1)
@@ -54,7 +78,7 @@ class ProductGalleryTests(TemporaryMediaMixin, TestCase):
         product = Product.objects.get()
         self.client.force_login(self.other)
         self.assertEqual(self.client.post(reverse('product_edit', args=[product.pk]), {'name':'Invalid', 'images':[image_file()]}).status_code, 404)
-        self.assertEqual(product.images.count(), 5)
+        self.assertEqual(product.images.count(), 1)
         product.is_active = False
         product.save()
         self.assertEqual(self.client.get(product.get_absolute_url()).status_code, 404)

@@ -153,13 +153,13 @@
       prices.append(field(entry, 'discount', t('Discount % (optional)'), 'number', {min:'0', max:'100', step:'1', inputmode:'numeric'}));
       card.append(prices);
       if (entry.status !== 'published') {
-        const label = node('label', t('Extra views ({number}/6)', {number: entry.photos.length}));
+        const label = node('label', t('Extra views ({number}/2)', {number: entry.photos.length}));
         const extra = node('input'); extra.type = 'file'; extra.accept = picker.accept; extra.multiple = true;
-        extra.disabled = busy || entry.photos.length >= 6; label.append(extra); card.append(label);
+        extra.disabled = busy || entry.photos.length >= 2; label.append(extra); card.append(label);
         extra.onchange = async () => {
           busy = true; render();
           try {
-            if (extra.files.length + entry.photos.length > 6) throw new Error('Maximum 6 images for one product.');
+            if (extra.files.length + entry.photos.length > 2) throw new Error('Maximum 2 images for one product.');
             for (const file of extra.files) entry.photos.push(await preparePhoto(file));
             await save();
           } catch (error) { say(error.message, true); }
@@ -206,8 +206,17 @@
       row.append(img, node('p', `${entry.name} · ₹${price}${entry.discount ? ` (${t('{number}% off', {number: entry.discount})})` : ''}`)); list.append(row);
     });
   }
+  function photosWithinLimit() {
+    if (entries.some(entry => entry.status !== 'published' && entry.photos.length > 2)) {
+      review.hidden = true;
+      say('Maximum 2 images for one product.', true);
+      return false;
+    }
+    return true;
+  }
   form.onsubmit = event => {
     event.preventDefault(); if (busy || !form.reportValidity()) return;
+    if (!photosWithinLimit()) return;
     const pending = entries.filter(entry => entry.status !== 'published');
     if (!pending.length) return;
     if (pending.length > remaining) {
@@ -224,6 +233,7 @@
   };
   $('[data-publish]').onclick = async () => {
     if (busy) return;
+    if (!photosWithinLimit()) return;
     if (recognition) recognition.abort();
     busy = true; review.hidden = true;
     const pending = entries.filter(entry => entry.status !== 'published');

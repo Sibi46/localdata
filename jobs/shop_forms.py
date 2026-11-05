@@ -25,20 +25,20 @@ class ProductImageInput(forms.ClearableFileInput):
 
 
 class ProductImagesField(forms.ImageField):
-    widget = ProductImageInput(attrs={'accept': 'image/jpeg,image/png,image/webp', 'data-image-preview': 'product-upload-preview', 'data-max-images': '6', 'data-image-crop': 'product'})
+    widget = ProductImageInput(attrs={'accept': 'image/jpeg,image/png,image/webp', 'data-image-preview': 'product-upload-preview', 'data-max-images': '2', 'data-image-crop': 'product'})
 
     def clean(self, data, initial=None):
         if not data:
             return []
         images = data if isinstance(data, (list, tuple)) else [data]
-        if len(images) > 6:
-            raise ValidationError('Choose a maximum of 6 product images.')
+        if len(images) > 2:
+            raise ValidationError('Choose a maximum of 2 product images.')
         return [check_image(super(ProductImagesField, self).clean(image)) for image in images]
 
 
 class ProductForm(forms.ModelForm):
-    images = ProductImagesField(label='Product images (up to 6)', required=False,
-                               help_text='Choose 1–6 JPG, PNG, or WebP images, up to 5 MB each. The first image is your cover. Choosing new images replaces the current gallery.')
+    images = ProductImagesField(label='Product images (up to 2)', required=False,
+                               help_text='Choose 1–2 JPG, PNG, or WebP images, up to 5 MB each. The first image is your cover. Choosing new images replaces the current gallery.')
     price = forms.DecimalField(label='Regular price (₹)', min_value=Decimal('0.01'), max_digits=12, decimal_places=2,
                                help_text='Your price before any discount.', widget=forms.NumberInput(attrs={'step': '0.01', 'placeholder': '499.00'}))
     discount_percent = forms.IntegerField(label='Discount (%)', min_value=0, max_value=100, required=False,

@@ -8,6 +8,7 @@
   <header class="easy-intro"><p class="eyebrow">{{ company.company_name }}</p><h1>Add products</h1><p>Add photos. Enter a name &amp; price. Publish.</p><ol><li>Photo</li><li>Name and price</li><li>Publish</li></ol></header>
   <p class="easy-allowance"><strong data-slots>{{ remaining }}</strong> product slots available. <a href="{% url 'product_access_request' %}">Request more</a></p>
   <div class="easy-choose"><label class="button button-green" for="easy-photo-picker"><i class="fas fa-images" aria-hidden="true"></i>Choose photos</label><input id="easy-photo-picker" class="easy-file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple><p>Each photo starts a separate product. Up to 20 products per batch. Add extra views inside its card.</p></div>
+  <p>Maximum 2 images for one product.</p>
   <p class="easy-draft-note" data-draft-status role="status">Drafts stay in this browser on this device. Use one tab. Clear drafts on shared devices.</p>
   <p class="easy-feedback" data-feedback role="status" aria-live="polite"></p>
   <form data-entry-form>{% csrf_token %}<div class="easy-cards" data-cards></div>
@@ -19,4 +20,4 @@
   <p class="easy-help">Need help? <a href="tel:+917305675201">Call LOCALFROM: 7305675201</a></p>
 </section>
 {% endblock %}
-{% block extra_js %}<script src="{% static 'js/product-language.js' %}?v=2" defer></script><script src="{% static 'js/easy-products.js' %}?v=3" defer></script>{% endblock %}
+{% block extra_js %}<script src="{% static 'js/product-language.js' %}?v=3" defer></script><script src="{% static 'js/easy-products.js' %}?v=4" defer></script>{% endblock %}

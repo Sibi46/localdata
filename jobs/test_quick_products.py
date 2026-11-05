@@ -33,19 +33,19 @@ class QuickProductTests(TemporaryMediaMixin, TestCase):
     def test_editor_and_dashboard_offer_photo_entry(self):
         response = self.client.get(reverse('product_easy_add'))
         self.assertContains(response, 'data-easy-products')
-        self.assertContains(response, 'data-remaining="5"')
+        self.assertContains(response, 'data-remaining="10"')
         self.assertContains(response, reverse('product_add'))
         self.assertContains(self.client.get(reverse('employer_dashboard')), reverse('product_easy_add'))
 
-    def test_six_photos_and_discount_publish_into_current_shop(self):
-        data = self.payload(images=[image_file(f'photo{i}.png') for i in range(6)], shop=self.other_shop.pk)
+    def test_two_photos_and_discount_publish_into_current_shop(self):
+        data = self.payload(images=[image_file(f'photo{i}.png') for i in range(2)], shop=self.other_shop.pk)
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         product = Product.objects.get()
         self.assertEqual(product.shop_id, self.shop.pk)
         self.assertTrue(product.is_active)
         self.assertEqual(str(product.sale_price), '450.00')
-        self.assertEqual(product.images.count(), 5)
+        self.assertEqual(product.images.count(), 1)
         self.assertEqual(response.json()['id'], product.pk)
 
     def test_retry_of_same_draft_returns_existing_product(self):
@@ -66,13 +66,13 @@ class QuickProductTests(TemporaryMediaMixin, TestCase):
     def test_limit_cannot_be_bypassed_and_replay_works_when_full(self):
         token = str(uuid4())
         first = self.client.post(self.url, self.payload(draft_id=token))
-        for _ in range(4):
+        for _ in range(9):
             self.assertEqual(self.client.post(self.url, self.payload()).status_code, 200)
         response = self.client.post(self.url, self.payload())
         self.assertEqual(response.status_code, 403)
         self.assertTrue(response.json()['limit_reached'])
         self.assertEqual(self.client.post(self.url, self.payload(draft_id=token)).json(), first.json())
-        self.assertEqual(self.shop.products.count(), 5)
+        self.assertEqual(self.shop.products.count(), 10)
 
     def test_approved_allowance_is_respected(self):
         self.shop.product_limit = 12
@@ -84,7 +84,8 @@ class QuickProductTests(TemporaryMediaMixin, TestCase):
     def test_invalid_details_and_images_create_nothing_and_allow_correction(self):
         cases = [{'price': '0'}, {'price': '-1'}, {'discount_percent': '101'},
                  {'discount_percent': '-1'}, {'name': ''}, {'name': 'x' * 161},
-                 {'images': []}, {'images': [image_file() for _ in range(7)]},
+                 {'images': []}, {'images': [image_file() for _ in range(3)]},
+                 {'images': [image_file() for _ in range(7)]},
                  {'images': [SimpleUploadedFile('fake.png', b'not an image', content_type='image/png')]}]
         for values in cases:
             with self.subTest(values=list(values)):
