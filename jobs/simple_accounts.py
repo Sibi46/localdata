@@ -165,9 +165,9 @@ class BusinessForm(forms.Form):
         data=super().clean()
         if data.get('directory_entry'):
             from .models import ShopDirectoryEntry
-            from .shop_directory import normalize_phone
+            from .shop_directory import entry_accepts_phone
             entry=ShopDirectoryEntry.objects.filter(pk=data['directory_entry']).first()
-            if not entry or entry.registered_shop_id or not self.user or entry.phone!=normalize_phone(self.user.phone):
+            if not entry or entry.registered_shop_id or not self.user or not entry_accepts_phone(entry,self.user.phone):
                 raise forms.ValidationError('This listed shop is unavailable for your account. Search again using your account phone number.')
             data['name']=entry.name
         return data
@@ -196,9 +196,9 @@ def business_create(request):
                 entry=None
                 if data.get('directory_entry'):
                     from .models import ShopDirectoryEntry
-                    from .shop_directory import normalize_phone
-                    entry=ShopDirectoryEntry.objects.select_for_update().filter(pk=data['directory_entry'],phone=normalize_phone(user.phone),registered_shop__isnull=True).first()
-                    if entry is None:
+                    from .shop_directory import entry_accepts_phone
+                    entry=ShopDirectoryEntry.objects.select_for_update().filter(pk=data['directory_entry'],registered_shop__isnull=True).first()
+                    if entry is None or not entry_accepts_phone(entry,user.phone):
                         form.add_error(None,'This listed shop is no longer available. Please search again.')
                         return render(request,'accounts/business_create.html',{'form':form})
                     data['name']=entry.name

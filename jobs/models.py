@@ -191,7 +191,11 @@ class ShopDirectoryEntry(models.Model):
     """Superadmin's imported shop list, available for account-matched onboarding."""
     name=models.CharField(max_length=150,db_index=True)
     normalized_name=models.CharField(max_length=150)
-    phone=models.CharField(max_length=10,db_index=True)
+    phone=models.CharField(max_length=10,db_index=True,blank=True)
+    alternate_phones=models.JSONField(default=list,blank=True)
+    source_phone=models.TextField(blank=True,max_length=1000)
+    phone_note=models.CharField(max_length=500,blank=True)
+    contacts_reviewed=models.BooleanField(default=False)
     pincode=models.CharField(max_length=6,blank=True)
     city=models.CharField(max_length=100,blank=True)
     address=models.CharField(max_length=500,blank=True)

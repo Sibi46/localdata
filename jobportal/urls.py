@@ -61,6 +61,7 @@ urlpatterns = [
     path('business/create/', simple_accounts.business_create, name='business_create'),
     path('business/directory/search/',shop_directory.search,name='shop_directory_search'),
     path('super-admin/shop-directory/',shop_directory.directory,name='shop_directory'),
+    path('super-admin/shop-directory/<int:pk>/phones/',shop_directory.update_phones,name='shop_directory_phones'),
     path('super-admin/shop-directory/template/',shop_directory.template,name='shop_directory_template'),
     path('register/process/',       views.register_process,   name='register_process'),
     path('login/',                  views.login_view,         name='login'),
