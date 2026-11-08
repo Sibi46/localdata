@@ -1,14 +1,14 @@
 {% extends 'base.html' %}{% load static %}
-{% block title %}Local From News Desk{% endblock %}
+{% block title %}Local News{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'newsdesk/newsdesk.css' %}?v=2">{% endblock %}
 {% block content %}
 <main class="nd">
   <header class="nd-header">
-    <a class="nd-brand" href="{% url 'newsdesk:feed' %}"><span class="nd-mark" aria-hidden="true">N<span>•</span></span><span><small>Local From</small><strong>News Desk</strong></span></a>
-    <nav aria-label="News Desk"><a class="nd-btn nd-btn-small" href="{% url 'newsdesk:share' %}">Share your news</a><a href="{% url 'newsdesk:feed' %}">Local stories</a>{% if can_manage %}<a class="nd-btn nd-btn-small" href="{% url 'newsdesk:create' %}">+ Post news</a><a class="nd-btn nd-btn-small" href="{% url 'newsdesk:submissions' %}">Reader submissions</a><a class="nd-btn nd-btn-small" href="{% url 'newsdesk:manage' %}">My desk ↗</a>{% endif %}</nav>
+    <a class="nd-brand" href="{% url 'newsdesk:feed' %}"><span class="nd-mark" aria-hidden="true">N<span>•</span></span><span><small>Local From</small><strong>Local News</strong></span></a>
+    <nav aria-label="Local News"><a class="nd-btn nd-btn-small" href="{% url 'newsdesk:share' %}">Share your news</a><a href="{% url 'newsdesk:feed' %}">Local stories</a>{% if can_manage %}<a class="nd-btn nd-btn-small" href="{% url 'newsdesk:create' %}">+ Post news</a><a class="nd-btn nd-btn-small" href="{% url 'newsdesk:submissions' %}">Reader submissions</a><a class="nd-btn nd-btn-small" href="{% url 'newsdesk:manage' %}">My desk ↗</a>{% endif %}</nav>
   </header>
   {% block news_content %}{% endblock %}
-  <footer class="nd-footer"><strong>Your pincode. Your people. Your stories.</strong><span>Local From News Desk</span></footer>
+  <footer class="nd-footer"><strong>Your pincode. Your people. Your stories.</strong><span>Local News</span></footer>
 </main>
 {% endblock %}
 {% block extra_js %}<script src="{% static 'newsdesk/newsdesk.js' %}" defer></script>{% endblock %}

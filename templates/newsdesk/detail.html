@@ -1,5 +1,5 @@
 {% extends 'newsdesk/base.html' %}
-{% block title %}{{ item.title }} · Local From News Desk{% endblock %}
+{% block title %}{{ item.title }} · Local News{% endblock %}
 {% block news_content %}
 <a class="nd-back" href="{% url 'newsdesk:feed' %}?pincode={{ item.pincode.code }}">← Back to {{ item.pincode.code }}</a>
 <article class="nd-article">

@@ -1,11 +1,11 @@
 {% extends 'newsdesk/base.html' %}{% load static %}
 {% block site_header %}{% include 'includes/account_header.html' %}{% endblock %}
 {% block news_content %}
-<section class="nd-form-page"><p class="nd-eyebrow">Local From NEWS DESK</p><h1>{{ heading }}</h1><p class="nd-muted">{{ intro }}</p>
+<section class="nd-form-page"><p class="nd-eyebrow">Local News</p><h1>{{ heading }}</h1><p class="nd-muted">{{ intro }}</p>
 <form {% if request.resolver_match.view_name == 'newsdesk:create' or request.resolver_match.view_name == 'newsdesk:edit' %}data-news-upload{% endif %} class="nd-form nd-panel" method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.non_field_errors }}
 {% for field in form %}<div class="nd-field">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}
 <button class="nd-btn" type="submit">{{ submit }} →</button></form>
 {% if item.photo or item.video %}<aside class="nd-panel"><h2>Current attachments</h2>{% if item.photo %}<a href="{% url 'newsdesk:media' item.pk 'photo' %}">View photo</a>{% endif %} {% if item.video %}<a href="{% url 'newsdesk:media' item.pk 'video' %}">View video</a>{% endif %}<p class="nd-muted">Upload a new file to replace an attachment.</p></aside>{% endif %}
 </section>{% endblock %}
 
-{% block extra_js %}{{ block.super }}<script src="{% static 'newsdesk/upload-progress.js' %}?v=3" defer></script>{% endblock %}
+{% block extra_js %}{{ block.super }}<script src="{% static 'newsdesk/upload-progress.js' %}?v=4" defer></script>{% endblock %}

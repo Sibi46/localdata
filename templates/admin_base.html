@@ -89,7 +89,7 @@
 
 
 
-      <div class="ap-nav-section">News Desk</div>
+      <div class="ap-nav-section">Local News</div>
       <a href="{% url 'newsdesk:manage' %}" class="ap-nav-link {% if request.resolver_match.view_name == 'newsdesk:manage' %}active{% endif %}"><i class="fas fa-newspaper" aria-hidden="true"></i> Manage News</a>
       <a href="{% url 'newsdesk:create' %}" class="ap-nav-link {% if request.resolver_match.view_name == 'newsdesk:create' %}active{% endif %}"><i class="fas fa-pen" aria-hidden="true"></i> Post News</a>
       <a href="{% url 'newsdesk:agents' %}" class="ap-nav-link {% if request.resolver_match.view_name == 'newsdesk:agents' %}active{% endif %}"><i class="fas fa-user-plus" aria-hidden="true"></i> Assign News Agents</a>

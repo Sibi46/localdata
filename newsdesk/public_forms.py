@@ -38,7 +38,7 @@ class ShareNewsForm(forms.Form):
     def clean_pincode(self):
         pin = active_pincodes().filter(code=self.cleaned_data['pincode']).first()
         if not pin:
-            raise forms.ValidationError('Enter an active six-digit PIN code supported by News Desk.')
+            raise forms.ValidationError('Enter an active six-digit PIN code supported by Local News.')
         return pin
 
     def clean_body(self):

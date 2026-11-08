@@ -103,6 +103,8 @@ class SEOTests(TestCase):
         html=response.content.decode()
         self.assertNotIn('evoxu',html.casefold())
         self.assertNotIn('connecting people',html.casefold())
+        self.assertNotIn('News Desk',html)
+        self.assertContains(response,'Local News')
         self.assertContains(response,'LOCALFROM is your local platform in Vandavasi, Tamil Nadu.')
         self.assertEqual(len(re.findall('name="description"',html)),1)
         self.assertEqual(len(re.findall('rel="canonical"',html)),1)

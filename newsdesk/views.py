@@ -166,9 +166,9 @@ def report(request, pk):
         result, created = services.report_comment(request.user, pk, payload(request))
         if api(request):
             return JsonResponse({'id': result.pk, 'created': created}, status=201 if created else 200)
-        messages.success(request, 'Your report has been sent to the local news desk.')
+        messages.success(request, 'Your report has been sent to the local news team.')
         return redirect('newsdesk:detail', pk=obj.item_id)
-    return render(request, 'newsdesk/form.html', {'form': form, 'heading': 'Report a comment', 'intro': 'Tell the local news desk what needs attention.', 'submit': 'Send report', **desk_context(request)})
+    return render(request, 'newsdesk/form.html', {'form': form, 'heading': 'Report a comment', 'intro': 'Tell the local news team what needs attention.', 'submit': 'Send report', **desk_context(request)})
 
 
 @endpoint(auth=True)
@@ -237,7 +237,7 @@ def moderate(request, pk):
 @endpoint(('GET', 'POST'), auth=True)
 def agents(request, pk=None):
     if not is_admin(request.user):
-        raise PermissionDenied('News Desk admin access is required.')
+        raise PermissionDenied('Local News admin access is required.')
     agent = get_object_or_404(NewsAgent, pk=pk) if pk else None
     form = AgentForm(payload(request) if request.method == 'POST' else None, instance=agent)
     if request.method == 'POST' and form.is_valid():

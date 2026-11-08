@@ -49,7 +49,7 @@ def share(request):
     form = AccountNewsForm(request.POST if request.method == 'POST' else None, request.FILES or None, initial={'token': token})
     if request.method == 'POST' and form.is_valid():
         if not pin:
-            form.add_error(None, 'Update your account to an active News Desk pincode before submitting.')
+            form.add_error(None, 'Update your account to an active Local News pincode before submitting.')
         elif token not in tokens:
             form.add_error(None, 'This form has expired. Reload this page before submitting.')
         else:

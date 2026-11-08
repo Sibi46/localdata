@@ -53,7 +53,7 @@ def submit_news(phone, verified_at, data, user):
                     saved_files.append((file.storage, file.name))
                 contributor.save()
             if not active_pincodes().filter(pk=contributor.pincode_id).exists():
-                raise ValidationError('Your PIN code is unavailable. Contact News Desk before submitting.')
+                raise ValidationError('Your PIN code is unavailable. Contact Local News before submitting.')
             now = timezone.now()
             submission = NewsSubmission.objects.create(contributor=contributor, topic=data['topic'], body=data['body'],
                 submission_token=data['token'], terms_accepted_at=now, accuracy_accepted_at=now)

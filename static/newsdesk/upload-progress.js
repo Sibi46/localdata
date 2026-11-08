@@ -53,7 +53,7 @@
       } else if (xhr.status === 413) {
         finish('The uploaded files are too large for the server. Choose smaller files.');
       } else if (xhr.status === 403) {
-        finish('Your session or permission may have changed. Open News Desk in another tab and sign in before trying again.');
+        finish('Your session or permission may have changed. Open Local News in another tab and sign in before trying again.');
       } else {
         finish('The server could not confirm saving. Check My desk before submitting again to avoid duplicates.');
       }

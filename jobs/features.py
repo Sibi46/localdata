@@ -3,7 +3,7 @@ FEATURES = [
     {'name': 'Products', 'url': '/products/', 'keywords': 'shopping product item price discount shop'},
     {'name': 'Shops and businesses', 'url': '/businesses/', 'keywords': 'store shopping local company directory'},
     {'name': 'Offers', 'url': '/advertise/', 'keywords': 'deals discounts sale advertisement'},
-    {'name': 'News Desk', 'url': '/news/', 'keywords': 'news local updates headlines'},
+    {'name': 'Local News', 'url': '/news/', 'keywords': 'news local updates headlines'},
     {'name': 'Flicks', 'url': '/flicks/', 'keywords': 'video reels films watch'},
     {'name': 'Advertise your business', 'url': '/advertise/register/', 'keywords': 'promote marketing ads campaign'},
     {'name': 'Messages', 'url': '/messages/', 'keywords': 'chat conversations inbox'},
