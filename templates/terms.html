@@ -1,175 +1,30 @@
 {% extends 'base.html' %}
-{% block title %}Terms & Conditions — Local From{% endblock %}
+{% block title %}Terms of Use | LOCALFROM{% endblock %}
 {% block content %}
-<style>
-.legal-wrap{max-width:860px;margin:40px auto;padding:0 20px 60px}
-.legal-hero{background:linear-gradient(135deg,#0a66c2,#004182);color:#fff;border-radius:16px;padding:36px 32px;margin-bottom:32px;text-align:center}
-.legal-hero h1{font-size:28px;font-weight:900;margin-bottom:8px}
-.legal-hero p{font-size:14px;opacity:.85;margin:0}
-.effective{text-align:center;font-size:13px;color:#888;margin-bottom:28px}
-.legal-card{background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:28px 32px;margin-bottom:18px}
-.legal-card h2{font-size:16px;font-weight:800;color:#0a66c2;margin:0 0 12px;display:flex;align-items:center;gap:8px}
-.legal-card p{font-size:14px;color:#444;line-height:1.8;margin:0 0 10px}
-.legal-card p:last-child{margin:0}
-.legal-card ul{padding-left:20px;margin:0 0 10px}
-.legal-card ul li{font-size:14px;color:#444;line-height:1.8;list-style:disc}
-@media(max-width:600px){.legal-card{padding:20px 16px}.legal-hero{padding:28px 20px}}
-</style>
+{% include 'includes/legal_styles.html' %}
+<main class="legal-wrap">
+<header class="legal-hero"><p class="legal-kicker">LOCALFROM / USING OUR PLATFORM</p><h1>Terms of Use</h1><p>The ground rules for exploring your neighbourhood, sharing updates and running your shop on LOCALFROM.</p></header>
+<p class="legal-updated">Last updated: <time datetime="2026-11-08">8 November 2026</time></p>
+<nav class="legal-nav" aria-label="Terms sections"><a href="#accounts">Your account</a><a href="#shops">Shop listings</a><a href="#news">Local News</a><a href="#rides">Local Ride</a><a href="#contact">Contact us</a><a href="{% url 'privacy' %}">Privacy Policy</a></nav>
 
-<div class="legal-wrap">
-  <div class="legal-hero">
-    <h1><i class="fas fa-file-contract"></i> Terms &amp; Conditions</h1>
-    <p>Please read these terms carefully before using Local From</p>
-  </div>
-  <p class="effective"><strong>Effective Date:</strong> July 15, 2026</p>
+<section class="legal-card"><h2>1. About LOCALFROM</h2><p>LOCALFROM is a local discovery and connection platform, starting with a pilot in Vandavasi, Tamil Nadu. Members can explore shops, products and offers, follow businesses, exchange messages, submit Local News and connect over planned journeys through Local Ride.</p><p>These terms apply when you use our website or create an account. If you do not agree, please do not use the service. The pilot may change as we improve it; a feature marked as coming soon is not yet available.</p></section>
 
-  <div class="legal-card">
-    <p>Welcome to Local From ("Platform", "Website", "App", "we", "our", or "us"). By accessing or using Local From, you agree to comply with and be bound by these Terms and Conditions. If you do not agree with these terms, you should not use our services.</p>
-  </div>
+<section class="legal-card" id="accounts"><h2>2. Your account and access</h2><p>Account registration is intended for people aged 18 or over. Use your own name and phone number, provide accurate details and keep your password private. Register a business only if you own it or have permission to represent it.</p><p>You can view the home page without an account. Most browsing and participation actions require you to sign in. A personal account does not automatically make you a shop owner or administrator.</p><p>If a testing code is displayed during demo signup, it does not verify ownership of a phone number or a person's identity. Sign-in still requires your password. Password recovery may be unavailable during demo mode; contact support for assistance without sharing your password or codes.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-info-circle"></i> 1. About the Platform</h2>
-    <p>Local From is a location-based employment platform that connects employers, job seekers, advertisers, and other authorized users through services based on PIN Code and geographic location.</p>
-  </div>
+<section class="legal-card" id="shops"><h2>3. Shops, products and offers</h2><p>Shop owners are responsible for business details, product photos, prices, descriptions, availability and discounts. Upload only material you own or have permission to use, and keep listings current.</p><p>The standard free allowance is 10 products per shop, with up to 2 images per product. Extra product slots require admin approval. Any separately approved allowance continues to apply. Contact us before agreeing to any additional service or charge.</p><p>Check availability, final price, delivery, returns and any warranty directly with the shop before purchasing. Listing a shop or approving an offer is not a guarantee of its identity, goods, services or fulfilment.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-user-check"></i> 2. Eligibility</h2>
-    <p>You must be at least 18 years of age or otherwise legally permitted under applicable law to use the Platform.</p>
-    <p>By registering, you represent that:</p>
-    <ul>
-      <li>The information you provide is true, accurate, and current.</li>
-      <li>You have the legal authority to create an account.</li>
-      <li>You will maintain the accuracy of your profile information.</li>
-    </ul>
-  </div>
+<section class="legal-card"><h2>4. Advertising and payments</h2><p>Advertising applications and submitted offers are reviewed before publication. We may request changes, reject misleading content or remove content that breaks these terms. Approval does not replace an advertiser's responsibility to follow applicable advertising and consumer rules.</p><p>Online payment functionality is not currently available for the pilot. These terms do not authorise a payment or create a subscription. If a paid service is offered separately, its price, duration and cancellation or refund terms must be explained before you agree. Do not send money in response to an unverified message claiming to be LOCALFROM.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-user-lock"></i> 3. User Accounts</h2>
-    <p>Users are responsible for maintaining the confidentiality of their login credentials.</p>
-    <p>Users agree to:</p>
-    <ul>
-      <li>Keep their password secure.</li>
-      <li>Notify us immediately of any unauthorized access.</li>
-      <li>Accept responsibility for all activities under their account.</li>
-    </ul>
-    <p>We reserve the right to suspend or terminate accounts involved in fraud, abuse, or violations of these Terms.</p>
-  </div>
+<section class="legal-card" id="news"><h2>5. Local News and uploaded content</h2><p>Submit accurate news and clearly distinguish facts from opinions. Do not post fabricated reports, unlawful content, private identity documents, someone else's contact details without permission, or photographs you are not entitled to share.</p><p>Reader submissions remain private while they await editorial review. Editors may correct, shorten, reject or remove content. Review does not guarantee that every statement is correct. Contact us to report an error or request a correction.</p><p>You keep ownership of your original content. By submitting it, you give LOCALFROM permission to store, process, format and display it as needed to provide the feature you chose, with the access restrictions described in our Privacy Policy. This does not permit publication of your private messages or identity documents as public posts.</p></section>
 
+<section class="legal-card"><h2>6. Messages and respectful behaviour</h2><p>Do not impersonate others, harass people, send spam, upload malware, attempt to access another person's account, collect people's information without permission or use the platform for fraud.</p><p>Share only information you are comfortable giving to a recipient. LOCALFROM messages are not end-to-end encrypted. Tell support about abusive messages or suspected account misuse. We may restrict access or remove content to address abuse, security concerns or legal requirements.</p></section>
 
+<section class="legal-card" id="rides"><h2>7. Local Ride</h2><p>Local Ride lets members post a planned journey and request to join one another. LOCALFROM provides a way to connect; it does not operate the vehicle, provide a driver or guarantee a seat, journey or person's identity.</p><p>Before travelling, confirm the person, route, timing, vehicle and any proposed cost directly. Drivers are responsible for the licences, permissions, insurance and safety requirements that apply to their journey. Passengers should make their own safety checks. Keep private addresses and phone numbers out of public trip notes.</p><p>Do not use Local Ride for unlawful transport or misleading commercial offers. In an emergency, contact local emergency services; the platform is not an emergency response service.</p></section>
 
+<section class="legal-card"><h2>8. Availability, moderation and responsibility</h2><p>We work to keep LOCALFROM useful and available, but the pilot can have interruptions, errors or changing features. Member information may be incomplete or out of date. Transactions and travel arrangements made between members remain their responsibility.</p><p>We may investigate reports, limit features or suspend accounts when reasonably necessary to protect users, address violations or comply with law. You can contact support to explain a concern or request a review.</p><p>We do not promise uninterrupted service or a particular commercial outcome. Nothing in these terms excludes rights or responsibilities that cannot be excluded under applicable law.</p></section>
 
+<section class="legal-card"><h2>9. Changes and applicable law</h2><p>These terms are governed by applicable Indian law. We will publish revisions on this page with an updated date. Material changes will be communicated through the service where appropriate. Any separately agreed service terms and mandatory consumer rights continue to apply.</p><p>For details of how we handle information, read the <a href="{% url 'privacy' %}">Privacy Policy</a>.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-bullhorn"></i> 6. Advertiser Responsibilities</h2>
-    <p>Advertisers agree that:</p>
-    <ul>
-      <li>All advertisements must comply with applicable laws.</li>
-      <li>Advertisements are subject to review and approval.</li>
-      <li>Payments are required before advertisements are published unless otherwise agreed.</li>
-    </ul>
-    <p>We reserve the right to reject or remove advertisements at our discretion.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-ban"></i> 7. Prohibited Activities</h2>
-    <p>Users shall not:</p>
-    <ul>
-      <li>Impersonate another person or organization.</li>
-      <li>Use the Platform for unlawful purposes.</li>
-      <li>Upload malicious software or harmful code.</li>
-      <li>Harvest or scrape user data.</li>
-      <li>Send spam or unsolicited communications.</li>
-      <li>Post misleading or fraudulent content.</li>
-      <li>Infringe intellectual property rights.</li>
-    </ul>
-    <p>Violation may result in immediate suspension without notice.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-credit-card"></i> 8. Payments</h2>
-    <p>Certain services may require payment.</p>
-    <p>Fees may include:</p>
-    <ul>
-      <li>Premium subscriptions</li>
-      <li>Featured job postings</li>
-      <li>Advertisements</li>
-      <li>Candidate search services</li>
-      <li>Other premium services</li>
-    </ul>
-    <p>All applicable taxes are payable by the user.</p>
-    <p>Unless otherwise stated, fees are non-refundable after the service has been delivered.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-comments"></i> 9. Messaging Services</h2>
-    <p>The Platform may provide messaging functionality.</p>
-    <p>Users agree not to:</p>
-    <ul>
-      <li>Send abusive or offensive messages.</li>
-      <li>Harass other users.</li>
-      <li>Share illegal or harmful content.</li>
-      <li>Send unsolicited commercial messages.</li>
-    </ul>
-    <p>We may monitor or investigate reports of misuse to maintain platform safety.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-check-circle"></i> 10. Verification</h2>
-    <p>Verification badges or status indicate that certain information has been reviewed based on our verification process. Verification does not guarantee the accuracy, quality, suitability, or legitimacy of any employer, job seeker, or advertiser.</p>
-    <p>Users should exercise their own judgment before entering into any employment or commercial relationship.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-copyright"></i> 11. Intellectual Property</h2>
-    <p>All content, logos, software, trademarks, graphics, and materials on the Platform are owned by or licensed to Local From.</p>
-    <p>No content may be copied, reproduced, modified, or distributed without prior written permission.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-plug"></i> 12. Third-Party Services</h2>
-    <p>The Platform may integrate third-party services such as payment gateways, SMS providers, maps, analytics, and cloud hosting.</p>
-    <p>Use of such services may be subject to their own terms and privacy policies.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-exclamation-triangle"></i> 13. Limitation of Liability</h2>
-    <p>Local From acts as a technology platform connecting users.</p>
-    <p>We do not guarantee:</p>
-    <ul>
-      <li>Employment offers.</li>
-      <li>Candidate selection.</li>
-      <li>Employer credibility.</li>
-      <li>Interview success.</li>
-      <li>Business transactions between users.</li>
-    </ul>
-    <p>To the maximum extent permitted by law, Local From shall not be liable for indirect, incidental, consequential, or special damages arising from use of the Platform.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-user-slash"></i> 14. Suspension and Termination</h2>
-    <p>We reserve the right to suspend or terminate accounts that:</p>
-    <ul>
-      <li>Violate these Terms.</li>
-      <li>Engage in fraudulent activity.</li>
-      <li>Misuse the Platform.</li>
-      <li>Threaten the security or integrity of the Platform.</li>
-    </ul>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-edit"></i> 15. Changes to the Terms</h2>
-    <p>We may update these Terms from time to time. Continued use of the Platform after changes become effective constitutes acceptance of the revised Terms.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-gavel"></i> 16. Governing Law</h2>
-    <p>These Terms shall be governed by the laws of India.</p>
-    <p>Any disputes shall be subject to the jurisdiction of the competent courts where Local From is headquartered, unless otherwise required by applicable law.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-envelope"></i> 17. Contact</h2>{% include 'includes/site_contact.html' %}
-    <p>For questions regarding these Terms, please contact us through the contact details published on <strong>Local From</strong>.</p>
-  </div>
-</div>
+<section class="legal-card" id="contact"><h2>10. Questions, complaints and support</h2><p>Contact the LOCALFROM team at <a href="mailto:localfrom8@gmail.com">localfrom8@gmail.com</a> or call <a href="tel:+919361240355">9361240355</a>. Include the relevant page or listing and a brief description of the issue. Never send your password, OTP or payment credentials.</p><p><a href="{% url 'about' %}">About LOCALFROM</a> &middot; <a href="/">Back to home</a></p></section>
+</main>
 {% endblock %}

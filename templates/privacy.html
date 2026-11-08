@@ -1,179 +1,37 @@
 {% extends 'base.html' %}
-{% block title %}Privacy Policy — Local From{% endblock %}
+{% block title %}Privacy Policy | LOCALFROM{% endblock %}
 {% block content %}
-<style>
-.legal-wrap{max-width:860px;margin:40px auto;padding:0 20px 60px}
-.legal-hero{background:linear-gradient(135deg,#0a66c2,#004182);color:#fff;border-radius:16px;padding:36px 32px;margin-bottom:32px;text-align:center}
-.legal-hero h1{font-size:28px;font-weight:900;margin-bottom:8px}
-.legal-hero p{font-size:14px;opacity:.85;margin:0}
-.effective{text-align:center;font-size:13px;color:#888;margin-bottom:28px}
-.legal-card{background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:28px 32px;margin-bottom:18px}
-.legal-card h2{font-size:16px;font-weight:800;color:#0a66c2;margin:0 0 12px;display:flex;align-items:center;gap:8px}
-.legal-card p{font-size:14px;color:#444;line-height:1.8;margin:0 0 10px}
-.legal-card p:last-child{margin:0}
-.legal-card h3{font-size:13px;font-weight:700;color:#111;margin:14px 0 6px}
-.legal-card ul{padding-left:20px;margin:0 0 10px}
-.legal-card ul li{font-size:14px;color:#444;line-height:1.8;list-style:disc}
-@media(max-width:600px){.legal-card{padding:20px 16px}.legal-hero{padding:28px 20px}}
-</style>
+{% include 'includes/legal_styles.html' %}
+<main class="legal-wrap">
+<header class="legal-hero"><p class="legal-kicker">LOCALFROM / YOUR INFORMATION</p><h1>Privacy Policy</h1><p>What information LOCALFROM uses, who can see it and how to contact us about your data.</p></header>
+<p class="legal-updated">Last updated: <time datetime="2026-11-08">8 November 2026</time></p>
+<nav class="legal-nav" aria-label="Privacy sections"><a href="#information">Information we collect</a><a href="#visibility">Who can see it</a><a href="#analytics">Cookies &amp; analytics</a><a href="#choices">Your choices</a><a href="#privacy-contact">Privacy contact</a><a href="{% url 'terms' %}">Terms of Use</a></nav>
 
-<div class="legal-wrap">
-  <div class="legal-hero">
-    <h1><i class="fas fa-lock"></i> Privacy Policy</h1>
-    <p>How Local From collects, uses, and protects your information</p>
-  </div>
-  <p class="effective"><strong>Effective Date:</strong> July 15, 2026</p>
+<section class="legal-card"><h2>1. Scope of this policy</h2><p>This policy covers information handled through LOCALFROM, our local platform starting in Vandavasi, Tamil Nadu. It applies to visitors, members, shop owners, news contributors and Local Ride participants.</p><p>The LOCALFROM team handles privacy enquiries through <a href="mailto:localfrom8@gmail.com">localfrom8@gmail.com</a>. This policy describes the service; it does not mean that a person's account or content has been independently verified.</p></section>
 
-  <div class="legal-card">
-    <p>Local From values your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, share, and protect your information when you use our Platform.</p>
-  </div>
+<section class="legal-card" id="information"><h2>2. Information you provide</h2><ul>
+<li><strong>Account details:</strong> your name, phone number, password and pincode/city. Passwords are stored as hashes rather than readable text. Other profile details, such as a photo, email or address, are used if you provide them.</li>
+<li><strong>Shop information:</strong> business name, category, address, contact details, logo, banner, product photos, prices, descriptions, discounts, offers, videos and advertising applications.</li>
+<li><strong>Messages:</strong> conversations, attachments, participants, timestamps and read status needed to provide messaging.</li>
+<li><strong>Local News:</strong> submitted text, photos, account/contributor details and editorial decisions. Signed-in news submission uses your account phone number. Separate contributor verification forms, where offered, also request a name, address, pincode, identity document and profile photo. A masked Aadhaar is accepted in that form.</li>
+<li><strong>Local Ride:</strong> journey start and destination, date/time, vehicle type, seats, notes, join requests and their status.</li>
+<li><strong>Interactions and support:</strong> shop follows, reviews or other feedback you submit, product-access requests and information you choose to send to support.</li>
+</ul><p>Only submit information or images about others when you are entitled to do so. Ordinary account registration does not require an identity-document upload.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-database"></i> 1. Information We Collect</h2>
-    <p>We may collect:</p>
+<section class="legal-card"><h2>3. Why we use information</h2><p>We use information to create accounts, authenticate access, show content for your selected area, run listings, deliver messages and notifications, review news and advertising, coordinate Local Ride requests, provide support and protect the service against misuse.</p><p>Pincode and city help select nearby content. These features do not require continuous GPS tracking. A demo signup code, where displayed, does not prove phone ownership and must not be treated as verified identity.</p><p>We also use operational records and usage statistics to understand which features work, diagnose errors and respond to security or legal issues. We do not sell personal information.</p></section>
 
-    <h3>Personal Information</h3>
-    <ul>
-      <li>Name</li>
-      <li>Mobile number</li>
-      <li>Email address</li>
-      <li>Address</li>
-      <li>PIN Code</li>
-      <li>Date of birth</li>
-      <li>Profile photograph</li>
-      <li>Resume</li>
-      <li>Educational qualifications</li>
-      <li>Employment history</li>
-      <li>Skills and certifications</li>
-    </ul>
+<section class="legal-card" id="visibility"><h2>4. Who can see your information</h2><h3>Listings and published activity</h3><p>Shop profiles, business contact details, products, approved offers/ads, published news, reviews and journey posts are visible to people who can access those features. An account requirement does not make a listing confidential. People may copy or share content they can view.</p><h3>Messages and submissions awaiting review</h3><p>Private conversations and their attachments are intended for the participants. They are stored by the service and are not end-to-end encrypted. Authorised service operators may need access for support, security investigations or legal requirements; private does not mean inaccessible to the operator.</p><p>Unpublished news submissions are available to the contributor and authorised editorial/admin users. Contributor identity documents and review photos are restricted to authorised review access and are not intended for publication with a story. Keep private details out of news text or images intended for publication.</p><h3>Service administration</h3><p>Authorised admins can access account and shop information needed for moderation, support and management. Superadmin can view member-related usage statistics. Ride request details are shown according to journey and request permissions.</p></section>
 
-    <h3>Employer Information</h3>
-    <ul>
-      <li>Company name</li>
-      <li>Business address</li>
-      <li>Industry</li>
-      <li>Contact person</li>
-      <li>GST details (if provided)</li>
-      <li>Website</li>
-      <li>Company logo</li>
-    </ul>
+<section class="legal-card" id="analytics"><h2>5. Cookies, browser storage and analytics</h2><p>Session and security cookies support sign-in and protect forms. Browser storage remembers settings such as language and display preferences. Blocking necessary cookies may prevent sign-in or other features from working.</p><p>First-party analytics use a browser identifier to count visits, page views, button/link clicks, form-submit actions and visible browsing time. This identifier cookie can last up to one year. Activity can be linked to your member account when signed in, and admins can view the statistics. Separate browsers or devices may be counted separately.</p><p>These first-party event records do not store IP addresses, passwords, OTPs, form values, search text or private message contents. They honour browser Do Not Track and Global Privacy Control signals. This describes first-party analytics, not every server log or third-party tool.</p><p>Where configured, Google Analytics (GA4) may also load on pages with its tracking tag, including account pages. It processes browser/device and interaction information under <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a>. First-party analytics settings are not a separate consent control for GA4. You can manage cookies and tracking through your browser settings.</p></section>
 
-    <h3>Advertiser Information</h3>
-    <ul>
-      <li>Business details</li>
-      <li>Contact information</li>
-      <li>Billing information</li>
-    </ul>
+<section class="legal-card"><h2>6. Technical records and service providers</h2><p>Web servers and security tools may record IP addresses, requested URLs, browser information, timestamps, response codes and error details for operation and security. Do not put secrets in URLs or public posts.</p><p>Hosting, storage, backup and other configured providers process information needed to operate the site. If external error monitoring is enabled, it may receive diagnostic information. SMS providers receive a phone number and delivery information when real SMS delivery is configured; a visible demo code is not an SMS.</p><p>Provider processing or storage may take place outside your local area or India, depending on the service used. We may disclose relevant information when required by law or necessary to respond to fraud, abuse or a security incident. External links, including Instagram and WhatsApp, have their own privacy practices.</p></section>
 
-    <h3>Technical Information</h3>
-    <ul>
-      <li>IP address</li>
-      <li>Browser information</li>
-      <li>Device information</li>
-      <li>Operating system</li>
-      <li>Login history</li>
-      <li>Cookies and similar technologies</li>
-    </ul>
-  </div>
+<section class="legal-card"><h2>7. Storage, security and retention</h2><p>We use measures such as password hashing and access restrictions to protect information. No online service can guarantee complete security. Keep your password private and contact us if you suspect unauthorised access.</p><p>We retain information while needed to provide accounts and services, manage moderation, address disputes or security issues, and meet applicable legal requirements. Retention depends on the record and purpose; this policy does not promise immediate deletion or a fixed deletion period for every category.</p><p>Removing a listing from view does not necessarily erase its records or files. Backup copies may remain until replaced or removed through the backup lifecycle. Recipients may retain copies of information you shared. Contact us to discuss deletion of a particular record.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-cogs"></i> 2. How We Use Information</h2>
-    <p>We use your information to:</p>
-    <ul>
-      <li>Create and manage user accounts.</li>
-      <li>Match employers with job seekers.</li>
-      <li>Display relevant jobs and candidates.</li>
-      <li>Process payments.</li>
-      <li>Deliver customer support.</li>
-      <li>Send notifications and service communications.</li>
-      <li>Improve our products and services.</li>
-      <li>Detect fraud and maintain platform security.</li>
-      <li>Comply with legal obligations.</li>
-    </ul>
-  </div>
+<section class="legal-card" id="choices"><h2>8. Your choices and data requests</h2><p>You can update your local area through My account and use available profile/shop tools to correct information. For access, correction, account closure, deletion, withdrawal of consent where relevant, or a privacy complaint, email <a href="mailto:localfrom8@gmail.com?subject=LOCALFROM%20privacy%20request">localfrom8@gmail.com</a> with the subject <strong>LOCALFROM privacy request</strong>.</p><p>Tell us what you want changed and the account or record concerned. We may request proportionate information to confirm that the request is yours. Do not send passwords, OTPs or unrequested identity documents. We will assess requests and respond in accordance with applicable law, explaining any legal, security or other valid reason that limits what we can do.</p><p>Choosing not to provide information needed for a feature, or requesting its removal, may mean that feature or account can no longer be provided. Questions and complaints can be raised through the same contact channel.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-map-marker-alt"></i> 3. Location Information</h2>
-    <p>We may use your PIN Code and, where you provide permission, your approximate or precise location to improve local job matching and search results.</p>
-    <p>You may withdraw location permissions through your device settings where applicable.</p>
-  </div>
+<section class="legal-card"><h2>9. Children and policy updates</h2><p>Account registration is intended for people aged 18 or over. If you believe a child has provided personal information through an account, contact us so we can review the situation.</p><p>We will update this page when our data practices change and revise the date above. Material changes will be communicated through the service where appropriate.</p></section>
 
-  <div class="legal-card">
-    <h2><i class="fas fa-share-alt"></i> 4. Sharing Information</h2>
-    <p>We may share information:</p>
-    <ul>
-      <li>With employers when you apply for jobs.</li>
-      <li>With service providers assisting in platform operations.</li>
-      <li>With payment processors.</li>
-      <li>With law enforcement or regulatory authorities where legally required.</li>
-      <li>During business transfers such as mergers or acquisitions, subject to applicable law.</li>
-    </ul>
-    <p>We do not sell your personal information to third parties.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-cookie-bite"></i> 5. Cookies</h2><p>Site analytics use a first-party browser identifier to count visits, page views, button and link clicks, form submit actions, and visible browsing time. Browsing activity can be associated with your member account when you sign in and viewed by Superadmin. Passwords, OTPs, form values, search text, and private message contents are not stored in these analytics. Visitors are counted by browser and may be counted separately across devices. Analytics respect browser Do Not Track and Global Privacy Control signals.</p>
-    <p>We use cookies and similar technologies to:</p>
-    <ul>
-      <li>Remember user preferences.</li>
-      <li>Improve website performance.</li>
-      <li>Analyze usage.</li>
-      <li>Enhance security.</li>
-    </ul>
-    <p>You may manage cookies through your browser settings, although some features may not function properly if cookies are disabled.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-shield-alt"></i> 6. Data Security</h2>
-    <p>We implement reasonable administrative, technical, and organizational measures to protect your information against unauthorized access, alteration, disclosure, or destruction.</p>
-    <p>However, no online service can guarantee absolute security.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-clock"></i> 7. Data Retention</h2>
-    <p>We retain personal information only for as long as reasonably necessary for:</p>
-    <ul>
-      <li>Providing services.</li>
-      <li>Meeting legal and regulatory obligations.</li>
-      <li>Resolving disputes.</li>
-      <li>Preventing fraud.</li>
-      <li>Enforcing our agreements.</li>
-    </ul>
-    <p>When no longer required, information will be deleted or anonymized where appropriate.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-user-shield"></i> 8. Your Rights</h2>
-    <p>Subject to applicable law, you may have the right to:</p>
-    <ul>
-      <li>Access your personal information.</li>
-      <li>Correct inaccurate information.</li>
-      <li>Update your profile.</li>
-      <li>Delete your account, subject to legal and operational requirements.</li>
-      <li>Withdraw consent where processing is based on consent.</li>
-      <li>Request information about how your personal data is processed.</li>
-    </ul>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-child"></i> 9. Children's Privacy</h2>
-    <p>The Platform is not intended for children under 18 years of age without appropriate legal authorization where applicable. We do not knowingly collect personal information from children in violation of applicable law.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-external-link-alt"></i> 10. Third-Party Links</h2>
-    <p>The Platform may contain links to third-party websites or services. We are not responsible for their privacy practices or content.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-edit"></i> 11. Changes to this Privacy Policy</h2>
-    <p>We may update this Privacy Policy periodically. The updated version will be published on the Platform with the revised effective date.</p>
-  </div>
-
-  <div class="legal-card">
-    <h2><i class="fas fa-envelope"></i> 12. Contact</h2>{% include 'includes/site_contact.html' %}
-    <p>If you have questions about this Privacy Policy or your personal information, please contact us using the contact information provided on <strong>Local From</strong>.</p>
-    <p>By using Local From, you acknowledge that you have read and understood this Privacy Policy.</p>
-  </div>
-</div>
+<section class="legal-card" id="privacy-contact"><h2>10. Contact LOCALFROM about privacy</h2><p>Email: <a href="mailto:localfrom8@gmail.com">localfrom8@gmail.com</a><br>Phone: <a href="tel:+919361240355">9361240355</a></p><p><a href="{% url 'terms' %}">Terms of Use</a> &middot; <a href="{% url 'about' %}">About LOCALFROM</a> &middot; <a href="/">Back to home</a></p></section>
+</main>
 {% endblock %}
