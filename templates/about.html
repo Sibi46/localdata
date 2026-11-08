@@ -28,7 +28,7 @@ a{text-decoration:none;color:inherit}
 .tb-register:hover{background:#1e40af}
 
 /* HERO */
-.about-hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#1d4ed8 100%);padding:64px 24px 72px;text-align:center;position:relative;overflow:hidden}
+.about-hero{background:#b49aff;padding:64px 24px 72px;text-align:center;position:relative;overflow:hidden}
 .about-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 80%,rgba(249,115,22,.15) 0%,transparent 60%);pointer-events:none}
 .about-hero-inner{max-width:760px;margin:0 auto;position:relative}
 .about-hero-badge{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:5px 16px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:20px}
@@ -128,6 +128,13 @@ a{text-decoration:none;color:inherit}
 @media(max-width:460px){
   .services-grid{grid-template-columns:1fr}
 }
+/* LOCALFROM palette */
+.about-hero-h1,.about-hero-h1 span{color:#17171f}
+.about-hero-sub{color:#30283f}
+.about-hero-badge,.about-company-badge{background:rgba(255,255,255,.5);border-color:transparent;color:#30283f}
+.ab-label{color:#6245a0}
+.service-card:hover{border-color:#b49aff;box-shadow:0 4px 16px rgba(98,69,160,.08)}
+.about-hero a:focus-visible,.ab-section a:focus-visible{outline:3px solid #6245a0;outline-offset:4px}
 </style>
 {% include "includes/site_ui.html" %}
 </head>
@@ -136,251 +143,78 @@ a{text-decoration:none;color:inherit}
 <!-- TOPBAR -->
 {% include 'includes/account_header.html' %}
 
-<!-- HERO -->
-<div class="about-hero">
+<!-- ABOUT LOCALFROM -->
+<section class="about-hero">
   <div class="about-hero-inner">
-    <div class="about-hero-badge">About Us</div>
-    <h1 class="about-hero-h1">We Build <span>Communities.</span><br>We Create Markets.</h1>
-    <p class="about-hero-sub">EVOXU Pvt Ltd is a Bengaluru-based marketing and venture-building company that creates innovative products, services and digital platforms around communities, markets and opportunities.</p>
-    <div class="about-company-badge"><i class="fas fa-map-marker-alt" style="color:#f97316"></i> EVOXU Pvt Ltd — Bengaluru, Karnataka, India</div>
+    <div class="about-hero-badge">LOCALFROM &middot; VANDAVASI PILOT</div>
+    <h1 class="about-hero-h1">Good things.<br><span>Close to you.</span></h1>
+    <p class="about-hero-sub">Discover local shops, explore their products and offers, and keep up with news from your neighbourhood. LOCALFROM brings your local world together in one place.</p>
+    <div class="about-company-badge"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Starting in Vandavasi, Tamil Nadu</div>
   </div>
-</div>
+</section>
 
-<!-- ABOUT EVOXU -->
+<section class="ab-section">
+  <div class="ab-inner ab-2col">
+    <div>
+      <div class="ab-label">Our story</div>
+      <h2 class="ab-h2">Made for the places we call home.</h2>
+      <p class="ab-p">A useful product, a good offer or a shop you need may be just around the corner. LOCALFROM helps you find them and connect with the people behind them.</p>
+      <p class="ab-p">We are starting with a pilot in Vandavasi. As local people and shop owners use the platform, their feedback will help us improve it, one step at a time.</p>
+    </div>
+    <div class="platform-card pc-purple">
+      <h3 class="platform-name">Your neighbourhood, all together.</h3>
+      <p class="platform-desc">Use your pincode to explore your area. Find a shop, discover its products, follow its updates and message the shop when you want to know more.</p>
+    </div>
+  </div>
+</section>
+
 <section class="ab-section" style="background:#fff">
   <div class="ab-inner">
-    <div class="ab-2col">
-      <div>
-        <div class="ab-label">Who We Are</div>
-        <h2 class="ab-h2">From Marketing Agency to Community-Driven Venture Builder</h2>
-        <p class="ab-p">We believe that the future of marketing is not simply about advertising. It is about creating communities, connecting people and building markets around innovative ideas.</p>
-        <p class="ab-p">EVOXU develops its own platforms, builds strategic communities and helps innovative products and services find their markets.</p>
-        <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:8px">
-          <span style="background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px">Community Building</span>
-          <span style="background:#fdf4ff;color:#7c3aed;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px">Digital Platforms</span>
-          <span style="background:#f0fdf4;color:#059669;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px">Market Activation</span>
-          <span style="background:#fff7ed;color:#c2410c;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px">Innovation</span>
-          <span style="background:#f8fafc;color:#475569;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px">Partnerships</span>
-        </div>
-      </div>
-      <div>
-        <div style="background:#0f172a;border-radius:18px;padding:28px;color:#fff">
-          <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f97316;margin-bottom:14px">Our Simple Principle</div>
-          <p style="font-size:16px;font-weight:700;line-height:1.6;margin-bottom:20px">"Find a community. Understand its needs. Build the solution. Create the market."</p>
-          <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:18px;font-size:12px;color:rgba(255,255,255,.55);font-family:monospace;letter-spacing:.05em;line-height:2.2">
-            COMMUNITIES → PLATFORMS → MARKETS → OPPORTUNITIES
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- OUR VISION -->
-<section class="ab-section" style="background:#f8faff">
-  <div class="ab-inner">
-    <div style="text-align:center;margin-bottom:36px">
-      <div class="ab-label" style="text-align:center">Our Vision</div>
-      <h2 class="ab-h2" style="text-align:center;max-width:600px;margin:0 auto 14px">A Network of Communities. A Marketplace of Opportunities.</h2>
-      <p class="ab-p" style="text-align:center;margin:0 auto">EVOXU aims to develop multiple community-driven platforms across different sectors — an ecosystem where people, businesses, products and innovators all discover value together.</p>
-    </div>
-    <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;align-items:center">
-      <span style="background:#1d4ed8;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;white-space:nowrap">People discover opportunities.</span>
-      <span style="color:#1d4ed8;font-weight:900;font-size:18px;padding:0 2px">→</span>
-      <span style="background:#1d4ed8;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;white-space:nowrap">Businesses discover customers.</span>
-      <span style="color:#1d4ed8;font-weight:900;font-size:18px;padding:0 2px">→</span>
-      <span style="background:#1d4ed8;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;white-space:nowrap">Products discover markets.</span>
-      <span style="color:#1d4ed8;font-weight:900;font-size:18px;padding:0 2px">→</span>
-      <span style="background:#1d4ed8;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;white-space:nowrap">Innovators discover communities.</span>
-      <span style="color:#1d4ed8;font-weight:900;font-size:18px;padding:0 2px">→</span>
-      <span style="background:#1d4ed8;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;white-space:nowrap">Communities discover solutions.</span>
-    </div>
-  </div>
-</section>
-
-<!-- OUR PLATFORMS -->
-<section class="ab-section" style="background:#fff">
-  <div class="ab-inner">
-    <div class="ab-label">Our Platforms</div>
-    <h2 class="ab-h2">Three Platforms. One Philosophy.</h2>
-    <p class="ab-p">Our ventures demonstrate how EVOXU transforms ideas into market-facing businesses across three very different sectors.</p>
-    <div class="platform-grid">
-      <div class="platform-card pc-blue">
-        <div class="platform-num">Platform 01 — Local Communities</div>
-        <div class="platform-name">Local From</div>
-        <span class="platform-url">{{ SITE_URL }}</span>
-        <div class="platform-tagline">"Your Pincode. Your Community. Your Opportunities."</div>
-        <p class="platform-desc">A hyperlocal community and business platform designed around the PINCODE. Every pincode represents a community of people, families, businesses, professionals, institutions and opportunities. Local From brings them together.</p>
-        <p class="platform-desc" style="margin-top:8px;font-weight:700;color:#1e3a8a">One Pincode → One Community → Multiple Opportunities</p>
-      </div>
-      <div class="platform-card pc-purple">
-        <div class="platform-num">Platform 02 — Consumer &amp; Lifestyle</div>
-        <div class="platform-name">111111 PERFUMES</div>
-        <span class="platform-url">www.111111perfumes.com</span>
-        <div class="platform-tagline">"A Fragrance. A Ritual. A Belief."</div>
-        <p class="platform-desc">An innovative fragrance concept built around manifestation, personal rituals and symbolic numbers. Rather than positioning perfume simply as a fragrance product, 111111 creates an experience around intention, identity and personal aspiration.</p>
-        <p class="platform-desc" style="margin-top:8px;font-weight:700;color:#4c1d95">We don't just sell perfume. We create a ritual around the fragrance.</p>
-      </div>
-      <div class="platform-card pc-green">
-        <div class="platform-num">Platform 03 — Agriculture &amp; Rural Economy</div>
-        <div class="platform-name">AGROZS</div>
-        <span class="platform-url">www.agrozs.com</span>
-        <div class="platform-tagline">"From Farm to Market. From Farmer to Entrepreneur."</div>
-        <p class="platform-desc">An agriculture-focused ecosystem designed to connect farmers, agripreneurs, buyers, resources, services and opportunities. AGROZS aims to make agriculture more connected, entrepreneurial and market-driven.</p>
-        <p class="platform-desc" style="margin-top:8px;font-weight:700;color:#064e3b">GROW → ADD VALUE → BRAND → MARKET → SCALE</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 7-STEP MODEL -->
-<section class="ab-section" style="background:#f8faff">
-  <div class="ab-inner">
-    <div class="ab-2col">
-      <div>
-        <div class="ab-label">Our Approach</div>
-        <h2 class="ab-h2">The Community-to-Market Model</h2>
-        <p class="ab-p">We don't start with advertising. We start with people. Our 7-step model transforms communities into sustainable markets.</p>
-      </div>
-      <div class="steps-list">
-        <div class="step-row"><div class="step-n">01</div><div><div class="step-title">Find the Community</div><p class="step-desc">Identify people who share a need, interest, location or aspiration.</p></div></div>
-        <div class="step-row"><div class="step-n">02</div><div><div class="step-title">Understand the Need</div><p class="step-desc">Understand what the community actually wants — not what we assume.</p></div></div>
-        <div class="step-row"><div class="step-n">03</div><div><div class="step-title">Create the Solution</div><p class="step-desc">Develop or identify products and services that genuinely solve those needs.</p></div></div>
-        <div class="step-row"><div class="step-n">04</div><div><div class="step-title">Build Engagement</div><p class="step-desc">Create conversations, experiences, events and digital interactions.</p></div></div>
-        <div class="step-row"><div class="step-n">05</div><div><div class="step-title">Activate the Market</div><p class="step-desc">Connect the community with the product, service or opportunity.</p></div></div>
-        <div class="step-row"><div class="step-n">06</div><div><div class="step-title">Create Advocates</div><p class="step-desc">Turn customers into community ambassadors who extend the market.</p></div></div>
-        <div class="step-row"><div class="step-n">07</div><div><div class="step-title">Scale</div><p class="step-desc">Use the community network to expand into new markets and opportunities.</p></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- WHAT WE DO -->
-<section class="ab-section" style="background:#fff">
-  <div class="ab-inner">
-    <div class="ab-label">Services</div>
-    <h2 class="ab-h2">What EVOXU Does</h2>
+    <div class="ab-label">Explore LOCALFROM</div>
+    <h2 class="ab-h2">Everyday connections, closer to home.</h2>
     <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon">🏘️</div>
-        <div class="service-name">Community Building</div>
-        <p class="service-desc">We create communities around locations, interests, industries, professions, products, causes and lifestyle.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">💻</div>
-        <div class="service-name">Digital Platform Development</div>
-        <p class="service-desc">We transform market opportunities into digital platforms that connect communities and businesses.</p>
-        <ul class="service-list"><li>Local From</li><li>111111 PERFUMES</li><li>AGROZS</li></ul>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🎯</div>
-        <div class="service-name">Product &amp; Service Marketing</div>
-        <p class="service-desc">We help innovative products enter the market through community marketing, digital campaigns and local activation.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🚀</div>
-        <div class="service-name">Market Creation</div>
-        <p class="service-desc">Some products need a market to be created. EVOXU specialises in building awareness, education and community around new opportunities.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🤝</div>
-        <div class="service-name">Partnerships &amp; Ecosystem</div>
-        <p class="service-desc">We connect Businesses, Communities, Institutions, Entrepreneurs, Consumers, Investors and Innovators to create mutually beneficial opportunities.</p>
-      </div>
+      <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="fas fa-store"></i></div><h3 class="service-name">Local shops</h3><p class="service-desc">Explore business profiles, shop details and updates. Follow shops you like and connect through private messages.</p></article>
+      <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="fas fa-shopping-bag"></i></div><h3 class="service-name">Products &amp; offers</h3><p class="service-desc">Browse product photos, prices and discounts from local shops. Contact the shop for availability and purchase details.</p></article>
+      <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="far fa-newspaper"></i></div><h3 class="service-name">Local News Desk</h3><p class="service-desc">Read updates from your area. Signed-in members can share news for admin review before publication.</p></article>
+      <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="fas fa-car"></i></div><h3 class="service-name">Local Ride</h3><p class="service-desc">Share a planned journey or request to join someone travelling the same way. Connect and discuss the journey before making arrangements.</p></article>
     </div>
   </div>
 </section>
 
-<!-- WHY EVOXU -->
-<section class="ab-section" style="background:#f8faff">
-  <div class="ab-inner">
-    <div class="ab-label">Why EVOXU</div>
-    <h2 class="ab-h2">Marketing is Changing. We Changed With It.</h2>
-    <div class="compare-grid">
-      <div class="compare-col compare-traditional">
-        <div class="compare-label">Traditional Marketing asks</div>
-        <div class="compare-row">"How do we reach more customers?"</div>
-        <div class="compare-row">Campaigns → Advertising → Reach</div>
-        <div class="compare-row">Focuses on transaction</div>
-        <div class="compare-row">One-way broadcast</div>
-        <div class="compare-row">Rented audiences</div>
-      </div>
-      <div class="compare-col compare-evoxu">
-        <div class="compare-label">EVOXU asks</div>
-        <div class="compare-row">"How do we build a community that creates customers?"</div>
-        <div class="compare-row">Community → Engagement → Trust → Experience → Market → Growth</div>
-        <div class="compare-row">Focuses on relationships</div>
-        <div class="compare-row">Conversation and co-creation</div>
-        <div class="compare-row">Owned communities</div>
-      </div>
+<section class="ab-section">
+  <div class="ab-inner ab-2col">
+    <div>
+      <div class="ab-label">For shop owners</div>
+      <h2 class="ab-h2">Let your neighbourhood discover your shop.</h2>
+      <p class="ab-p">Create a personal account, then register your business using the same account. Add your shop logo, banner, products and offers, and manage your shop from your dashboard.</p>
+      <p class="ab-p">Your first 10 products are free, with up to 2 images per product. Need more product slots? Contact the LOCALFROM admin to request a higher allowance.</p>
+      <p class="ab-p">You can also apply to advertise your business. Ad applications and submitted offers go through admin review.</p>
+      <a href="{% if request.user.is_authenticated %}{% url 'business_create' %}{% else %}{% url 'register' %}{% endif %}" class="cta-btn" style="margin-top:20px;background:#b49aff;color:#17171f">Register your shop &rarr;</a>
+    </div>
+    <div class="platform-card pc-blue">
+      <h3 class="platform-name">A simple start</h3>
+      <ol style="padding-left:20px;line-height:2;font-size:14px">
+        <li>Create your account with your name, phone number and local area.</li>
+        <li>Explore nearby shops, products, offers and news.</li>
+        <li>If you own a business, register your shop and start adding products.</li>
+      </ol>
     </div>
   </div>
 </section>
 
-<!-- WORK WITH US -->
 <section class="ab-section" style="background:#fff">
   <div class="ab-inner">
-    <div class="ab-label">Work With Us</div>
-    <h2 class="ab-h2">Who We Work With</h2>
-    <div class="audience-grid">
-      <div class="audience-card">
-        <div class="aud-for">For Businesses</div>
-        <div class="aud-h">Do you have a product that needs a market?</div>
-        <p class="aud-p">EVOXU can help you identify your target community, build engagement and activate your market.</p>
-        <ul class="aud-list">
-          <li>Community around your brand</li>
-          <li>Market-entry strategy</li>
-          <li>Digital campaigns &amp; launches</li>
-          <li>Customer &amp; referral networks</li>
-        </ul>
-        <p style="margin-top:12px;font-size:12px;font-style:italic;color:#94a3b8">You bring the idea. We build the community and the market.</p>
-      </div>
-      <div class="audience-card">
-        <div class="aud-for">For Innovators &amp; Startups</div>
-        <div class="aud-h">Your idea deserves a market.</div>
-        <p class="aud-p">A great product is only valuable when people discover it, understand it and adopt it.</p>
-        <div style="margin:12px 0;background:#eff6ff;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:700;color:#1d4ed8;font-family:monospace;letter-spacing:.05em">IDEA → COMMUNITY → MARKET → BUSINESS</div>
-        <p class="aud-p">We transform innovative concepts into market-facing opportunities.</p>
-      </div>
-      <div class="audience-card">
-        <div class="aud-for">For Investors &amp; Partners</div>
-        <div class="aud-h">Build the next community-driven business with us.</div>
-        <p class="aud-p">We welcome strategic partnerships in:</p>
-        <ul class="aud-list">
-          <li>Technology &amp; product development</li>
-          <li>Marketing &amp; distribution</li>
-          <li>Investment</li>
-          <li>Regional expansion</li>
-          <li>Franchise &amp; reseller networks</li>
-        </ul>
-        <p style="margin-top:12px;font-size:12px;font-style:italic;color:#94a3b8">We are not only building businesses. We are building interconnected markets.</p>
-      </div>
-    </div>
-
-    <!-- Final CTA -->
-    <div class="ab-cta">
-      <h3>Let's Build Something Together</h3>
-      <p>Have an innovative product? Want to build a community? Looking for strategic marketing? Looking to partner?</p>
-      <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
-        <a href="/register/" class="cta-btn">Join Local From →</a>
-        <a href="/" style="display:inline-block;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);color:#fff;font-size:14px;font-weight:700;padding:13px 32px;border-radius:10px;transition:.2s">Back to Home</a>
-      </div>
-      <p style="margin-top:20px;font-size:12px;color:rgba(255,255,255,.35)">EVOXU Pvt Ltd — Bengaluru, Karnataka, India</p>
+    <div class="ab-label">Built with local feedback</div>
+    <h2 class="ab-h2">Help shape the Vandavasi pilot.</h2>
+    <p class="ab-p">LOCALFROM is still growing. Tell us what works well, what is confusing and what would make it more useful for your neighbourhood.</p>
+    <div class="ab-cta" style="background:#eae0ff;color:#17171f">
+      <h3 style="color:#17171f">Say hello to LOCALFROM.</h3>
+      <p style="color:#484254">For help, feedback or business enquiries, email <a href="mailto:localfrom8@gmail.com">localfrom8@gmail.com</a> or call <a href="tel:+919361240355">9361240355</a>.</p>
+      <a href="https://www.instagram.com/local_from97/" class="cta-btn" target="_blank" rel="noopener noreferrer" style="background:#17171f;color:#fff">Follow @local_from97 &nearr;</a>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<div class="about-footer">{% include 'includes/site_contact.html' %}
-  <p>© EVOXU Pvt Ltd — Bengaluru, Karnataka, India &nbsp;|&nbsp;
-    <a href="/">Local From</a>
-    <a href="/businesses/">Local shops</a>
-
-
-    <a href="/about/">About</a>
-  </p>
-  <p style="margin-top:6px;font-size:11px">COMMUNITY BUILDING · MARKET CREATION · DIGITAL PLATFORMS · INNOVATIVE MARKETING · PARTNERSHIPS</p>
-</div>
-
+{% include 'includes/site_footer.html' %}
 </body>
 </html>

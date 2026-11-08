@@ -63,7 +63,7 @@ class TenProductAllowanceTests(TestCase):
         migrate(apps, SimpleNamespace(connection=connection))
         self.assertEqual(CompanyProfile.objects.get(pk=self.shop.pk).product_limit, 10)
 
-    def test_limit_page_has_both_call_buttons_and_automatic_popup(self):
+    def test_limit_page_has_current_call_button_and_automatic_popup(self):
         for index in range(10):
             Product.objects.create(shop=self.shop, name=f'Product {index}', price=100, image='products/kept.jpg')
         self.client.force_login(self.owner)
@@ -71,7 +71,8 @@ class TenProductAllowanceTests(TestCase):
             response = self.client.get(reverse(route))
             self.assertContains(response, 'id="product-limit-dialog"')
             self.assertContains(response, 'data-auto-open')
-            self.assertContains(response, 'href="tel:+917305675201"')
+            popup = response.content.decode().split('id="product-limit-dialog"', 1)[1].split('</dialog>', 1)[0]
+            self.assertNotIn('7305675201', popup)
             self.assertContains(response, 'href="tel:+919361240355"')
         dashboard = self.client.get(reverse('employer_dashboard'))
         self.assertContains(dashboard, 'data-product-count="10" data-product-limit="10"')
