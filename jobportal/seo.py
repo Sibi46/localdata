@@ -57,7 +57,7 @@ def metadata(request):
                     description='Discover shops, products, discounts and local news in Vandavasi, Tamil Nadu. Join Local From, a pilot platform connecting our neighbourhood.', indexable=True)
     elif name == 'about':
         data.update(title='About LOCALFROM | Local Shops & Community in Vandavasi',
-                    description='Learn about LOCALFROM, a Vandavasi pilot connecting people with nearby shops, products, offers and local news by pincode.', indexable=True)
+                    description='LOCALFROM is your local platform in Vandavasi, Tamil Nadu. Discover nearby shops, products, offers and local news in one place.', indexable=True)
     elif name == 'business_list':
         data.update(title='Local Businesses & Shops Near You | Local From',
                     description='Discover businesses and shops in your pincode. Explore local business profiles, offers and opportunities on Local From.', indexable=public_businesses().exists())

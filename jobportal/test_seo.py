@@ -101,6 +101,9 @@ class SEOTests(TestCase):
     def test_about_has_one_shared_metadata_set(self):
         response=self.client.get('/about/')
         html=response.content.decode()
+        self.assertNotIn('evoxu',html.casefold())
+        self.assertNotIn('connecting people',html.casefold())
+        self.assertContains(response,'LOCALFROM is your local platform in Vandavasi, Tamil Nadu.')
         self.assertEqual(len(re.findall('name="description"',html)),1)
         self.assertEqual(len(re.findall('rel="canonical"',html)),1)
         self.assertContains(response,'href="https://ourpincode.com/about/"')
