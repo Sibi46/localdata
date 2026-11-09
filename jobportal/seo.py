@@ -87,7 +87,7 @@ def metadata(request):
              'contactPoint': [
                  {'@type': 'ContactPoint', 'telephone': number, 'contactType': 'customer support',
                   'availableLanguage': ['English', 'Tamil'], 'areaServed': 'IN'}
-                 for number in ('+917305675201', '+919361240355')
+                 for number in ('+919361240355',)
              ]},
             {'@type': 'WebSite', '@id': origin() + '/#website', 'name': 'Local From',
              'alternateName': 'LOCALFROM', 'url': origin() + '/',

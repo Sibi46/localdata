@@ -15,8 +15,8 @@
   const MAX_PRODUCTS = 20, MAX_IMAGE = 5 * 1024 * 1024;
   let entries = [], busy = false, db = null, saveQueue = Promise.resolve(), urls = [];
   let remaining = Number(root.dataset.remaining);
-  const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let recognition = null, saveTimer = null;
+  const voice = window.LocalfromProductVoice;
+  let saveTimer = null;
 
   function say(message, error = false, params = {}) {
     feedbackState = {message, error, params};
@@ -99,17 +99,9 @@
     } finally { bitmap.close(); }
   }
   function listen(entry, input, button) {
-    if (!Speech) return;
-    if (recognition) recognition.abort();
-    recognition = new Speech(); recognition.lang = locale.language === 'ta' ? 'ta-IN' : 'en-IN'; recognition.interimResults = false;
-    button.textContent = '…';
-    recognition.onresult = event => {
-      entry.name = event.results[0][0].transcript.slice(0, 160);
-      input.value = entry.name; save();
-    };
-    recognition.onerror = () => say('Mic unavailable. You can type the product name.', true);
-    recognition.onend = () => { button.textContent = '🎤'; recognition = null; };
-    try { recognition.start(); } catch (_) { button.textContent = '🎤'; recognition = null; }
+    voice.start({input, button, lang: locale.language === 'ta' ? 'ta-IN' : 'en-IN',
+      onStatus: (message, error) => say(message, error),
+      onText: text => { entry.name = text; review.hidden = true; save(); }});
   }
   function field(entry, key, label, type, attributes) {
     const box = node('div'), id = `entry-${entry.id}-${key}`;
@@ -122,14 +114,16 @@
     input.addEventListener('invalid', () => input.setCustomValidity(t(key === 'name' ? 'Enter a product name.' : key === 'price' ? 'Enter a valid price greater than zero.' : 'Enter a whole discount percentage from 0 to 100.')));
     input.addEventListener('input', () => input.setCustomValidity(''));
     row.append(input);
-    if (key === 'name' && Speech && entry.status !== 'published') {
+    if (key === 'name' && voice && entry.status !== 'published') {
       const mic = node('button', '🎤', 'easy-mic'); mic.type = 'button'; mic.disabled = busy;
       mic.title = t('Speak product name'); mic.setAttribute('aria-label', t('Speak product name'));
+      mic.setAttribute('aria-pressed', 'false');
       mic.onclick = () => listen(entry, input, mic); row.append(mic);
     }
     box.append(row); return box;
   }
   function render() {
+    if (voice) voice.stop();
     urls.forEach(URL.revokeObjectURL); urls = []; cards.replaceChildren();
     $('[data-slots]').textContent = remaining;
     entries.forEach((entry, index) => {
@@ -172,6 +166,10 @@
       } else {
         const link = node('a', t('✓ View product'));
         link.href = `/products/${Number(entry.productId)}/`; card.append(link);
+        const edit = node('a', t('Edit this product'));
+        edit.href = `/shop/products/${Number(entry.productId)}/edit/`; card.append(edit);
+        const manage = node('a', t('Manage products / delete'));
+        manage.href = '/employer/dashboard/#products'; card.append(manage);
       }
       if (entry.error) card.append(node('p', locale.error(entry.error), 'easy-card-error'));
       if (entry.status === 'uploading') card.append(node('p', t('Uploading…'), 'easy-card-status'));
@@ -234,7 +232,7 @@
   $('[data-publish]').onclick = async () => {
     if (busy) return;
     if (!photosWithinLimit()) return;
-    if (recognition) recognition.abort();
+    if (voice) voice.stop();
     busy = true; review.hidden = true;
     const pending = entries.filter(entry => entry.status !== 'published');
     let completed = 0;
@@ -265,13 +263,13 @@
           throw error;
         }
       }
-      say('✓ {number} products published. Clear this draft to add the next batch.', false, {number: completed});
+      say(completed === 1 ? 'Your product has been added to LOCALFROM.' : '{number} products have been added to LOCALFROM.', false, {number: completed});
     } catch (error) { say(error.message, true); }
     finally { busy = false; render(); }
   };
   window.addEventListener('beforeunload', event => { if (busy) { event.preventDefault(); event.returnValue = ''; } });
   document.addEventListener('product-language-change', () => {
-    if (recognition) recognition.abort();
+    if (voice) voice.stop();
     const previewOpen = !review.hidden;
     render();
     if (previewOpen) renderReview();

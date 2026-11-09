@@ -1100,7 +1100,7 @@ def admin_advertisers(request):
             f"Hi {name}, we received your advertiser registration ({adv.business_name}) on Local From. "
             f"Unfortunately, we are unable to approve this ad account creation. "
             f"Please make necessary edits and re-apply. "
-            f"If you feel everything is correct, reach us at +91 7305675201 or +91 9361240355, or email localfrom8@gmail.com. Thanks"
+            f"If you feel everything is correct, reach us at +91 9361240355, or email localfrom8@gmail.com. Thanks"
         )
         adv.wa_link        = f"https://wa.me/{phone}?text={quote(msg_inquiry)}" if phone else ''
         adv.wa_link_reject = f"https://wa.me/{phone}?text={quote(msg_reject)}"  if phone else ''

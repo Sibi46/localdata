@@ -82,7 +82,7 @@ def product_form(request, pk=None):
                 transaction.on_commit(lambda: [storage.delete(name) for storage, name in old_files if name])
             else:
                 form.save()
-        messages.success(request, 'Product updated.' if pk else 'Product added to your shop.')
+        messages.success(request, 'Product updated.' if pk else 'Your product has been added to LOCALFROM.')
         return redirect('/employer/dashboard/#products')
     current_images = ([product.image] if product.image else []) + ([item.image for item in product.images.all()] if product.pk else [])
     return render(request, 'shop/manage_form.html', {'company': shop, 'form': form, 'kind': 'product', 'editing': bool(pk), 'current_images': current_images, 'form_title': 'Edit product' if pk else 'Add a product'})

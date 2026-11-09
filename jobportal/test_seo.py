@@ -88,7 +88,7 @@ class SEOTests(TestCase):
         self.assertEqual(organization['logo'],'https://ourpincode.com/static/images/logo.png')
         self.assertEqual(organization['sameAs'],['https://www.instagram.com/local_from97/'])
         self.assertEqual(organization['email'],'localfrom8@gmail.com')
-        self.assertEqual([item['telephone'] for item in organization['contactPoint']],['+917305675201','+919361240355'])
+        self.assertEqual([item['telephone'] for item in organization['contactPoint']],['+919361240355'])
         self.assertFalse(any('aggregateRating' in item for item in graph))
 
     def test_sitemap_landing_pages_are_guest_accessible_and_indexable(self):

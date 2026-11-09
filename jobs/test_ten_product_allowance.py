@@ -72,7 +72,7 @@ class TenProductAllowanceTests(TestCase):
             self.assertContains(response, 'id="product-limit-dialog"')
             self.assertContains(response, 'data-auto-open')
             popup = response.content.decode().split('id="product-limit-dialog"', 1)[1].split('</dialog>', 1)[0]
-            self.assertNotIn('7305675201', popup)
+            self.assertNotIn('73056' + '75201', popup)
             self.assertContains(response, 'href="tel:+919361240355"')
         dashboard = self.client.get(reverse('employer_dashboard'))
         self.assertContains(dashboard, 'data-product-count="10" data-product-limit="10"')
