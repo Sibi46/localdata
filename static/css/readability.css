@@ -1,0 +1,30 @@
+/* Shared reading sizes; keep decorative icons and hero headings independent. */
+html body{font-size:16px;line-height:1.65}
+html body :is(main,.auth-main,.pilot-admin,.nd,.legal-wrap,.local-footer,.site-contact) :is(p,li,dd){font-size:15px!important;line-height:1.8!important;overflow-wrap:break-word}
+html body :is(input:not([type=checkbox]):not([type=radio]):not([type=submit]),textarea,select){font-size:16px!important;line-height:1.55!important}
+html body label{font-size:14px!important;line-height:1.65!important}
+html body :is(.button,.auth-primary,.easy-secondary,.text-link,.nd-btn,.admin-tabs a,.dashboard-tabs a,.store-tabs a,.account-options a,.local-footer-links a,.site-contact a){font-size:14px!important;line-height:1.6!important}
+html body :is(.product-copy h3,.dashboard-product h3,.admin-record h3,.admin-catalog h3,.message-preview){font-size:16px!important;line-height:1.55!important}
+html body .easy-card h2{font-size:22px!important;line-height:1.4!important}
+html body .auth-primary{font-size:16px!important}
+html body :is(small,.helptext,.auth-subtitle,.easy-draft-note,.gallery-tip,.product-shop,.product-shop-link,.admin-details dt,.story-meta,.nd-muted,.legal-updated){font-size:13px!important;line-height:1.7!important}
+html body :is(.eyebrow,.auth-kicker,.legal-kicker,.product-detail-category){font-size:12px!important;line-height:1.6!important}
+html body :is(.primary-shortcuts a,.mobile-nav a){font-size:13px!important;line-height:1.5!important}
+html body .mobile-nav a span{font-size:12px!important;line-height:1.4!important}
+html body :is(.discovery-search input,.market-header-search input,.catalog-search input){min-width:0}
+html body :is(.product-copy,.dashboard-product>div,.admin-record>div,.local-footer-contact){min-width:0}
+html body .item-actions{flex-wrap:wrap;gap:12px}
+html body .item-actions :is(a,button){font-size:14px!important;line-height:1.6!important;min-height:40px;display:inline-flex;align-items:center}
+html body :is(.dashboard-top-actions,.product-detail-actions,.auth-header,.account-header-actions){flex-wrap:wrap}
+html body .showcase-slide>span{font-size:14px!important;line-height:1.5!important}
+html body .showcase-controls{gap:0}
+html body .showcase-controls button{width:44px;height:44px;flex:0 0 44px;border-radius:0;background:transparent;font-size:24px!important}
+html body .showcase-controls>span{font-size:12px!important;line-height:1.5;min-width:28px;text-align:center}
+@media(max-width:640px){
+  html body :is(.hero-description,.daily-banner-copy>p,.dashboard-section-help,.easy-intro>p){font-size:15px!important;line-height:1.75!important}
+  html body :is(.banner-link,.greeting-shop-link,.account-create-button){font-size:13px!important;line-height:1.6!important;white-space:normal}
+  html body .product-copy h3{min-height:0}
+  html body .product-prices{flex-wrap:wrap;row-gap:4px}
+  html body .product-shop-link{flex-wrap:wrap}
+  html body .primary-shortcuts{gap:8px}
+}

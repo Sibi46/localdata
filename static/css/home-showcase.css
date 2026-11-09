@@ -7,8 +7,9 @@
 .showcase-slide svg{display:block;width:100%;height:180px;overflow:visible}
 .showcase-slide>span{font-size:13px;font-weight:500;text-align:center;line-height:1.5}
 .showcase-controls{display:flex;align-items:center;gap:10px;margin-top:7px;color:#3c2865}
-.showcase-controls button{display:grid;place-items:center;width:25px;height:25px;border:0;border-radius:50%;background:#ffffff70;color:#39285b;font:20px/1 var(--sans);padding:0}
-.showcase-controls button:hover{background:#fff}
+.showcase-controls button{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:0;background:transparent;color:#39285b;font:24px/1 var(--sans);padding:0;cursor:pointer}
+.showcase-controls button:hover{background:transparent;color:#17171f}
+.showcase-controls button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 .showcase-controls>span{font-size:9px;font-variant-numeric:tabular-nums}
 @keyframes showcase-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @media(min-width:1000px){.studio-home .product-showcase{right:13%;width:280px}.showcase-slide svg{height:185px}}
