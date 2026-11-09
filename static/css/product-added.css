@@ -1,0 +1,12 @@
+.product-added-dialog{box-sizing:border-box;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 40px);overflow:auto;border:1px solid #e7dafa;border-radius:26px;padding:32px 26px;margin:auto;background:#fcfaff;color:#25202e;text-align:center;box-shadow:0 24px 90px #1d123047;font-family:'Poppins',sans-serif}
+.product-added-dialog::backdrop{background:#20182b80;backdrop-filter:blur(3px)}
+.product-added-icon{display:grid;place-items:center;width:76px;height:76px;border-radius:24px;margin:0 auto 18px;background:#e4f2dc;color:#3d6b32}
+.product-added-brand{font-size:12px!important;font-weight:700;letter-spacing:.15em;color:#76549f;margin:0 0 12px}
+.product-added-dialog h2{font-size:26px;line-height:1.35;letter-spacing:-.5px;margin:0 0 12px;color:#25202e;overflow-wrap:break-word}
+.product-added-dialog>p:not(.product-added-brand){font-size:15px;line-height:1.75;color:#706779;margin:0 0 24px}
+.product-added-actions{display:flex;flex-direction:column;gap:10px}
+.product-added-actions>a,.product-added-actions>button{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:12px 18px;border-radius:14px;font:600 15px/1.5 'Poppins',sans-serif;text-decoration:none;cursor:pointer}
+.product-added-actions>a{background:#b49aff;color:#20182b;border:1px solid #b49aff}
+.product-added-actions>button{background:#fff;color:#51425e;border:1px solid #ded2eb}
+.product-added-actions>:focus-visible{outline:3px solid #76549f;outline-offset:3px}
+@media(max-width:360px){.product-added-dialog{padding:26px 20px}.product-added-dialog h2{font-size:23px}}

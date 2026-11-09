@@ -264,6 +264,7 @@
         }
       }
       say(completed === 1 ? 'Your product has been added to LOCALFROM.' : '{number} products have been added to LOCALFROM.', false, {number: completed});
+      if (completed > 0) window.LocalfromProductAdded?.show(completed);
     } catch (error) { say(error.message, true); }
     finally { busy = false; render(); }
   };

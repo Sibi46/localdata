@@ -53,3 +53,19 @@ class OwnerProductControlTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn('Your product has been added to LOCALFROM.', [str(message) for message in get_messages(response.wsgi_request)])
         self.assertTrue(Product.objects.filter(shop=self.shop, name='New product').exists())
+
+    def test_popup_marker_is_only_for_successful_creation_and_consumed_once(self):
+        self.client.force_login(self.owner)
+        dashboard = reverse('employer_dashboard')
+        self.assertNotContains(self.client.get(dashboard), 'data-product-added>')
+        response = self.client.post(reverse('product_add'), {
+            'name': 'Popup product', 'price': '80', 'is_active': 'on', 'image': image_file(),
+        }, follow=True)
+        self.assertContains(response, 'data-product-added>')
+        self.assertContains(response, 'id="product-added-dialog"')
+        self.assertNotContains(self.client.get(dashboard), 'data-product-added>')
+        created = Product.objects.get(shop=self.shop, name='Popup product')
+        response = self.client.post(reverse('product_edit', args=[created.pk]), {
+            'name': 'Edited product', 'price': '90', 'is_active': 'on',
+        }, follow=True)
+        self.assertNotContains(response, 'data-product-added>')

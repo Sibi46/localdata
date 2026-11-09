@@ -1,0 +1,10 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/product-added.css' %}?v=1">
+<dialog class="product-added-dialog" id="product-added-dialog" aria-labelledby="product-added-title" aria-describedby="product-added-description">
+  <div class="product-added-icon" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></div>
+  <p class="product-added-brand">LOCALFROM</p>
+  <h2 id="product-added-title">Your product has been added to LOCALFROM.</h2>
+  <p id="product-added-description">You can view or edit it in My products.</p>
+  <div class="product-added-actions"><a href="{% url 'employer_dashboard' %}#products" data-product-added-view>My products</a><button type="button" data-product-added-close autofocus>Continue</button></div>
+</dialog>
+<script src="{% static 'js/product-added.js' %}?v=1" defer></script>
