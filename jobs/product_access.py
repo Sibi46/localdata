@@ -18,7 +18,7 @@ def send_access_message(sender, receiver, content, title, link):
 
 
 class ProductAccessRequestForm(forms.Form):
-    requested_limit=forms.IntegerField(label='Total products you need',min_value=11,max_value=10000,help_text='This includes your 10 free products.')
+    requested_limit=forms.IntegerField(label='Total products you need',min_value=21,max_value=10000,help_text='This includes your 20 free products.')
     message=forms.CharField(label='Message to Superadmin',max_length=1000,widget=forms.Textarea(attrs={'rows':5}))
 
     def __init__(self,*args,company,**kwargs):
@@ -87,7 +87,7 @@ def request_access(request):
 
 class ProductAccessReviewForm(forms.Form):
     decision=forms.ChoiceField(choices=[('approve','Assign more product slots'),('decline','Request changes')])
-    product_limit=forms.IntegerField(label='New total product limit',min_value=11,max_value=10000,required=False,help_text='For example, 20 means this shop can have 20 products in total.')
+    product_limit=forms.IntegerField(label='New total product limit',min_value=21,max_value=10000,required=False,help_text='For example, 20 means this shop can have 20 products in total.')
     note=forms.CharField(label='Message to shop owner (optional)',required=False,max_length=1000,widget=forms.Textarea(attrs={'rows':3}))
 
     def clean(self):

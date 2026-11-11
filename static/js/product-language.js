@@ -60,7 +60,7 @@
     'Enter a product name.':'பொருளின் பெயரை உள்ளிடுங்கள்.', 'Enter a valid price greater than zero.':'பூஜ்ஜியத்தைவிட அதிகமான சரியான விலையை உள்ளிடுங்கள்.',
     'Enter a whole discount percentage from 0 to 100.':'0 முதல் 50 வரை முழு எண்ணில் தள்ளுபடி சதவீதத்தை உள்ளிடுங்கள்.',
     'Need more product slots?':'மேலும் பொருட்கள் சேர்க்க வேண்டுமா?',
-    'Your first 10 products are free. Your current product slots are full.':'முதல் 10 பொருட்கள் இலவசம். உங்களுக்கான பொருட்கள் சேர்க்கும் அனுமதி முடிந்தது.',
+    'Your first 20 products are free. Your current product slots are full.':'முதல் 20 பொருட்கள் இலவசம். உங்களுக்கான பொருட்கள் சேர்க்கும் அனுமதி முடிந்தது.',
     'Call an admin for more product slots.':'மேலும் பொருட்கள் சேர்க்க நிர்வாகியை அழையுங்கள்.',
 'Admin · 9361240355':'நிர்வாகி · 9361240355', '☎ Call':'☎ அழைக்கவும்',
     'Send a request':'கோரிக்கை அனுப்பு', 'Admin approval is required to increase your allowance.':'மேலும் பொருட்கள் சேர்க்க நிர்வாகியின் அனுமதி தேவை.',

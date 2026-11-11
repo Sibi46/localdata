@@ -19,8 +19,8 @@ class TenProductAllowanceTests(TestCase):
         cls.owner = User.objects.create_user('ten-product-owner', user_type='shop')
         cls.shop = CompanyProfile.objects.create(user=cls.owner, company_name='Ten Product Shop')
 
-    def test_new_shop_starts_with_ten_free_slots(self):
-        self.assertEqual(self.shop.product_limit, 10)
+    def test_new_shop_starts_with_twenty_free_slots(self):
+        self.assertEqual(self.shop.product_limit, 20)
 
     def test_new_migration_raises_free_tier_without_touching_gallery_or_approved_limits(self):
         from .models import ProductImage
@@ -64,7 +64,7 @@ class TenProductAllowanceTests(TestCase):
         self.assertEqual(CompanyProfile.objects.get(pk=self.shop.pk).product_limit, 10)
 
     def test_limit_page_has_current_call_button_and_automatic_popup(self):
-        for index in range(10):
+        for index in range(20):
             Product.objects.create(shop=self.shop, name=f'Product {index}', price=100, image='products/kept.jpg')
         self.client.force_login(self.owner)
         for route in ('product_add', 'product_easy_add'):
@@ -75,7 +75,7 @@ class TenProductAllowanceTests(TestCase):
             self.assertNotIn('73056' + '75201', popup)
             self.assertContains(response, 'href="tel:+919361240355"')
         dashboard = self.client.get(reverse('employer_dashboard'))
-        self.assertContains(dashboard, 'data-product-count="10" data-product-limit="10"')
+        self.assertContains(dashboard, 'data-product-count="20" data-product-limit="20"')
 
     def test_guest_home_popup_is_present_without_changing_server_gate(self):
         response = self.client.get('/')

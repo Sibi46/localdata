@@ -184,7 +184,7 @@ a{text-decoration:none;color:inherit}
       <div class="ab-label">For shop owners</div>
       <h2 class="ab-h2">Let your neighbourhood discover your shop.</h2>
       <p class="ab-p">Create a personal account, then register your business using the same account. Add your shop logo, banner, products and offers, and manage your shop from your dashboard.</p>
-      <p class="ab-p">Your first 10 products are free, with up to 2 images per product. Need more product slots? Contact the LOCALFROM admin to request a higher allowance.</p>
+      <p class="ab-p">Your first 20 products are free, with up to 2 images per product. Need more product slots? Contact the LOCALFROM admin to request a higher allowance.</p>
       <p class="ab-p">You can also apply to advertise your business. Ad applications and submitted offers go through admin review.</p>
       <a href="{% if request.user.is_authenticated %}{% url 'business_create' %}{% else %}{% url 'register' %}{% endif %}" class="cta-btn" style="margin-top:20px;background:#b49aff;color:#17171f">Register your shop &rarr;</a>
     </div>

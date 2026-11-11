@@ -94,8 +94,8 @@ class ApprovalMessageTests(TestCase):
         self.assert_delivery('video promotion')
 
     def test_product_access_message_still_reaches_owner(self):
-        self.client.post(reverse('product_access_assign',args=[self.shop.pk]),{'decision':'approve','product_limit':'15'})
-        self.assert_delivery('15 products')
+        self.client.post(reverse('product_access_assign',args=[self.shop.pk]),{'decision':'approve','product_limit':'25'})
+        self.assert_delivery('25 products')
 
     def test_workspace_approvals_send_owner_messages_once(self):
         ad=self.ad();offer=self.offer()

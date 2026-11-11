@@ -133,7 +133,7 @@ class CompanyProfile(models.Model):
     company_id   = models.CharField(max_length=20, unique=True, blank=True, db_index=True)
     logo         = models.ImageField(upload_to='business_logos/', blank=True, null=True)
     banner_image = models.ImageField(upload_to='business_banners/', blank=True, null=True)
-    product_limit = models.PositiveIntegerField(default=10)
+    product_limit = models.PositiveIntegerField(default=20)
     requested_product_limit = models.PositiveIntegerField(null=True, blank=True)
     product_access_status = models.CharField(max_length=12, choices=PRODUCT_ACCESS_STATUS, blank=True, default='')
     product_access_requested_at = models.DateTimeField(null=True, blank=True)
