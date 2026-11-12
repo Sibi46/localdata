@@ -1,4 +1,5 @@
 window.LocalfromHomeTranslations = {
+  'Bike accessories':'பைக் உபகரணங்கள்', 'Gifts':'பரிசுப் பொருட்கள்', 'Kitchenware':'சமையலறைப் பொருட்கள்', 'Sports':'விளையாட்டுப் பொருட்கள்', 'Furniture':'மரச்சாமான்கள்', 'Watches & sunglasses':'கைக்கடிகாரங்கள் மற்றும் குளிர்கண்ணாடிகள்', 'Beauty':'அழகுப் பொருட்கள்', 'Toys':'பொம்மைகள்', 'Electrical items':'மின்சாதனப் பொருட்கள்', 'Washing machines':'துணி துவைக்கும் இயந்திரங்கள்', 'Travel luggage':'பயணப் பெட்டிகள்',
   'Footwear':'காலணிகள்', 'Bags':'பைகள்', 'Home essentials':'வீட்டு உபயோகப் பொருட்கள்',
   'Women’s dresses':'பெண்கள் ஆடைகள்', 'Televisions':'தொலைக்காட்சிகள்', 'Mobile phones':'கைப்பேசிகள்', 'Gadgets':'மின்னணுச் சாதனங்கள்',
   'Women':'பெண்கள்', 'Sponsored promotions':'விளம்பரங்கள்',

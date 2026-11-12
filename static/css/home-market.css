@@ -192,5 +192,5 @@ html[lang=ta] .market-home .market-promotion h1{font-size:clamp(22px,4vw,42px);l
 .market-home .business-card .business-monogram{display:grid;place-items:center;overflow:hidden}
 .market-home .business-card .business-monogram img{display:block;width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;border-radius:inherit}
 
-.market-home .market-product-photos{grid-template-rows:auto 44px}
+.market-home .market-product-photos{grid-template-rows:auto 64px}
 .market-home .market-product-photos .market-photo-caption{grid-area:2 / 1;align-self:start;text-align:center;color:#493a62;font-size:13px!important;font-weight:500;line-height:1.5!important;margin:0;padding:8px 3px 0;overflow-wrap:anywhere}

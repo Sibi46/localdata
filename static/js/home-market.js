@@ -1,45 +1,101 @@
-/* Progressive enhancement: the first banner and search work without JavaScript. */
+/* Progressive enhancement: one visible image without JS, bounded preloading with JS. */
 (() => {
   'use strict';
   const banner = document.querySelector('.market-promotion');
   const t = text => window.LocalfromProductLanguage?.t(text) || text;
   if (banner) {
-  const slides = [...banner.querySelectorAll('[data-product-photo]')];
-  let current = 0;
-  const controls = document.createElement('div');
-  controls.className = 'market-promo-controls market-photo-controls';
-  controls.setAttribute('role', 'group');
-  controls.setAttribute('aria-label', t('Promotion slides'));
-  const caption = banner.querySelector('[data-photo-caption]');
-  const counter = document.createElement('span');
-  counter.className = 'market-photo-count';
-  counter.setAttribute('aria-hidden', 'true');
-  function draw(index) {
-    current = (index + slides.length) % slides.length;
-    slides.forEach((image, position) => { image.hidden = position !== current; });
-    caption.textContent = t(slides[current].dataset.photoLabel);
-    counter.textContent = `${current + 1} / ${slides.length}`;
+    const slides = [...banner.querySelectorAll('[data-product-photo]')];
+    const caption = banner.querySelector('[data-photo-caption]');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const failed = new Set();
+    let current = 0;
+    let requested = 0;
+    const controls = document.createElement('div');
+    controls.className = 'market-promo-controls market-photo-controls';
+    controls.setAttribute('role', 'group');
+    controls.setAttribute('aria-label', t('Promotion slides'));
+    const counter = document.createElement('span');
+    counter.className = 'market-photo-count';
+    counter.setAttribute('aria-hidden', 'true');
+    const wrap = index => (index + slides.length) % slides.length;
+    function available(index, direction = 1) {
+      let candidate = wrap(index);
+      for (let tried = 0; tried < slides.length; tried++) {
+        if (!failed.has(candidate)) return candidate;
+        candidate = wrap(candidate + direction);
+      }
+      return null;
+    }
+    function load(index) {
+      const image = slides[index];
+      if (image.dataset.photoSrc && !image.hasAttribute('src')) {
+        image.src = image.dataset.photoSrc;
+        delete image.dataset.photoSrc;
+      }
+      return image;
+    }
+    function prime() {
+      load(current);
+      if (!reduced.matches && !document.hidden) {
+        for (const offset of [1, 2]) {
+          const index = available(current + offset);
+          if (index !== null) load(index);
+        }
+      }
+    }
+    function labels() {
+      caption.textContent = t(slides[current].dataset.photoLabel);
+      counter.textContent = `${current + 1} / ${slides.length}`;
+    }
+    function show(index) {
+      if (requested !== index) return;
+      current = index;
+      slides.forEach((image, position) => { image.hidden = position !== current; });
+      labels();
+      prime();
+    }
+    function draw(index, direction = 1) {
+      const candidate = available(index, direction);
+      if (candidate === null) return;
+      requested = candidate;
+      const image = load(candidate);
+      if (image.complete && image.naturalWidth > 0) show(candidate);
+    }
+    slides.forEach((image, index) => {
+      image.addEventListener('load', () => show(index));
+      image.addEventListener('error', () => {
+        failed.add(index);
+        if (requested === index) requested = current;
+      });
+    });
+    function addButton(label, direction) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('aria-label', t(label));
+      button.textContent = direction === -1 ? '❮' : '❯';
+      button.addEventListener('click', () => draw(requested + direction, direction));
+      controls.append(button);
+    }
+    addButton('Previous promotion', -1);
+    controls.append(counter);
+    addButton('Next promotion', 1);
+    banner.after(controls);
+    labels();
+    draw(0);
+    prime();
+    const timer = window.setInterval(() => {
+      if (reduced.matches || document.hidden || controls.matches(':focus-within') || document.querySelector('dialog[open]')) return;
+      const index = available(current + 1);
+      if (index === null) return;
+      const next = load(index);
+      if (next.complete && next.naturalWidth > 0) draw(index);
+    }, 1000);
+    reduced.addEventListener('change', prime);
+    document.addEventListener('visibilitychange', prime);
+    document.addEventListener('product-language-change', labels);
+    window.addEventListener('pagehide', () => window.clearInterval(timer), {once: true});
   }
-  function addButton(label, action) {
-    const button = document.createElement('button'); button.type = 'button';
-    button.setAttribute('aria-label', t(label));
-    button.textContent = action === -1 ? '❮' : '❯';
-    button.addEventListener('click', () => draw(current + action));
-    controls.append(button);
-  }
-  addButton('Previous promotion', -1);
-  controls.append(counter);
-  addButton('Next promotion', 1);
-  banner.after(controls); draw(0);
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const timer = window.setInterval(() => {
-    const next = slides[(current + 1) % slides.length];
-    if (!reduced.matches && !document.hidden && !controls.matches(':focus-within') && !document.querySelector('dialog[open]') && next.complete && next.naturalWidth > 0) draw(current + 1);
-  }, 1000);
-  window.addEventListener('pagehide', () => window.clearInterval(timer), {once: true});
-  document.addEventListener('product-language-change', () => draw(current));
 
-  }
   const mic = document.querySelector('[data-market-mic]');
   const input = document.getElementById('business-search');
   const status = document.querySelector('[data-market-voice-status]');
