@@ -1,0 +1,159 @@
+/* Homepage only: shared shop, account and administration layouts are unchanged. */
+.market-home{--ink:#192236;--sans:'Poppins',sans-serif;--serif:'Poppins',sans-serif;background:linear-gradient(180deg,#8ac7ff 0,#d8edff 310px,#f7fbff 610px,#fff 900px);color:var(--ink);font-family:var(--sans)}
+.market-home .shell{width:calc(100% - 48px);max-width:1180px;margin-inline:auto}
+.market-home .site-header{background:transparent;border:0;position:relative;backdrop-filter:none}
+.market-home .header-inner{min-height:88px;gap:24px;padding-block:18px}
+.market-home .brand{font-size:29px;letter-spacing:-1.2px;gap:7px;flex-shrink:0;color:#173f34}
+.market-home .site-brand-logo{object-fit:contain;width:44px;height:36px}
+.market-home .desktop-nav{margin-left:auto;gap:22px}
+.market-home .desktop-nav a{font-size:14px}
+.market-home .header-actions{gap:10px;flex-shrink:0}
+.market-home .header-actions .header-messages{display:none}
+.market-home .icon-button,.market-home .notification-bell{background:#ffffffb3;border:0;color:#202536;border-radius:14px;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.market-home .market-language select{background:#ffffffb3;color:#202536;border:0;border-radius:12px;padding:11px 7px;font-size:13px!important;max-width:105px;min-height:44px}
+.market-home .home-greeting{margin:8px 0 18px;min-height:40px;gap:10px;flex-wrap:wrap}
+.market-home .home-greeting h2{font:600 22px/1.4 var(--sans);letter-spacing:-.5px}
+.market-home .greeting-shop-link{font-size:13px!important;background:#fff8;border:0;border-radius:12px;padding:10px 12px;margin-left:auto}
+.market-home .market-location-row{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+.market-home .market-location{display:flex;align-items:center;gap:12px;flex:1;min-width:0;max-width:680px;background:#ffffff87;border:1px solid #fff8;border-radius:14px;padding:14px 16px;font:500 15px var(--sans);color:#24364a;min-height:50px;text-align:left}
+.market-home .market-location span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.market-home .market-location i:last-child{font-size:12px}
+.market-home .post-ad-button{background:#fff0ad;color:#343028;border:0;border-radius:14px;padding:14px 18px;font-size:14px;white-space:nowrap;min-height:50px;margin-left:auto}
+.market-home .discovery-search{display:flex;align-items:center;gap:15px;width:100%;max-width:none;margin:0;padding:8px 9px 8px 22px;background:#fff;border:2px solid #389bea;border-radius:19px;box-shadow:0 7px 20px #4e91bd0b}
+.market-home .discovery-search>i{font-size:23px;color:#556572}
+.market-home .discovery-search input{font:400 17px var(--sans);background:transparent;border:0;outline:0;flex:1;min-width:0;padding:12px 0;color:var(--ink);width:100%}
+.market-home .discovery-search button{flex-shrink:0;width:46px;height:46px;min-width:44px;min-height:44px;border:0;border-radius:12px;display:grid;place-items:center;padding:0;font-size:21px;background:#e8f3ff;color:#205f9b}
+.market-home .discovery-search .market-mic{background:transparent;font-size:23px}
+.market-home .market-voice-status:empty{display:none}
+.market-home .market-voice-status{margin:10px 0;color:#334c64}
+.market-home .market-shortcuts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin:24px 0 28px}
+.market-home .market-shortcuts>a,.market-home .market-shortcuts>button{position:static;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;min-width:0;min-height:100px;background:#ffffffb5;border:1px solid #fff;border-radius:20px;padding:16px 8px;font:500 14px/1.4 var(--sans)!important;color:#263244;text-align:center;box-shadow:0 5px 15px #4f8eba06;overflow-wrap:anywhere}
+.market-home .market-shortcuts>a>i,.market-home .market-shortcuts>button>i{font-size:26px;color:#2669ad}
+.market-home .market-shortcuts .primary-products{background:#fff1b4}
+.market-home .market-shortcuts .primary-offers>i{color:#bf4288}
+.market-home .market-shortcuts .primary-news>i{color:#168777}
+.market-home .market-shortcuts>button>i{color:#d36972}
+.market-home .market-promotion{position:relative;isolation:isolate;display:grid;grid-template-columns:1fr 1fr;align-items:center;min-height:330px;background:linear-gradient(110deg,#e0d0ff 0%,#d6bfff 48%,#ffe7a6 100%);border:1px solid #fff8;border-radius:28px;padding:36px;overflow:hidden;transition:background 1s}
+.market-home .market-promotion-copy{position:relative;z-index:1;max-width:430px}
+.market-home .market-promotion .eyebrow{font-size:11px;letter-spacing:1.6px;color:#564b79;margin:0 0 13px}
+.market-home .market-promotion h1{font:650 clamp(30px,4.7vw,56px)/1.12 var(--sans);letter-spacing:-2px;margin:0 0 18px;color:#222237}
+.market-home .market-promotion-copy>p:not(.eyebrow){max-width:310px;font-size:15px!important;line-height:1.7!important;color:#433956;margin-bottom:24px}
+.market-home .banner-link{display:inline-flex;align-items:center;gap:20px;min-height:46px;background:#ffffffb0;color:#302848;border-radius:12px;padding:12px 17px;font-size:14px;font-weight:500}
+.market-home .market-collection{width:100%;height:330px;object-fit:contain;position:relative;z-index:0;filter:drop-shadow(0 18px 12px #55346018)}
+.market-home .market-promo-controls{display:flex;justify-content:center;gap:8px;align-items:center;margin:8px 0}
+.market-home .market-promo-controls button{border:0;background:transparent;color:#35445c;min-width:44px;min-height:44px;padding:10px;cursor:pointer}
+.market-home .market-promo-controls button span{display:block;width:20px;height:5px;background:#d1d7e0;border-radius:5px}
+.market-home .market-promo-controls button[aria-pressed="true"] span{background:#3677c6;width:32px}
+.market-home .market-categories{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;padding:24px 0 30px;border-bottom:1px solid #e6edf6;margin-bottom:8px}
+.market-home .market-categories a{display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px;color:#354052;min-width:0;font-size:13px}
+.market-home .market-categories a>span{display:grid;place-items:center;background:#e8ddfb;width:74px;height:74px;border-radius:50%;font-size:29px;color:#66518c}
+.market-home .market-categories a:nth-child(2n)>span{background:#ffe9b2;color:#a67e25}
+.market-home .market-categories a:nth-child(3n)>span{background:#d8f1e8;color:#467967}
+.market-home .market-categories strong{font-weight:500;overflow-wrap:anywhere}
+.market-home .home-product-section,.market-home .business-section{padding:24px 0 34px}
+.market-home .section-heading{align-items:center;margin-bottom:20px;gap:16px}
+.market-home .section-heading h2{font:600 29px/1.3 var(--sans);letter-spacing:-.9px}
+.market-home .section-heading .eyebrow{display:none}
+.market-home .section-heading .text-link{font-size:13px!important;white-space:nowrap;color:#456388;gap:7px}
+.market-home .product-grid{gap:18px;grid-template-columns:repeat(4,minmax(0,1fr))}
+.market-home .product-card{background:#fff;border:1px solid #e6eaf1;border-radius:21px;box-shadow:0 6px 18px #22384c05}
+.market-home .product-image{background:#f0e8fb;aspect-ratio:1.07;border:0}
+.market-home .product-card:nth-child(4n+2) .product-image{background:#fff0ca}
+.market-home .product-card:nth-child(4n+3) .product-image{background:#e0f0ff}
+.market-home .product-card:nth-child(4n+4) .product-image{background:#e1f3e7}
+.market-home .product-image img{padding:15px;mix-blend-mode:normal}
+.market-home .discount-badge{background:#fff9;color:#354033;border-radius:9px;font-size:12px;backdrop-filter:blur(4px)}
+.market-home .product-copy{padding:16px}
+.market-home .product-copy h3{font-size:16px!important;line-height:1.5;font-weight:500;min-height:48px}
+.market-home .product-category{font-size:10px!important;color:#68788a}
+.market-home .product-shop{font-size:12px!important;color:#596e87}
+.market-home .product-prices strong{font-size:22px;color:#1b684c}
+.market-home .product-prices del{font-size:12px;color:#7a8391}
+.market-home .product-shop-link{font-size:12px!important;color:#3f65a0;border-color:#e8edf5}
+.market-home .product-location{font-size:12px!important;color:#7b8798}
+.market-home .business-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.market-home .business-card{border:1px solid #e3eaf3;border-radius:20px;background:#f5f9ff;padding:20px;gap:14px}
+.market-home .business-card h3{font-size:17px!important;font-weight:600;line-height:1.5}
+.market-home .business-card p,.market-home .business-card div>span{font-size:12px!important;color:#667a94}
+.market-home .business-monogram{background:#dceaff;color:#426b9a;border-radius:16px;width:55px;height:55px;font:600 25px var(--sans);flex-shrink:0}
+.market-home .pilot-section{border-radius:26px;background:#f2edff;padding:30px;margin-block:20px 35px}
+.market-home .pilot-story h2,.market-home .invite-copy h2{font:600 35px/1.25 var(--sans);letter-spacing:-1px}
+.market-home .business-invite{border-radius:26px;background:#e7f2ff;margin-bottom:30px}
+.market-home .business-invite .button-lime{background:#f7d87d;color:#393323}
+.market-home .invite-copy h2{color:#243d5b}
+.market-home .invite-copy h2 em{color:#526bb0}
+.market-home .invite-copy>p:not(.eyebrow),.market-home .invite-copy .eyebrow,.market-home .invite-secondary{color:#4b6380}
+.market-home .mobile-nav{background:#ffffffed;border:1px solid #e8edf5}
+.market-home .mobile-nav a{color:#526071}
+.market-home .mobile-nav a[aria-current=page]{background:#dfebff;color:#1e60ca}
+.market-home .market-promotion .eyebrow{font-size:11px!important;white-space:nowrap;letter-spacing:1px}
+.market-home .header-actions .account-create-button{padding:0;max-width:none;min-width:40px;width:40px}
+.market-home .home-greeting{display:flex}
+html[lang=ta] .market-home .market-shortcuts span{font-size:inherit}
+html[lang=ta] .market-home .market-promotion h1{font-size:clamp(22px,4vw,42px);line-height:1.5;letter-spacing:0}
+.market-home .market-empty,.market-home .directory-empty{background:#f3f8ff;border:1px dashed #b8cfe6;color:#425974}
+.market-home .market-empty h2{font:600 25px/1.4 var(--sans)}
+.market-home .market-empty p,.market-home .directory-empty p{color:#63758c}
+.market-home a:focus-visible,.market-home button:focus-visible,.market-home select:focus-visible{outline:3px solid #1554c0;outline-offset:3px}
+.market-home .discovery-search:focus-within{outline:3px solid #1a6bd330;outline-offset:3px}
+@media(max-width:1000px){.market-home .desktop-nav{display:none}.market-home .header-actions{margin-left:auto}.market-home .business-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.market-home .product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+ .market-home{padding-bottom:100px;background:linear-gradient(180deg,#8ac7ff 0,#d8edff 260px,#f7fbff 580px,#fff 900px)}
+ .market-home .shell{width:calc(100% - 32px)}
+ .market-home .header-inner{min-height:78px;padding-block:15px;gap:10px;flex-wrap:nowrap}
+ .market-home .brand{font-size:21px;gap:4px;letter-spacing:-1px}
+ .market-home .site-brand-logo{width:31px;height:30px}
+ .market-home .header-actions{gap:6px}
+ .market-home .icon-button,.market-home .notification-bell{min-width:40px;min-height:42px;width:40px;height:42px;border-radius:12px}
+ .market-home .market-language select{font-size:12px!important;padding:8px 3px;max-width:79px;min-height:42px}
+ .market-home .home-greeting{margin:0 0 13px;gap:6px}
+ .market-home .home-greeting h2{font-size:18px}
+ .market-home .greeting-shop-link{font-size:11px!important;padding:9px}
+ .market-home .market-location-row{gap:8px;margin-bottom:15px}
+ .market-home .market-location{font-size:13px;padding:11px;gap:8px;min-height:45px;border-radius:12px}
+ .market-home .post-ad-button{font-size:12px;min-height:45px;padding:10px;gap:6px;border-radius:12px}
+ .market-home .discovery-search{padding:5px 5px 5px 13px;gap:8px;border-radius:16px}
+ .market-home .discovery-search input{font-size:14px!important;padding:12px 0}
+ .market-home .discovery-search>i{font-size:19px}
+ .market-home .discovery-search button{width:40px;height:44px;min-width:40px;font-size:18px}
+ .market-home .discovery-search .market-mic{width:35px;min-width:35px;font-size:22px}
+ .market-home .market-shortcuts{gap:7px;margin:20px 0;grid-template-columns:repeat(6,minmax(0,1fr))}
+ .market-home .market-shortcuts>a,.market-home .market-shortcuts>button{min-height:83px;border-radius:14px;gap:8px;padding:10px 3px;font-size:10px!important;line-height:1.4!important}
+ .market-home .market-shortcuts>a>i,.market-home .market-shortcuts>button>i{font-size:22px}
+ .market-home .market-promotion{padding:23px 19px;min-height:245px;border-radius:23px;grid-template-columns:1.15fr 1fr;gap:0}
+ .market-home .market-promotion h1{font-size:26px;letter-spacing:-1px;margin-bottom:13px}
+ .market-home .market-promotion .eyebrow{font-size:8px!important;letter-spacing:1px;margin-bottom:10px}
+ .market-home .market-promotion-copy>p:not(.eyebrow){font-size:12px!important;line-height:1.6!important;margin-bottom:17px}
+ .market-home .banner-link{font-size:11px;gap:9px;padding:10px 11px;min-height:42px;white-space:nowrap}
+ .market-home .market-collection{width:120%;max-width:none;height:220px;margin-left:-6%;pointer-events:none}
+ .market-home .market-categories{display:flex;overflow-x:auto;gap:10px;padding:20px 0 23px;scrollbar-width:thin}
+ .market-home .market-categories a{font-size:10px;gap:8px;min-width:55px;flex:1}
+ .market-home .market-categories strong{white-space:nowrap}
+ .market-home .market-categories a>span{width:46px;height:46px;font-size:22px}
+ .market-home .section-heading{margin-bottom:17px;gap:10px}
+ .market-home .section-heading h2{font-size:23px;letter-spacing:-.7px}
+ .market-home .section-heading .text-link{font-size:11px!important;white-space:normal;flex-shrink:0;max-width:85px}
+ .market-home .product-grid{gap:12px}
+ .market-home .product-card{border-radius:18px}
+ .market-home .product-copy{padding:12px}
+ .market-home .product-copy h3{font-size:14px!important;min-height:42px}
+ .market-home .product-shop{font-size:11px!important;gap:5px}
+ .market-home .product-prices strong{font-size:20px}
+ .market-home .product-location{font-size:11px!important}
+ .market-home .product-shop-link{font-size:11px!important;line-height:1.5}
+ .market-home .discount-badge{font-size:11px;left:8px;top:8px}
+ .market-home .business-grid{grid-template-columns:1fr;gap:12px}
+ .market-home .business-card{padding:17px}
+ .market-home .pilot-section{display:block;padding:23px;margin-block:10px 28px}
+ .market-home .pilot-story h2,.market-home .invite-copy h2{font-size:29px}
+ .market-home .pilot-discover{margin-top:25px}
+ .market-home .business-invite{padding:25px}
+ .market-home .mobile-nav{display:flex;position:fixed;transform:none;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));width:auto;max-width:570px;margin-inline:auto;border:1px solid #e8edf5;border-radius:26px;background:#ffffffed;backdrop-filter:blur(18px);box-shadow:0 7px 25px #23385926;padding:7px 5px;z-index:40;min-height:70px;justify-content:space-around}
+ .market-home .mobile-nav>a{display:flex;flex:1;min-width:0;min-height:54px;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:20px;color:#526071;padding:4px 2px;background:transparent}
+ .market-home .mobile-nav>a>i{font-size:21px}
+ .market-home .mobile-nav>a>span{font-size:10px!important;line-height:1.3;text-align:center;overflow-wrap:anywhere}
+ .market-home .mobile-nav>a[aria-current=page]{background:#dfebff;color:#1e60ca}
+}
+@media(max-width:360px){.market-home .shell{width:calc(100% - 24px)}.market-home .brand{font-size:19px;letter-spacing:-.8px}.market-home .site-brand-logo{width:30px;height:30px}.market-home .header-actions{gap:4px}.market-home .icon-button,.market-home .notification-bell{min-width:35px;width:35px}.market-home .market-language select{max-width:68px;font-size:11px!important}.market-home .market-shortcuts{gap:4px}.market-home .market-shortcuts>a,.market-home .market-shortcuts>button{font-size:9px!important}.market-home .market-promotion{padding:20px 14px;min-height:235px}.market-home .market-promotion h1{font-size:26px}.market-home .market-promotion-copy>p:not(.eyebrow){font-size:11px!important}.market-home .market-collection{height:195px}.market-home .market-categories a{font-size:9px}.market-home .market-categories a>span{width:40px;height:40px}.market-home .section-heading h2{font-size:21px}.market-home .home-greeting h2{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.market-home .market-promotion,.market-home .product-card{transition:none}}
+@media(max-width:360px){.market-home .brand{font-size:16px}.market-home .market-language select{max-width:60px}.market-home .header-actions .account-create-button{min-width:35px;width:35px}.market-home .header-inner{gap:7px}}
