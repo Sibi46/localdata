@@ -1,4 +1,5 @@
 window.LocalfromHomeTranslations = {
+  'Women’s dresses':'பெண்கள் ஆடைகள்', 'Televisions':'தொலைக்காட்சிகள்', 'Mobile phones':'கைப்பேசிகள்', 'Gadgets':'மின்னணுச் சாதனங்கள்',
   'Women':'பெண்கள்', 'Sponsored promotions':'விளம்பரங்கள்',
   'Explore your neighbourhood':'உங்கள் பகுதியைத் தெரிந்துகொள்ளுங்கள்',
   'Good things.':'நல்ல பொருட்கள்.', 'Close to you.':'உங்கள் அருகில்.',
