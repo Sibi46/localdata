@@ -24,6 +24,10 @@
 .market-home .discovery-search input{font:400 17px var(--sans);background:transparent;border:0;outline:0;flex:1;min-width:0;padding:12px 0;color:var(--ink);width:100%}
 .market-home .discovery-search button{flex-shrink:0;width:46px;height:46px;min-width:44px;min-height:44px;border:0;border-radius:12px;display:grid;place-items:center;padding:0;font-size:21px;background:#e8f3ff;color:#205f9b}
 .market-home .discovery-search .market-mic{background:transparent;font-size:23px}
+.market-home .discovery-search .market-mic{font-size:0!important;color:#526b82}
+.market-home .market-mic::before{content:"";display:block;width:22px;height:26px;background:currentColor;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 28'%3E%3Cg fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Crect x='8' y='2' width='8' height='15' rx='4'/%3E%3Cpath d='M4 12v2a8 8 0 0 0 16 0v-2M12 22v4M8 26h8'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+.market-home .market-mic[aria-pressed="true"]{color:#b73349;background:#ffedf0}
+.market-home .market-mic[aria-pressed="true"]::before{mask:none;width:16px;height:16px;border-radius:3px}
 .market-home .market-voice-status:empty{display:none}
 .market-home .market-voice-status{margin:10px 0;color:#334c64}
 .market-home .market-shortcuts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin:24px 0 28px}
