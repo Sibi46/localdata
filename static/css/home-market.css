@@ -184,12 +184,13 @@ html[lang=ta] .market-home .market-promotion h1{font-size:clamp(22px,4vw,42px);l
 .market-home .market-product-photos{min-width:0;display:grid;align-items:center;position:relative}
 .market-home .market-product-photos .market-collection{grid-area:1 / 1;object-fit:contain;width:100%;max-width:100%;margin:0}
 .market-home .market-product-photos [hidden]{display:none}
-.market-home .market-promo-controls:has([data-slide]){gap:4px}
-.market-home .market-promo-controls [data-slide]{min-width:30px;padding:8px 4px}
-.market-home .market-promo-controls [data-slide] span{width:14px}
-.market-home .market-promo-controls [data-slide][aria-pressed="true"] span{width:22px}
+.market-home .market-photo-controls{gap:14px}
+.market-home .market-photo-count{min-width:54px;text-align:center;color:#51436b;font-size:13px}
 @keyframes market-photo-appear{from{opacity:.25;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:no-preference){.market-home .market-product-photos .market-collection:not([hidden]){animation:market-photo-appear .18s ease-out}}
 
 .market-home .business-card .business-monogram{display:grid;place-items:center;overflow:hidden}
 .market-home .business-card .business-monogram img{display:block;width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;border-radius:inherit}
+
+.market-home .market-product-photos{grid-template-rows:auto 44px}
+.market-home .market-product-photos .market-photo-caption{grid-area:2 / 1;align-self:start;text-align:center;color:#493a62;font-size:13px!important;font-weight:500;line-height:1.5!important;margin:0;padding:8px 3px 0;overflow-wrap:anywhere}

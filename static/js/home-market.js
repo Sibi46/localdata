@@ -7,24 +7,28 @@
   const slides = [...banner.querySelectorAll('[data-product-photo]')];
   let current = 0;
   const controls = document.createElement('div');
-  controls.className = 'market-promo-controls';
+  controls.className = 'market-promo-controls market-photo-controls';
   controls.setAttribute('role', 'group');
   controls.setAttribute('aria-label', t('Promotion slides'));
+  const caption = banner.querySelector('[data-photo-caption]');
+  const counter = document.createElement('span');
+  counter.className = 'market-photo-count';
+  counter.setAttribute('aria-hidden', 'true');
   function draw(index) {
     current = (index + slides.length) % slides.length;
     slides.forEach((image, position) => { image.hidden = position !== current; });
-    controls.querySelectorAll('[data-slide]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.slide) === current)));
+    caption.textContent = t(slides[current].dataset.photoLabel);
+    counter.textContent = `${current + 1} / ${slides.length}`;
   }
-  function addButton(label, action, slide) {
+  function addButton(label, action) {
     const button = document.createElement('button'); button.type = 'button';
     button.setAttribute('aria-label', t(label));
-    if (slide !== undefined) { button.dataset.slide = slide; button.append(document.createElement('span')); }
-    else button.textContent = action === -1 ? '❮' : '❯';
-    button.addEventListener('click', () => draw(slide === undefined ? current + action : slide));
+    button.textContent = action === -1 ? '❮' : '❯';
+    button.addEventListener('click', () => draw(current + action));
     controls.append(button);
   }
   addButton('Previous promotion', -1);
-  slides.forEach((image, index) => addButton(image.dataset.photoLabel, 0, index));
+  controls.append(counter);
   addButton('Next promotion', 1);
   banner.after(controls); draw(0);
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
