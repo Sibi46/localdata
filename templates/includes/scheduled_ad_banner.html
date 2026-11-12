@@ -1,0 +1,10 @@
+<section class="scheduled-ads" data-scheduled-ads aria-label="Sponsored promotions">
+  <h1 class="sr-only">Discover shops, products &amp; everyday offers.</h1>
+  <div class="scheduled-ad-slides">
+    {% for ad in homepage_ads %}<a class="scheduled-ad-slide" data-scheduled-slide data-promotion-kind="ad" data-promotion-id="{{ ad.pk }}" href="{% url 'adpost_click_track' ad.pk %}" {% if not forloop.first %}hidden{% endif %} aria-label="{{ ad.title|default:ad.company_name }}">
+      <img src="{{ ad.creative_image.url }}" alt="{{ ad.title|default:ad.company_name }}" width="1600" height="700" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+      <span class="scheduled-ad-label">Advertisement</span><span class="scheduled-ad-caption">{{ ad.title|default:ad.company_name }}</span>
+    </a>{% endfor %}
+  </div>
+  {% if homepage_ads|length > 1 %}<div class="market-promo-controls" role="group" aria-label="Promotion slides"><button type="button" data-ad-direction="-1" aria-label="Previous promotion">❮</button>{% for ad in homepage_ads %}<button type="button" data-ad-index="{{ forloop.counter0 }}" aria-label="{{ ad.title|default:ad.company_name }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"><span></span></button>{% endfor %}<button type="button" data-ad-direction="1" aria-label="Next promotion">❯</button></div>{% endif %}
+</section>

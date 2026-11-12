@@ -43,14 +43,14 @@ def home(request):
         products=products.filter(shop__user__pincode=area)
         businesses=businesses.filter(user__pincode=area)
     today=timezone.localdate()
-    live_ads=list(AdPost.objects.filter(status='approved',user__is_active=True).filter(Q(expires_at__isnull=True)|Q(expires_at__gte=today))[:60])
+    live_ads=list(AdPost.objects.filter(status='approved',user__is_active=True).filter(Q(expires_at__isnull=True)|Q(expires_at__gte=today)).filter(Q(starts_at__isnull=True)|Q(starts_at__lte=today))[:60])
     random.shuffle(live_ads)
     live_ads=live_ads[:12]
     AdPost.objects.filter(pk__in=[ad.pk for ad in live_ads]).update(views=F('views')+1)
     banners=Advertiser.objects.filter(status='approved').exclude(banner_image='').exclude(banner_image__isnull=True)
     from jobportal.seo import metadata
     return render(request,'index.html',{'seo':metadata(request),'home_products':products[:8],'business_logos':businesses.order_by('-pk')[:12],
-        'live_ads':live_ads,'advertiser_banners':banners[:6],'query':request.GET.get('q','')})
+        'live_ads':live_ads,'homepage_ads':[ad for ad in live_ads if ad.creative_image][:6],'advertiser_banners':banners[:6],'query':request.GET.get('q','')})
 
 
 @sensitive_post_parameters('password', 'confirm_password', 'otp')
@@ -1028,6 +1028,8 @@ def adpost_click_track(request, ad_id):
     from .models import AdPost
     try:
         ad = AdPost.objects.get(pk=ad_id, status='approved')
+        if not ad.is_live or not ad.user.is_active:
+            return redirect('ads_gallery')
         AdPost.objects.filter(pk=ad_id).update(clicks=F('clicks') + 1)
         safe_url = _sponsor_website(request, ad.website)
         if safe_url:
@@ -1053,7 +1055,10 @@ def _sponsor_website(request, value):
 def sponsored_detail(request, ad_id, kind):
     if kind == 'post':
         ad = get_object_or_404(AdPost.objects.select_related('user__company'), pk=ad_id, status='approved')
-        title, description, image, owner, website = ad.title or ad.company_name, ad.description, ad.image, ad.user, ad.website
+        if not ad.is_live or not ad.user.is_active:
+            from django.http import Http404
+            raise Http404
+        title, description, image, owner, website = ad.title or ad.company_name, ad.description, ad.display_image, ad.user, ad.website
         phone = ad.contact_phone or getattr(owner, 'phone', '')
     elif kind == 'banner':
         ad = get_object_or_404(Advertiser.objects.select_related('user__company'), pk=ad_id, status='approved')

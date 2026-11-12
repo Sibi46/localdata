@@ -20,7 +20,7 @@ class AdApplicationForm(forms.ModelForm):
         fields = ['ad_type', 'company_name', 'title', 'description', 'image', 'contact_name', 'contact_phone', 'pincode', 'website', 'requested_days']
         labels = {'ad_type': 'Promotion type', 'company_name':'Shop / business name', 'description':'Ad description', 'image':'Ad image', 'website':'Website (optional)', 'requested_days':'Requested duration'}
         widgets = {'ad_type': forms.RadioSelect(), 'description': forms.Textarea(attrs={'rows':4,'maxlength':'2000'}), 'image':forms.ClearableFileInput(attrs={'accept':'image/jpeg,image/png,image/webp','data-image-preview':'ad-image-preview','data-image-crop':'product'})}
-        help_texts = {'image':'JPG, PNG, or WebP, up to 5 MB. You can crop or adjust it before submitting.', 'requested_days':'The approved run starts when the Superadmin approves your ad.'}
+        help_texts = {'image':'JPG, PNG, or WebP, up to 5 MB. You can crop or adjust it before submitting.', 'requested_days':'The Superadmin confirms your start and end dates before publishing.'}
 
     def clean_image(self):
         return check_image(self.cleaned_data.get('image'))
@@ -49,6 +49,8 @@ def apply(request, pk=None):
         ad.reject_note=''
         ad.approved_at=None
         ad.expires_at=None
+        ad.starts_at=None
+        ad.creative_image=''
         ad.save()
         UserNotification.objects.bulk_create([
             UserNotification(user=admin,title='Ad application ready for review',message=f'{ad.company_name}: {ad.title}'[:200],link=f'/super-admin/ads/{ad.pk}/')

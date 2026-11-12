@@ -2,8 +2,8 @@
 (() => {
   'use strict';
   const banner = document.querySelector('.market-promotion');
-  if (!banner) return;
   const t = text => window.LocalfromProductLanguage?.t(text) || text;
+  if (banner) {
   const slides = [
     ['Good things.', 'Close to you.', 'Discover shops, products & everyday offers.', 'Explore nearby', '/products/'],
     ['Your town.', 'Your shops.', 'Find local businesses and see what they have in store.', 'Explore nearby', '/businesses/'],
@@ -46,6 +46,7 @@
   window.addEventListener('pagehide', () => window.clearInterval(timer), {once: true});
   document.addEventListener('product-language-change', () => draw(current));
 
+  }
   const mic = document.querySelector('[data-market-mic]');
   const input = document.getElementById('business-search');
   const status = document.querySelector('[data-market-voice-status]');

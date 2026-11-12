@@ -953,6 +953,8 @@ class AdPost(models.Model):
     pincode      = models.CharField(max_length=10, blank=True)
     description  = models.TextField()
     image        = models.ImageField(upload_to='ad_posts/')
+    creative_image = models.ImageField(upload_to='ad_creatives/', blank=True)
+    starts_at = models.DateField(null=True, blank=True)
     website      = models.URLField(blank=True)
     status       = models.CharField(max_length=20, choices=STATUS, default='pending')
     reject_note  = models.TextField(blank=True)
@@ -973,9 +975,10 @@ class AdPost(models.Model):
         from django.utils import timezone
         if self.status != 'approved':
             return False
-        if not self.expires_at:
-            return True
-        return self.expires_at >= timezone.now().date()
+        today = timezone.localdate()
+        if self.starts_at and self.starts_at > today:
+            return False
+        return not self.expires_at or self.expires_at >= today
 
     @property
     def is_expired(self):
@@ -983,6 +986,15 @@ class AdPost(models.Model):
         if self.status != 'approved' or not self.expires_at:
             return False
         return self.expires_at < timezone.now().date()
+
+    @property
+    def display_image(self):
+        return self.creative_image or self.image
+
+    @property
+    def is_scheduled(self):
+        from django.utils import timezone
+        return self.status == 'approved' and bool(self.starts_at and self.starts_at > timezone.localdate())
 
     @property
     def pending_renewal(self):

@@ -1,4 +1,5 @@
 window.LocalfromHomeTranslations = {
+  'Women':'பெண்கள்', 'Sponsored promotions':'விளம்பரங்கள்',
   'Explore your neighbourhood':'உங்கள் பகுதியைத் தெரிந்துகொள்ளுங்கள்',
   'Good things.':'நல்ல பொருட்கள்.', 'Close to you.':'உங்கள் அருகில்.',
   'Your town.':'உங்கள் ஊர்.', 'Your shops.':'உங்கள் கடைகள்.',

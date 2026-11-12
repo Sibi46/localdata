@@ -165,10 +165,26 @@ class AdReviewForm(forms.Form):
     decision = forms.ChoiceField(choices=[('approve','Approve and publish'),('reject','Request changes')])
     note = forms.CharField(required=False,max_length=2000,widget=forms.Textarea(attrs={'rows':3,'placeholder':'Explain any changes needed before approval.'}))
 
+    creative_image = forms.ImageField(required=False, label='Designed homepage banner', widget=forms.FileInput(attrs={'accept':'image/jpeg,image/png,image/webp'}), help_text='Upload your finished design (JPG, PNG or WebP, up to 5 MB). A wide 1600 × 700 banner works well. The applicant image is kept separately.')
+    starts_at = forms.DateField(required=False, label='Start date', widget=forms.DateInput(attrs={'type':'date'}, format='%Y-%m-%d'))
+    ends_at = forms.DateField(required=False, label='End date', widget=forms.DateInput(attrs={'type':'date'}, format='%Y-%m-%d'))
+
+    def clean_creative_image(self):
+        from .shop_forms import check_image
+        return check_image(self.cleaned_data.get('creative_image'))
+
     def clean(self):
         data=super().clean()
         if data.get('decision')=='reject' and not data.get('note'):
             self.add_error('note','Add a reason so the applicant knows what to change.')
+        start, end = data.get('starts_at'), data.get('ends_at')
+        if data.get('decision') == 'approve':
+            if bool(start) != bool(end):
+                self.add_error('ends_at', 'Enter both a start date and an end date.')
+            if start and start < timezone.localdate():
+                self.add_error('starts_at', 'Choose today or a future start date.')
+            if start and end and end < start:
+                self.add_error('ends_at', 'End date must be on or after the start date.')
         return data
 
 
@@ -176,7 +192,7 @@ class AdReviewForm(forms.Form):
 @require_http_methods(['GET','POST'])
 def ad_detail(request, pk):
     ad=get_object_or_404(AdPost.objects.select_related('user'),pk=pk)
-    form=AdReviewForm(request.POST if request.method=='POST' else None)
+    form=AdReviewForm(request.POST if request.method=='POST' else None, request.FILES if request.method=='POST' else None)
     if request.method=='POST' and form.is_valid():
         with transaction.atomic():
             ad=AdPost.objects.select_for_update().get(pk=pk)
@@ -186,19 +202,22 @@ def ad_detail(request, pk):
             if form.cleaned_data['decision']=='approve':
                 ad.status='approved'
                 ad.approved_at=timezone.now()
-                ad.expires_at=timezone.localdate()+timedelta(days=ad.requested_days-1)
+                ad.starts_at=form.cleaned_data.get('starts_at') or timezone.localdate()
+                ad.expires_at=form.cleaned_data.get('ends_at') or ad.starts_at+timedelta(days=ad.requested_days-1)
+                if form.cleaned_data.get('creative_image'):
+                    ad.creative_image=form.cleaned_data['creative_image']
                 ad.reject_note=''
             else:
                 ad.status='rejected'
                 ad.reject_note=form.cleaned_data['note']
                 ad.approved_at=None
                 ad.expires_at=None
-            ad.save(update_fields=['status','approved_at','expires_at','reject_note'])
+            ad.save(update_fields=['status','approved_at','expires_at','reject_note','starts_at','creative_image'])
             from .admin_messages import send_review_message
             send_review_message(request.user,ad.user,
                 title='Your ad is approved' if ad.status=='approved' else 'Your ad needs changes',
-                body=f'{ad.title or ad.company_name}: '+('Your ad is now published.' if ad.status=='approved' else ad.reject_note),
+                body=f'{ad.title or ad.company_name}: '+(f'Your ad is approved to run from {ad.starts_at:%d %b %Y} to {ad.expires_at:%d %b %Y}.' if ad.status=='approved' else ad.reject_note),
                 notif_type='success' if ad.status=='approved' else 'warning',link='/advertise/applications/')
-        messages.success(request,'Ad approved and published.' if ad.status=='approved' else 'Application returned with feedback.')
+        messages.success(request,('Ad approved and scheduled.' if ad.is_scheduled else 'Ad approved and published.') if ad.status=='approved' else 'Application returned with feedback.')
         return redirect('pilot_admin_ad',pk=pk)
     return render(request,'pilot_admin/ad_detail.html',{'tab':'ads','ad':ad,'form':form})

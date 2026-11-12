@@ -48,7 +48,7 @@ def collect(request):
     user = request.user if request.user.is_authenticated else None
     today = timezone.localdate()
     offers = LocalOffer.objects.filter(is_active=True).filter(Q(owner__isnull=True) | Q(owner__is_active=True)).filter(Q(valid_until__isnull=True) | Q(valid_until__gte=today))
-    ads = AdPost.objects.filter(status='approved', user__is_active=True).filter(Q(expires_at__isnull=True) | Q(expires_at__gte=today))
+    ads = AdPost.objects.filter(status='approved', user__is_active=True).filter(Q(expires_at__isnull=True) | Q(expires_at__gte=today)).filter(Q(starts_at__isnull=True) | Q(starts_at__lte=today))
     # Resolve only submitted IDs; never trust an owner or visibility flag from JS.
     valid = []
     for event in events:
