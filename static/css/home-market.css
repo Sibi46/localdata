@@ -195,14 +195,20 @@ html[lang=ta] .market-home .market-promotion h1{font-size:clamp(22px,4vw,42px);l
 .market-home .market-product-photos{grid-template-rows:auto 64px}
 .market-home .market-product-photos .market-photo-caption{grid-area:2 / 1;align-self:start;text-align:center;color:#493a62;font-size:13px!important;font-weight:500;line-height:1.5!important;margin:0;padding:8px 3px 0;overflow-wrap:anywhere}
 
-/* Seven discovery shortcuts: one desktop row and two balanced mobile rows. */
-.market-home .primary-shortcuts.market-shortcuts{grid-template-columns:repeat(7,minmax(0,1fr))}
-.market-home .market-shortcuts>a:focus-visible,.market-home .market-shortcuts>button:focus-visible{outline:3px solid #2669ad;outline-offset:3px}
+/* Compact discovery icons with labels, kept in a single row. */
+.market-home .primary-shortcuts.market-shortcuts{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:18px 0 22px}
+.market-home .primary-shortcuts.market-shortcuts>a,.market-home .primary-shortcuts.market-shortcuts>button{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;min-width:0;min-height:70px;padding:4px 0;border:0;border-radius:10px;background:transparent;box-shadow:none;font:500 11px/1.35 var(--sans)!important;color:#263244;text-align:center;overflow-wrap:normal;transform:none}
+.market-home .primary-shortcuts.market-shortcuts>a>i,.market-home .primary-shortcuts.market-shortcuts>button>i{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#eaf2ff;font-size:17px;color:#2669ad}
+.market-home .primary-shortcuts.market-shortcuts .primary-products>i{background:#fff0b8}
+.market-home .primary-shortcuts.market-shortcuts .primary-offers>i{background:#fce9f3;color:#bf4288}
+.market-home .primary-shortcuts.market-shortcuts .primary-news>i{background:#e3f5ef;color:#168777}
+.market-home .primary-shortcuts.market-shortcuts>button>i{background:#ffeded;color:#c9616c}
+.market-home .primary-shortcuts.market-shortcuts>a>span,.market-home .primary-shortcuts.market-shortcuts>button>span{font-size:inherit;line-height:inherit;white-space:normal;max-width:100%}
+.market-home .primary-shortcuts.market-shortcuts>a:hover,.market-home .primary-shortcuts.market-shortcuts>button:hover{background:#f4f7fb;box-shadow:none;transform:none}
+.market-home .primary-shortcuts.market-shortcuts>a:focus-visible,.market-home .primary-shortcuts.market-shortcuts>button:focus-visible{outline:2px solid #2669ad;outline-offset:2px}
 @media(max-width:600px){
- .market-home .primary-shortcuts.market-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 24px}
- .market-home .primary-shortcuts.market-shortcuts>a,.market-home .primary-shortcuts.market-shortcuts>button{min-height:86px;flex-direction:column;gap:8px;padding:12px 6px;border-radius:16px;font-size:12px!important;line-height:1.4!important;overflow-wrap:normal}
- .market-home .primary-shortcuts.market-shortcuts>button[data-hospital-launch]{grid-column:span 2;flex-direction:row;gap:12px;padding:12px;background:#fff5f4;border-color:#f1deda}
- .market-home .primary-shortcuts.market-shortcuts>button[data-hospital-launch]>span{max-width:110px;text-align:left}
- .market-home .primary-shortcuts.market-shortcuts>a>i,.market-home .primary-shortcuts.market-shortcuts>button>i{font-size:23px}
- .market-home .primary-shortcuts.market-shortcuts>a>span,.market-home .primary-shortcuts.market-shortcuts>button>span{font-size:inherit;line-height:inherit}
+ .market-home .primary-shortcuts.market-shortcuts{gap:4px;margin:16px 0 18px}
+ .market-home .primary-shortcuts.market-shortcuts>a,.market-home .primary-shortcuts.market-shortcuts>button{font-size:10px!important;min-height:72px;gap:6px}
+ .market-home .primary-shortcuts.market-shortcuts>a>i,.market-home .primary-shortcuts.market-shortcuts>button>i{width:32px;height:32px;font-size:15px}
 }
+@media(max-width:360px){.market-home .primary-shortcuts.market-shortcuts{gap:2px}.market-home .primary-shortcuts.market-shortcuts>a,.market-home .primary-shortcuts.market-shortcuts>button{font-size:9px!important}}
