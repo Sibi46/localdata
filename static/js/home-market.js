@@ -14,9 +14,6 @@
     controls.className = 'market-promo-controls market-photo-controls';
     controls.setAttribute('role', 'group');
     controls.setAttribute('aria-label', t('Promotion slides'));
-    const counter = document.createElement('span');
-    counter.className = 'market-photo-count';
-    counter.setAttribute('aria-hidden', 'true');
     const wrap = index => (index + slides.length) % slides.length;
     function available(index, direction = 1) {
       let candidate = wrap(index);
@@ -45,7 +42,6 @@
     }
     function labels() {
       caption.textContent = t(slides[current].dataset.photoLabel);
-      counter.textContent = `${current + 1} / ${slides.length}`;
     }
     function show(index) {
       if (requested !== index) return;
@@ -77,7 +73,6 @@
       controls.append(button);
     }
     addButton('Previous promotion', -1);
-    controls.append(counter);
     addButton('Next promotion', 1);
     banner.after(controls);
     labels();

@@ -212,3 +212,19 @@ html[lang=ta] .market-home .market-promotion h1{font-size:clamp(22px,4vw,42px);l
  .market-home .primary-shortcuts.market-shortcuts>a>i,.market-home .primary-shortcuts.market-shortcuts>button>i{width:32px;height:32px;font-size:15px}
 }
 @media(max-width:360px){.market-home .primary-shortcuts.market-shortcuts{gap:2px}.market-home .primary-shortcuts.market-shortcuts>a,.market-home .primary-shortcuts.market-shortcuts>button{font-size:9px!important}}
+
+/* Compact promotion without extra caption space. */
+.market-home .market-promotion{min-height:250px;padding:24px;gap:12px}
+.market-home .market-product-photos{grid-template-rows:auto auto}
+.market-home .market-product-photos .market-collection{height:230px}
+.market-home .market-promotion h1{font-size:clamp(28px,3.8vw,44px);margin-bottom:12px}
+.market-home .market-promotion-copy>p:not(.eyebrow){margin-bottom:16px}
+@media(max-width:600px){
+ .market-home .market-promotion{min-height:0;padding:18px 16px;gap:8px;border-radius:20px}
+ .market-home .market-product-photos .market-collection{height:150px}
+ .market-home .market-product-photos .market-photo-caption{font-size:11px!important;padding-top:4px}
+ .market-home .market-promotion h1{font-size:clamp(20px,5.5vw,24px);line-height:1.2!important;letter-spacing:-.8px;margin-bottom:10px}
+ .market-home .market-promotion .eyebrow{margin-bottom:8px}
+ .market-home .market-promotion-copy>p:not(.eyebrow){font-size:11px!important;line-height:1.5!important;margin-bottom:12px}
+ .market-home .market-promotion .banner-link{min-height:40px;padding:8px 10px}
+}
