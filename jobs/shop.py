@@ -16,18 +16,26 @@ def public_products():
     return Product.objects.filter(is_active=True, shop__user__is_active=True).exclude(shop__company_name='').select_related('shop', 'shop__user')
 
 
-def product_list(request):
+def food_list(request):
+    return product_list(request, food_mode=True)
+
+
+def product_list(request, food_mode=False):
     pincode = selected_area(request)
     query = request.GET.get('q', '').strip()[:150]
     category = request.GET.get('category', '').strip()[:80]
     products = public_products()
     shops = CompanyProfile.objects.filter(user__is_active=True).exclude(company_name='').select_related('user')
+    if food_mode:
+        from .shop_categories import food_category_query
+        products = products.filter(food_category_query('category') | food_category_query('shop__industry'))
+        shops = shops.filter(food_category_query('industry'))
     if pincode:
         products = products.filter(shop__user__pincode=pincode)
         shops = shops.filter(user__pincode=pincode)
     if query:
         products = products.filter(Q(name__icontains=query) | Q(description__icontains=query) | Q(category__icontains=query) | Q(shop__company_name__icontains=query))
-        shops = shops.filter(company_name__icontains=query)
+        shops = shops.filter(Q(company_name__icontains=query) | Q(industry__icontains=query))
     if category:
         products = products.filter(category__iexact=category)
     sort = request.GET.get('sort', 'newest')
@@ -37,7 +45,8 @@ def product_list(request):
     ordering = {'price_low': ['current_price', '-pk'], 'price_high': ['-current_price', '-pk']}.get(sort, ['-created_at', '-pk'])
     page = Paginator(products.order_by(*ordering), 24).get_page(request.GET.get('page'))
     return render(request, 'shop/products.html', {'products': page, 'query': query, 'category': category, 'sort': sort,
-                  'matching_shops': shops[:6] if query else [], 'product_count': page.paginator.count,
+                  'matching_shops': shops[:24] if food_mode else shops[:6] if query else [], 'product_count': page.paginator.count,
+                  'food_mode': food_mode,
                   'owns_shop': request.user.is_authenticated and CompanyProfile.objects.filter(user=request.user, user__is_active=True).exists()})
 
 

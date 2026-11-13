@@ -84,6 +84,7 @@ urlpatterns = [
 
     # Business Public Profile
     path('products/', shop.product_list, name='product_list'),
+    path('food/', shop.food_list, name='food_list'),
     path('products/<int:pk>/', shop.product_detail, name='product_detail'),
     path('shop/products/add/', shop.product_form, name='product_add'),
     path('shop/products/easy/', quick_products.editor, name='product_easy_add'),

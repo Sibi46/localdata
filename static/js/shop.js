@@ -1,4 +1,16 @@
 (() => {
+  document.querySelectorAll('input[type="file"][multiple]').forEach(input => {
+    const count = document.createElement('p');
+    count.className = 'upload-image-status';
+    count.setAttribute('aria-live', 'polite');
+    input.insertAdjacentElement('afterend', count);
+    const updateCount = () => {
+      const total = input.files.length;
+      count.textContent = `${total} image${total === 1 ? '' : 's'} selected`;
+    };
+    input.addEventListener('change', updateCount);
+    updateCount();
+  });
   const dashboard = document.querySelector('[data-shop-dashboard]');
   if (dashboard) {
     const sections = [...dashboard.querySelectorAll('.dashboard-section')];

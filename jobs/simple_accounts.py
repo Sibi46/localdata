@@ -144,13 +144,16 @@ def signup(request):
     })
 
 
+from .shop_categories import ShopCategoryInput
+
+
 class BusinessForm(forms.Form):
     directory_entry=forms.IntegerField(required=False,widget=forms.HiddenInput)
     owner_name=forms.CharField(label='Owner name',disabled=True,required=False)
     phone=forms.CharField(label='Registered phone number',disabled=True,required=False,help_text='Your shop uses your personal account phone and password.')
     account_type = forms.ChoiceField(label='Account type', choices=[('shop', 'Shop'), ('company', 'Business')])
     name = forms.CharField(label='Shop / business name', max_length=150)
-    category = forms.CharField(label='Category (optional)', max_length=100, required=False, widget=forms.TextInput(attrs={'placeholder': 'For example: groceries, clothing, jewellery'}))
+    category = forms.CharField(label='Shop category', max_length=100, required=False, widget=ShopCategoryInput(attrs={'placeholder': 'Choose Food, Restaurant, Bakery, Clothing...'}), help_text='Choose Food, Restaurant, Bakery or Cafe to appear in Food, or enter another category.')
     pincode = forms.RegexField(r'^[1-9][0-9]{5}$', label='Pincode', widget=forms.TextInput(attrs={'inputmode': 'numeric', 'maxlength': '6','data-account-pincode':''}))
     city = forms.CharField(label='City / town', max_length=100,widget=forms.TextInput(attrs={'data-account-city':''}))
     address = forms.CharField(label='Shop address (optional)', required=False, max_length=500, widget=forms.Textarea(attrs={'rows': 2}))

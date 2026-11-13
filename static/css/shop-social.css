@@ -19,3 +19,8 @@
 
 /* Keep the shop banner aligned with its upload crop. */
 .social-profile-cover{height:auto;aspect-ratio:4/1}
+
+.social-profile-cover > a,.social-avatar.large > a{display:block;width:100%;height:100%}
+.social-avatar.large > a{border-radius:50%;overflow:hidden}
+
+.social-profile-cover > a{aspect-ratio:4/1}
