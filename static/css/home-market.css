@@ -194,3 +194,15 @@ html[lang=ta] .market-home .market-promotion h1{font-size:clamp(22px,4vw,42px);l
 
 .market-home .market-product-photos{grid-template-rows:auto 64px}
 .market-home .market-product-photos .market-photo-caption{grid-area:2 / 1;align-self:start;text-align:center;color:#493a62;font-size:13px!important;font-weight:500;line-height:1.5!important;margin:0;padding:8px 3px 0;overflow-wrap:anywhere}
+
+/* Seven discovery shortcuts: one desktop row and two balanced mobile rows. */
+.market-home .primary-shortcuts.market-shortcuts{grid-template-columns:repeat(7,minmax(0,1fr))}
+.market-home .market-shortcuts>a:focus-visible,.market-home .market-shortcuts>button:focus-visible{outline:3px solid #2669ad;outline-offset:3px}
+@media(max-width:600px){
+ .market-home .primary-shortcuts.market-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 24px}
+ .market-home .primary-shortcuts.market-shortcuts>a,.market-home .primary-shortcuts.market-shortcuts>button{min-height:86px;flex-direction:column;gap:8px;padding:12px 6px;border-radius:16px;font-size:12px!important;line-height:1.4!important;overflow-wrap:normal}
+ .market-home .primary-shortcuts.market-shortcuts>button[data-hospital-launch]{grid-column:span 2;flex-direction:row;gap:12px;padding:12px;background:#fff5f4;border-color:#f1deda}
+ .market-home .primary-shortcuts.market-shortcuts>button[data-hospital-launch]>span{max-width:110px;text-align:left}
+ .market-home .primary-shortcuts.market-shortcuts>a>i,.market-home .primary-shortcuts.market-shortcuts>button>i{font-size:23px}
+ .market-home .primary-shortcuts.market-shortcuts>a>span,.market-home .primary-shortcuts.market-shortcuts>button>span{font-size:inherit;line-height:inherit}
+}
