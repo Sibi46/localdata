@@ -10,10 +10,6 @@
     const failed = new Set();
     let current = 0;
     let requested = 0;
-    const controls = document.createElement('div');
-    controls.className = 'market-promo-controls market-photo-controls';
-    controls.setAttribute('role', 'group');
-    controls.setAttribute('aria-label', t('Promotion slides'));
     const wrap = index => (index + slides.length) % slides.length;
     function available(index, direction = 1) {
       let candidate = wrap(index);
@@ -64,22 +60,11 @@
         if (requested === index) requested = current;
       });
     });
-    function addButton(label, direction) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.setAttribute('aria-label', t(label));
-      button.textContent = direction === -1 ? '❮' : '❯';
-      button.addEventListener('click', () => draw(requested + direction, direction));
-      controls.append(button);
-    }
-    addButton('Previous promotion', -1);
-    addButton('Next promotion', 1);
-    banner.after(controls);
     labels();
     draw(0);
     prime();
     const timer = window.setInterval(() => {
-      if (reduced.matches || document.hidden || controls.matches(':focus-within') || document.querySelector('dialog[open]')) return;
+      if (reduced.matches || document.hidden || document.querySelector('dialog[open]')) return;
       const index = available(current + 1);
       if (index === null) return;
       const next = load(index);

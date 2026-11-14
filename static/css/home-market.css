@@ -228,3 +228,30 @@ html[lang=ta] .market-home .market-promotion h1{font-size:clamp(22px,4vw,42px);l
  .market-home .market-promotion-copy>p:not(.eyebrow){font-size:11px!important;line-height:1.5!important;margin-bottom:12px}
  .market-home .market-promotion .banner-link{min-height:40px;padding:8px 10px}
 }
+
+/* Nearby village names sit separately around the shop's circular illustration. */
+.market-home .invite-art{display:grid;position:relative;min-height:310px;isolation:isolate}
+.market-home .invite-art .invite-orbit{top:47%;width:230px;height:230px}
+.market-home .invite-art .invite-store{font-size:76px;margin-top:-18px}
+.market-home .invite-villages{position:absolute;inset:0;z-index:2;pointer-events:none}
+.market-home .invite-village{position:absolute;display:grid;place-items:center;transform:translate(-50%,-50%);width:104px;min-height:32px;padding:6px 8px;border:1px solid #d4e2ef;border-radius:24px;background:#ffffffed;color:#345a72;font:500 11px/1.3 var(--sans);text-align:center;box-shadow:0 3px 10px #23456a09;overflow-wrap:anywhere}
+.market-home .invite-village:nth-child(1){left:30%;top:12%}
+.market-home .invite-village:nth-child(2){left:74%;top:20%}
+.market-home .invite-village:nth-child(3){left:17%;top:43%}
+.market-home .invite-village:nth-child(4){left:82%;top:52%}
+.market-home .invite-village:nth-child(5){left:26%;top:76%}
+.market-home .invite-village:nth-child(6){left:70%;top:82%}
+.market-home .invite-art .invite-stamp{top:-12px;right:0;font-size:8px;padding:9px;z-index:3}
+.market-home .invite-art .invite-caption{bottom:-8px;font:italic 11px/1.4 var(--sans);color:#557888}
+@keyframes village-name-appear{from{opacity:.2}to{opacity:1}}
+.market-home .invite-village.is-changing{animation:village-name-appear .45s ease-out}
+@media(max-width:600px){
+ .market-home .business-invite{overflow:hidden}
+ .market-home .business-invite .invite-art{display:grid;min-height:290px;margin-top:30px}
+ .market-home .invite-village{width:92px;font-size:10px}
+ .market-home .invite-art .invite-orbit{width:205px;height:205px}
+ .market-home .invite-art .invite-store{font-size:65px}
+ .market-home .invite-art .invite-stamp{right:4px}
+}
+@media(prefers-reduced-motion:reduce){.market-home .invite-village.is-changing{animation:none}}
+.market-home .invite-village.is-long-name{font-size:9px;padding-inline:4px;letter-spacing:-.2px;white-space:nowrap}
