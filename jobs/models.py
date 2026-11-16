@@ -1070,7 +1070,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, max_length=3000)
     category = models.CharField(max_length=80, blank=True)
     image = models.ImageField(upload_to='products/')
-    price = models.DecimalField(max_digits=12, decimal_places=2)
+    price = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     discount_percent = models.PositiveSmallIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -1087,6 +1087,8 @@ class Product(models.Model):
     @property
     def sale_price(self):
         from decimal import Decimal, ROUND_HALF_UP
+        if self.price is None:
+            return None
         return (self.price * (Decimal('100') - self.discount_percent) / Decimal('100')).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     def get_absolute_url(self):

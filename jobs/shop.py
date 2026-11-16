@@ -42,7 +42,7 @@ def product_list(request, food_mode=False):
     # Sort by the actual discounted price, rather than the original price.
     from django.db.models import DecimalField, ExpressionWrapper, F, Value
     products = products.annotate(current_price=ExpressionWrapper(F('price') * (Value(100) - F('discount_percent')) / Value(100.0), output_field=DecimalField(max_digits=12, decimal_places=2)))
-    ordering = {'price_low': ['current_price', '-pk'], 'price_high': ['-current_price', '-pk']}.get(sort, ['-created_at', '-pk'])
+    ordering = {'price_low': [F('current_price').asc(nulls_last=True), '-pk'], 'price_high': [F('current_price').desc(nulls_last=True), '-pk']}.get(sort, ['-created_at', '-pk'])
     page = Paginator(products.order_by(*ordering), 24).get_page(request.GET.get('page'))
     return render(request, 'shop/products.html', {'products': page, 'query': query, 'category': category, 'sort': sort,
                   'matching_shops': shops[:24] if food_mode else shops[:6] if query else [], 'product_count': page.paginator.count,

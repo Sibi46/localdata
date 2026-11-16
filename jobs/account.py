@@ -30,9 +30,9 @@ class LocationPreferencesForm(forms.Form):
 
 
 class BusinessDetailsForm(forms.ModelForm):
-    from .shop_categories import ShopCategoryInput
-    industry = forms.CharField(label='Shop category', max_length=100, required=False,
-                               widget=ShopCategoryInput(), help_text='Choose Food, Restaurant, Bakery or Cafe to appear in Food, or enter another category.')
+    from .shop_categories import ShopCategoryInput, ShopCategoriesField
+    industry = ShopCategoriesField(label='Shop categories', max_length=100, required=False,
+                               widget=ShopCategoryInput(), help_text='Choose up to 5 categories or add your own. Food categories also appear on the Food page.')
 
     class Meta:
         model = CompanyProfile

@@ -1,0 +1,20 @@
+.shop-category-tags,.category-selected,.category-suggestions{display:flex;flex-wrap:wrap;gap:6px;max-width:100%}
+.shop-category-tags{margin:10px 0}
+.shop-category-tag{display:inline-flex;align-items:center;max-width:100%;padding:5px 10px;border:1px solid #dfd9ef;border-radius:20px;background:#f2edff;color:#57417c;font:500 11px/1.4 var(--sans,sans-serif);overflow-wrap:anywhere}
+.category-picker{max-width:100%;margin-block:8px}
+.category-picker .category-selected{margin-bottom:10px}
+.category-picker .category-selected button,.category-picker .category-suggestions button{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:7px 11px;border:1px solid #d8d1e4;border-radius:22px;background:#fff;color:#4b3c63;font:500 12px/1.4 var(--sans,sans-serif);cursor:pointer;max-width:100%;overflow-wrap:anywhere;text-align:left}
+.category-picker .category-selected button,.category-picker .category-suggestions button[aria-pressed=true]{background:#eee5ff;border-color:#a58bc8;color:#56367f}
+.category-picker .category-add{display:flex;gap:8px;margin:12px 0}
+.category-picker .category-add input{flex:1;min-width:0;width:100%;padding:10px 12px;border:1px solid #d8d1e4;border-radius:12px;font:inherit}
+.category-picker .category-add button{flex-shrink:0;min-height:44px;padding:9px 14px;border:1px solid #bba9d6;border-radius:12px;background:#eee5ff;color:#4c356c;cursor:pointer}
+.category-picker button:focus-visible,.category-picker input:focus-visible{outline:2px solid #7350ac;outline-offset:3px}
+.category-picker [data-category-status]{display:block;font-size:12px;line-height:1.5;margin-top:8px;color:#665275}
+.category-picker .category-value-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.category-picker select[data-category-select]{display:block;width:100%;max-width:100%;min-height:48px;padding:12px;border:1px solid #bbaad2;border-radius:12px;background:#fff;color:#352848;font:16px/1.4 var(--sans,sans-serif)}
+.category-picker select[data-category-select]:disabled{background:#f5f2f9;color:#756b82}
+.category-custom{margin-top:12px}.category-custom>summary{cursor:pointer;min-height:44px;padding:10px 0;font-size:13px;color:#614883}
+.business-card .shop-category-tags{margin:0 0 6px}
+.business-card .shop-category-tag{font-size:10px;padding:3px 8px}
+
+.category-picker{position:relative}.category-picker input.category-value-hidden{width:1px!important;height:1px!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;clip:rect(0,0,0,0)}

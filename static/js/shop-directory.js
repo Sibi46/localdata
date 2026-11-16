@@ -9,7 +9,7 @@
   function choose(entry){
     if(!entry.can_select)return;
     for(const key of ['name','category','pincode','city','address']){
-      if(entry[key])form.elements[key].value=entry[key];
+      if(entry[key]) { form.elements[key].value=entry[key]; form.elements[key].dispatchEvent(new Event('change', {bubbles:true})); }
     }
     selected.value=entry.id;
     search.value=entry.name;

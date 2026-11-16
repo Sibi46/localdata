@@ -22,7 +22,7 @@ class DetailsForm(forms.Form):
     name = forms.CharField(label='Your name', max_length=150, help_text='Letters and spaces only.', widget=forms.TextInput(attrs={'autocomplete':'name','placeholder':'Your full name','inputmode':'text','data-text-only-name':'','pattern':r'[\p{L}\p{M}\s]+'}))
     phone = forms.RegexField(r'^[6-9][0-9]{9}$', label='Phone number', error_messages={'invalid': 'Enter a valid 10-digit mobile number.'}, widget=forms.TextInput(attrs={'type': 'tel', 'inputmode': 'numeric', 'maxlength': '10', 'autocomplete': 'tel-national', 'placeholder': '10-digit mobile number'}))
     pincode=forms.RegexField(r'^[1-9][0-9]{5}$',label='Your pincode',widget=forms.TextInput(attrs={'inputmode':'numeric','maxlength':'6','autocomplete':'postal-code','data-account-pincode':''}))
-    city=forms.CharField(label='City / town',max_length=100,required=False,help_text='Filled from your pincode. You can correct it if needed.',widget=forms.TextInput(attrs={'data-account-city':'','autocomplete':'address-level2'}))
+    city=forms.CharField(label='Town or village',max_length=100,required=False,help_text='Filled from your pincode. You can correct it if needed.',widget=forms.TextInput(attrs={'data-account-city':'','autocomplete':'address-level2'}))
 
     def clean_name(self):
         name=unicodedata.normalize('NFC',' '.join(self.cleaned_data['name'].split()))
@@ -144,7 +144,7 @@ def signup(request):
     })
 
 
-from .shop_categories import ShopCategoryInput
+from .shop_categories import ShopCategoryInput, ShopCategoriesField
 
 
 class BusinessForm(forms.Form):
@@ -152,10 +152,10 @@ class BusinessForm(forms.Form):
     owner_name=forms.CharField(label='Owner name',disabled=True,required=False)
     phone=forms.CharField(label='Registered phone number',disabled=True,required=False,help_text='Your shop uses your personal account phone and password.')
     account_type = forms.ChoiceField(label='Account type', choices=[('shop', 'Shop'), ('company', 'Business')])
-    name = forms.CharField(label='Shop / business name', max_length=150)
-    category = forms.CharField(label='Shop category', max_length=100, required=False, widget=ShopCategoryInput(attrs={'placeholder': 'Choose Food, Restaurant, Bakery, Clothing...'}), help_text='Choose Food, Restaurant, Bakery or Cafe to appear in Food, or enter another category.')
+    name = forms.CharField(label='Shop name', max_length=150)
+    category = ShopCategoriesField(label='Shop categories', max_length=100, required=False, widget=ShopCategoryInput(attrs={'placeholder': 'Choose Food, Restaurant, Bakery, Clothing...'}), help_text='Choose up to 5 categories or add your own. Food categories also appear on the Food page.')
     pincode = forms.RegexField(r'^[1-9][0-9]{5}$', label='Pincode', widget=forms.TextInput(attrs={'inputmode': 'numeric', 'maxlength': '6','data-account-pincode':''}))
-    city = forms.CharField(label='City / town', max_length=100,widget=forms.TextInput(attrs={'data-account-city':''}))
+    city = forms.CharField(label='Town or village', max_length=100,widget=forms.TextInput(attrs={'data-account-city':''}))
     address = forms.CharField(label='Shop address (optional)', required=False, max_length=500, widget=forms.Textarea(attrs={'rows': 2}))
     logo = forms.ImageField(label='Shop logo (optional)', required=False, help_text='JPG, PNG, or WebP, up to 5 MB.', widget=forms.ClearableFileInput(attrs={'accept': 'image/jpeg,image/png,image/webp', 'data-image-preview': 'shop-logo-preview', 'data-image-crop': 'logo'}))
     banner_image = forms.ImageField(label='Shop banner (optional)', required=False, help_text='A wide photo for the top of your shop profile. Up to 5 MB.', widget=forms.ClearableFileInput(attrs={'accept': 'image/jpeg,image/png,image/webp', 'data-image-preview': 'shop-banner-preview', 'data-image-crop': 'banner'}))
@@ -239,4 +239,4 @@ def personal_account(request):
 
 class AccountLocationForm(forms.Form):
     pincode=forms.RegexField(r'^[1-9][0-9]{5}$',label='Your pincode',widget=forms.TextInput(attrs={'inputmode':'numeric','maxlength':'6','data-account-pincode':''}))
-    city=forms.CharField(label='City / town',max_length=100,required=False,widget=forms.TextInput(attrs={'data-account-city':''}))
+    city=forms.CharField(label='Town or village',max_length=100,required=False,widget=forms.TextInput(attrs={'data-account-city':''}))

@@ -1,0 +1,1 @@
+{% load shop_category_tags %}<span class="shop-category-tags">{% for tag in category|category_tags %}<span class="shop-category-tag">{{ tag }}</span>{% empty %}<span class="shop-category-tag">Local shop</span>{% endfor %}</span>

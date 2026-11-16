@@ -49,7 +49,7 @@ def home(request):
     AdPost.objects.filter(pk__in=[ad.pk for ad in live_ads]).update(views=F('views')+1)
     banners=Advertiser.objects.filter(status='approved').exclude(banner_image='').exclude(banner_image__isnull=True)
     from jobportal.seo import metadata
-    return render(request,'index.html',{'seo':metadata(request),'home_products':products[:8],'business_logos':businesses.order_by('-pk')[:12],
+    return render(request,'index.html',{'seo':metadata(request),'home_products':products.order_by('?')[:8],'business_logos':businesses.order_by('-pk')[:12],
         'live_ads':live_ads,'homepage_ads':[ad for ad in live_ads if ad.creative_image][:6],'advertiser_banners':banners[:6],'query':request.GET.get('q','')})
 
 
@@ -297,7 +297,7 @@ def business_list(request):
     if pincode:
         businesses = businesses.filter(user__pincode=pincode)
     if query:
-        businesses = businesses.filter(company_name__icontains=query)
+        businesses = businesses.filter(Q(company_name__icontains=query) | Q(industry__icontains=query))
     businesses = businesses.annotate(review_count=Count('reviews', distinct=True), average_rating=Avg('reviews__rating'),
         recent_reviews=Count('reviews', filter=Q(reviews__created_at__gte=timezone.now() - timedelta(days=30)), distinct=True), follower_count=Count('followers', distinct=True), product_count=Count('products', filter=Q(products__is_active=True), distinct=True))
     sort = request.GET.get('sort', 'name')

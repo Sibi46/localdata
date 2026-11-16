@@ -39,8 +39,8 @@ class ProductImagesField(forms.ImageField):
 class ProductForm(forms.ModelForm):
     images = ProductImagesField(label='Product images (up to 2)', required=False,
                                help_text='Choose 1–2 JPG, PNG, or WebP images, up to 5 MB each. The first image is your cover. Choosing new images replaces the current gallery.')
-    price = forms.DecimalField(label='Regular price (₹)', min_value=Decimal('0.01'), max_digits=12, decimal_places=2,
-                               help_text='Your price before any discount.', widget=forms.NumberInput(attrs={'step': '0.01', 'placeholder': '499.00'}))
+    price = forms.DecimalField(label='Regular price (₹, optional)', required=False, min_value=Decimal('0.01'), max_digits=12, decimal_places=2,
+                               help_text='Leave blank to let customers ask your price. Add a price to calculate a discount.', widget=forms.NumberInput(attrs={'step': '0.01', 'placeholder': '499.00'}))
     discount_percent = forms.IntegerField(label='Discount (%)', min_value=0, max_value=100, required=False,
                                          help_text='Leave blank or enter 0 for the regular price.')
 

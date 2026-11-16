@@ -6,13 +6,14 @@
   const locale = window.LocalfromProductLanguage;
   const t = (key, params) => locale.t(key, params);
   let feedbackState = null;
-  let draftMessage = 'Drafts stay in this browser on this device. Use one tab. Clear drafts on shared devices.';
+  let draftMessage = 'Photos are saved on this phone. Clear them on shared phones.';
   const $ = selector => root.querySelector(selector);
   const cards = $('[data-cards]'), picker = $('#easy-photo-picker');
   const form = $('[data-entry-form]'), review = $('[data-review-panel]');
   const feedback = $('[data-feedback]'), draftStatus = $('[data-draft-status]');
   const draftKey = `${root.dataset.owner}:${root.dataset.shop}`;
   const MAX_PRODUCTS = 20, MAX_IMAGE = 5 * 1024 * 1024;
+  let activeIndex = 0;
   let entries = [], busy = false, db = null, saveQueue = Promise.resolve(), urls = [];
   let remaining = Number(root.dataset.remaining);
   const voice = window.LocalfromProductVoice;
@@ -48,7 +49,7 @@
       tx.onerror = () => reject(tx.error);
       tx.onabort = () => reject(tx.error);
     })).then(() => {
-      setDraftStatus('Draft saved on this device. Clear it on shared devices.');
+      setDraftStatus('Photos are saved on this phone. Clear them on shared phones.');
     }).catch(() => {
       setDraftStatus('Draft could not be saved. Keep this page open until you publish.');
     });
@@ -103,6 +104,25 @@
       onStatus: (message, error) => say(message, error),
       onText: text => { entry.name = text; review.hidden = true; save(); }});
   }
+  function sellingPrice(entry) {
+    if (!String(entry.price || '').trim()) return t('Ask shop for price');
+    const [whole, fraction = ''] = String(entry.price).split('.');
+    const cents = Number(whole) * 100 + Number((fraction + '00').slice(0, 2));
+    const discounted = Math.round(cents * (100 - Number(entry.discount || 0)) / 100);
+    return new Intl.NumberFormat('en-IN', {style:'currency', currency:'INR'}).format(discounted / 100);
+  }
+  function updateProgress() {
+    const step = !entries.length ? 'photo' : !review.hidden ? 'review' : 'details';
+    root.querySelectorAll('[data-entry-step]').forEach(item => {
+      if (item.dataset.entryStep === step) item.setAttribute('aria-current', 'step');
+      else item.removeAttribute('aria-current');
+    });
+    $('[data-entry-progress]').textContent = entries.length && review.hidden ? t('Product {number} of {total}', {number:activeIndex + 1, total:entries.length}) : '';
+    form.hidden = !review.hidden;
+    $('[data-previous]').hidden = activeIndex === 0;
+    $('[data-previous]').disabled = busy;
+    $('[data-review]').textContent = t(activeIndex < entries.length - 1 ? 'Next product' : 'Check products');
+  }
   function field(entry, key, label, type, attributes) {
     const box = node('div'), id = `entry-${entry.id}-${key}`;
     const title = node('label', label); title.htmlFor = id; box.append(title);
@@ -110,7 +130,7 @@
     const input = node('input'); input.id = id; input.type = type; input.value = entry[key];
     Object.entries(attributes).forEach(([name, value]) => input.setAttribute(name, value));
     input.disabled = busy || entry.status === 'published';
-    input.addEventListener('input', () => { entry[key] = input.value; review.hidden = true; scheduleSave(); });
+    input.addEventListener('input', () => { entry[key] = input.value; review.hidden = true; const preview = input.closest('.easy-card')?.querySelector('[data-entry-price-preview]'); if (preview) preview.textContent = `${t('Selling price')}: ${sellingPrice(entry)}`; scheduleSave(); });
     input.addEventListener('invalid', () => input.setCustomValidity(t(key === 'name' ? 'Enter a product name.' : key === 'price' ? 'Enter a valid price greater than zero.' : 'Enter a whole discount percentage from 0 to 100.')));
     input.addEventListener('input', () => input.setCustomValidity(''));
     row.append(input);
@@ -126,8 +146,9 @@
     if (voice) voice.stop();
     urls.forEach(URL.revokeObjectURL); urls = []; cards.replaceChildren();
     $('[data-slots]').textContent = remaining;
+    activeIndex = Math.max(0, Math.min(activeIndex, entries.length - 1));
     entries.forEach((entry, index) => {
-      const card = node('article', '', 'easy-card'); card.dataset.published = entry.status === 'published';
+      const card = node('article', '', 'easy-card'); card.dataset.published = entry.status === 'published'; card.hidden = index !== activeIndex;
       card.append(node('h2', t('Product {number}', {number: index + 1})));
       const photos = node('div', '', 'easy-photos');
       entry.photos.forEach((photo, position) => {
@@ -143,11 +164,14 @@
       card.append(photos);
       card.append(field(entry, 'name', t('Product name'), 'text', {required:'', maxlength:'160', autocomplete:'off'}));
       const prices = node('div', '', 'easy-prices');
-      prices.append(field(entry, 'price', t('Price ₹'), 'number', {required:'', min:'0.01', max:'9999999999.99', step:'0.01', inputmode:'decimal'}));
+      prices.append(field(entry, 'price', t('Price (optional)'), 'number', { min:'0.01', max:'9999999999.99', step:'0.01', inputmode:'decimal'}));
       prices.append(field(entry, 'discount', t('Discount % (optional)'), 'number', {min:'0', max:'100', step:'1', inputmode:'numeric'}));
       card.append(prices);
+      const salePreview = node('p', `${t('Selling price')}: ${sellingPrice(entry)}`, 'easy-sale-preview');
+      salePreview.dataset.entryPricePreview = ''; salePreview.setAttribute('aria-live','polite'); card.append(salePreview);
+      card.append(node('p', t('Price is optional. Leave it blank if you prefer.'), 'easy-price-note'));
       if (entry.status !== 'published') {
-        const label = node('label', t('Extra views ({number}/2)', {number: entry.photos.length}));
+        const label = node('label', t('Add another photo ({number}/2)', {number: entry.photos.length}));
         const extra = node('input'); extra.type = 'file'; extra.accept = picker.accept; extra.multiple = true;
         extra.disabled = busy || entry.photos.length >= 2; label.append(extra); card.append(label);
         extra.onchange = async () => {
@@ -173,15 +197,19 @@
       }
       if (entry.error) card.append(node('p', locale.error(entry.error), 'easy-card-error'));
       if (entry.status === 'uploading') card.append(node('p', t('Uploading…'), 'easy-card-status'));
+      if (card.hidden) card.querySelectorAll('input,button').forEach(control => { control.disabled = true; });
       cards.append(card);
     });
     picker.disabled = busy || entries.length >= MAX_PRODUCTS;
     $('[data-clear]').disabled = busy;
     $('[data-review]').disabled = busy || !entries.some(entry => entry.status !== 'published');
     $('[data-publish]').disabled = busy; $('[data-back]').disabled = busy;
+    $('[data-add-more]').disabled = busy || entries.length >= MAX_PRODUCTS;
+    $('.easy-choose').hidden = entries.length > 0;
+    updateProgress();
   }
   picker.onchange = async () => {
-    const files = Array.from(picker.files); picker.value = ''; review.hidden = true;
+    const files = Array.from(picker.files); picker.value = ''; review.hidden = true; activeIndex = entries.length;
     if (remaining <= 0) { showLimit(); return; }
     if (files.length + entries.length > MAX_PRODUCTS) return say('Choose up to 20 products per batch. Clear completed drafts to start another batch.', true);
     busy = true; render();
@@ -190,7 +218,7 @@
         const photo = await preparePhoto(file);
         entries.push({id: crypto.randomUUID(), name:'', price:'', discount:'', photos:[photo], status:'pending'});
       }
-      await save(); say('Photos ready. Enter a name and price below.');
+      await save(); say('Photos ready. Enter a name below. Price is optional.');
     } catch (error) { await save(); say(error.message, true); }
     finally { busy = false; render(); }
   };
@@ -200,8 +228,8 @@
     pending.forEach(entry => {
       const row = node('div', '', 'easy-review-row'), img = node('img');
       img.src = imageURL(entry.photos[0]); img.alt = entry.name;
-      const price = (Number(entry.price) * (100 - Number(entry.discount || 0)) / 100).toFixed(2);
-      row.append(img, node('p', `${entry.name} · ₹${price}${entry.discount ? ` (${t('{number}% off', {number: entry.discount})})` : ''}`)); list.append(row);
+      const price = sellingPrice(entry);
+      row.append(img, node('p', `${entry.name} · ${price}${entry.discount ? ` (${t('{number}% off', {number: entry.discount})})` : ''}`)); list.append(row);
     });
   }
   function photosWithinLimit() {
@@ -215,6 +243,9 @@
   form.onsubmit = event => {
     event.preventDefault(); if (busy || !form.reportValidity()) return;
     if (!photosWithinLimit()) return;
+    if (activeIndex < entries.length - 1) { activeIndex++; render(); cards.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+    const invalid = entries.findIndex(entry => entry.status !== 'published' && (!entry.name.trim() || (entry.price !== '' && (!Number.isFinite(Number(entry.price)) || Number(entry.price) <= 0)) || !Number.isInteger(Number(entry.discount || 0)) || Number(entry.discount || 0) < 0 || Number(entry.discount || 0) > 100));
+    if (invalid !== -1) { activeIndex = invalid; render(); form.reportValidity(); return; }
     const pending = entries.filter(entry => entry.status !== 'published');
     if (!pending.length) return;
     if (pending.length > remaining) {
@@ -222,9 +253,11 @@
       return say('Only {number} product slots remain. Remove extra drafts or request more slots.', false, {number: remaining});
     }
     renderReview();
-    review.hidden = false; review.scrollIntoView({behavior:'smooth', block:'center'});
+    review.hidden = false; updateProgress(); review.scrollIntoView({behavior:'smooth', block:'center'});
   };
-  $('[data-back]').onclick = () => { review.hidden = true; cards.scrollIntoView({behavior:'smooth'}); };
+  $('[data-add-more]').onclick = () => { if (!busy) picker.click(); };
+  $('[data-previous]').onclick = () => { if (!busy) { activeIndex = Math.max(0, activeIndex - 1); render(); } };
+  $('[data-back]').onclick = () => { review.hidden = true; render(); cards.scrollIntoView({behavior:'smooth'}); };
   $('[data-clear]').onclick = async () => {
     if (busy || !confirm(t('Clear the draft photos and details on this device? Published products will remain in your shop.'))) return;
     entries = []; review.hidden = true; await save(); render(); say('Draft cleared. You can choose more photos.');
@@ -238,7 +271,7 @@
     let completed = 0;
     try {
       for (const entry of pending) {
-        entry.error = ''; entry.status = 'uploading'; await save(); render();
+        entry.error = ''; entry.status = 'uploading'; activeIndex = entries.indexOf(entry); await save(); render();
         say('Uploading {number} / {total}… Keep this page open.', false, {number: completed + 1, total: pending.length});
         const data = new FormData();
         data.set('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);

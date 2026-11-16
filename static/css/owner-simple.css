@@ -1,0 +1,30 @@
+.owner-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:20px 0}
+.owner-heading p{font-size:14px;color:#6b6279;margin:0 0 6px}.owner-heading h1{font-size:clamp(24px,4vw,34px);line-height:1.3;margin:0;overflow-wrap:anywhere}
+.owner-help{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;color:#4e3978;font-size:13px;white-space:nowrap;text-decoration:underline}
+.owner-primary-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+.owner-primary-actions a{display:flex;align-items:center;gap:13px;padding:18px;border:1px solid #ddd8e8;border-radius:16px;background:#fff;color:#352848;min-height:88px}
+.owner-primary-actions a>i{font-size:25px;flex-shrink:0}.owner-primary-actions a>span{min-width:0}.owner-primary-actions strong{display:block;font-size:16px;line-height:1.5}.owner-primary-actions small{display:block;font-size:13px;margin-top:3px}
+.owner-primary-actions .owner-add-product{grid-column:1/-1;background:#215b45;color:#fff;border-color:#215b45;min-height:96px}.owner-add-product>span:last-child{margin-left:auto;font-size:30px}
+.owner-more{margin:18px 0;padding:12px 16px;border:1px solid #e2dce9;border-radius:14px;background:#faf8fd}.owner-more>summary{cursor:pointer;font-size:14px;line-height:1.6;min-height:32px;padding:6px 0}.owner-more[open]>summary{margin-bottom:14px}.owner-more p{font-size:14px;line-height:1.6}.owner-more .product-access-summary{margin:8px 0}
+[data-shop-dashboard] .dashboard-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;overflow:visible}
+[data-shop-dashboard] .dashboard-tabs a{min-height:52px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:10px 8px;border-radius:12px;font-size:13px;line-height:1.5;text-align:center;white-space:normal}
+[data-shop-dashboard] .dashboard-tabs a>span{font-size:12px}
+[data-shop-dashboard] .dashboard-section .eyebrow{display:none}
+.owner-simple-form .auth-intro p,.owner-simple-form .auth-subtitle{font-size:15px;line-height:1.6}.owner-simple-form .auth-intro h1{font-size:clamp(26px,4vw,38px);line-height:1.4}
+.owner-simple-form .auth-field label,.owner-simple-form .shop-form label{font-size:15px;line-height:1.6}.owner-simple-form .auth-field small{font-size:13px}.owner-simple-form .auth-primary{min-height:52px;font-size:16px}
+.easy-products .easy-intro{padding:16px 0;background:none;border-radius:0;margin-top:8px}.easy-products .easy-intro h1{font-size:28px}.easy-products .easy-intro ol{gap:8px}.easy-products .easy-intro li{font-size:13px;padding:7px 11px;background:#f1edf8}.easy-products .easy-intro li[aria-current=step]{background:#6042a6;color:#fff}
+.easy-products .easy-choose{padding:20px;text-align:center}.easy-products .easy-choose .button{font-size:17px;min-height:58px;justify-content:center}.easy-products .easy-choose p{font-size:14px;margin:12px 0 0}
+.easy-products .easy-card label{font-size:16px}.easy-products .easy-card input:not([type=file]){font-size:17px;min-height:48px}.easy-products .easy-footer .button,.easy-products [data-publish]{min-height:52px;font-size:16px}.easy-products .easy-feedback:empty{display:none}.easy-products [data-entry-progress]{font-size:15px;font-weight:600;margin:16px 0}
+.easy-products .easy-price-note{font-size:13px;margin:8px 0;color:#62566f}.easy-products .easy-help a{display:inline-flex;align-items:center;min-height:44px}
+.owner-more .shop-lookup{margin:0}.owner-account-note{font-size:14px;line-height:1.6;color:#62566f;margin-bottom:18px}
+@media(max-width:600px){.owner-heading{align-items:flex-start;gap:8px}.owner-help{font-size:12px;padding:6px}.owner-primary-actions{gap:10px}.owner-primary-actions a{padding:14px;gap:10px;min-height:86px}.owner-primary-actions strong{font-size:14px}.owner-primary-actions small{font-size:12px}.owner-primary-actions a>i{font-size:22px}[data-shop-dashboard] .dashboard-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.owner-simple-form.auth-main{display:block}.owner-simple-form .auth-intro{padding-bottom:16px}.owner-simple-form .auth-card{padding:20px}.easy-products .easy-intro h1{font-size:24px}.easy-products .easy-footer .button{width:100%}.easy-products .easy-review{padding:16px}}
+
+.owner-registration-intro h1{font-size:30px;line-height:1.5}.owner-registration-intro h1 small{font-size:20px;font-weight:500}.owner-registration-intro p{font-size:15px;line-height:1.7}
+
+[data-shop-dashboard] .dashboard-tabs a>span{background:transparent;border:0;padding:0;min-width:0;border-radius:0}.owner-primary-actions a:focus-visible{outline:3px solid #7350ac;outline-offset:3px}[data-shop-dashboard] .item-actions a,[data-shop-dashboard] .item-actions button{display:inline-flex;align-items:center;min-height:44px;padding:10px 12px;font-size:14px}
+
+.owner-language select{font:inherit;font-size:13px;min-height:44px;max-width:100px;padding:7px;border:1px solid #ddd6e8;border-radius:12px;background:#f7f4fc;color:#352848}.owner-language{display:inline-flex;align-items:center}.market-page .header-actions{gap:8px}
+
+.account-header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.auth-header{gap:12px;flex-wrap:wrap}
+
+.owner-edit-shop{display:inline-flex;align-items:center;gap:9px;min-height:44px;margin:0 0 18px;padding:8px 12px;border:1px solid #d8d1e4;border-radius:12px;color:#4e3978;background:#fff;font-size:14px}.owner-edit-shop:focus-visible{outline:2px solid #7350ac;outline-offset:3px}

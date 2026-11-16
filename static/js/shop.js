@@ -43,6 +43,7 @@
     const updatePrice = () => {
       const regular = Number(price.value) || 0;
       const percent = Math.min(100, Math.max(0, Number(discount.value) || 0));
+      if (!price.value) { preview.textContent = 'Ask shop for price'; return; }
       preview.textContent = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR'}).format(regular * (100 - percent) / 100);
     };
     [price, discount].forEach(input => input.addEventListener('input', updatePrice));
