@@ -1,0 +1,6 @@
+<li class="home-product-item"><a class="home-product-card" href="{{ product.get_absolute_url }}" data-product-content>
+  <span class="home-product-image">{% if product.image %}<img src="{{ product.image.url }}" alt="" width="300" height="300" loading="lazy">{% else %}<i class="fas fa-shopping-bag" aria-hidden="true"></i>{% endif %}{% if product.discount_percent and product.price != None %}<span class="home-product-discount">{{ product.discount_percent }}% off</span>{% endif %}</span>
+  <strong class="home-product-name" title="{{ product.name }}">{{ product.name }}</strong>
+  <span class="home-product-shop"><i class="fas fa-store" aria-hidden="true"></i><span title="{{ product.shop.company_name }}">{{ product.shop.company_name }}</span></span>
+  {% if product.price != None %}<span class="home-product-price">₹{{ product.sale_price|floatformat:2 }}{% if product.discount_percent %} <del>₹{{ product.price|floatformat:2 }}</del>{% endif %}</span>{% endif %}
+</a></li>

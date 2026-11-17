@@ -96,7 +96,7 @@
       const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         const text = walker.currentNode;
-        if (text.parentElement.closest('.brand, .auth-brand, .owner-heading h1, .social-profile h1, .social-profile-bio, .social-shop-body h2, .social-shop-bio, .product-detail-copy h1, .product-seller strong, .product-description, .shop-gallery figcaption, .category-selected, .category-suggestions, .shop-category-tags, .dashboard-product h3, .dashboard-offer h3, .shop-video-grid h3, .shop-video-grid p, .owner-account-note, .local-footer-brand a, .easy-cards, [data-review-list], select, .easy-intro .eyebrow, [data-feedback], [data-draft-status], .business-card, .notices, script, style')) continue;
+        if (text.parentElement.closest('[data-product-content], .brand, .auth-brand, .owner-heading h1, .social-profile h1, .social-profile-bio, .social-shop-body h2, .social-shop-bio, .product-detail-copy h1, .product-seller strong, .product-description, .shop-gallery figcaption, .category-selected, .category-suggestions, .shop-category-tags, .dashboard-product h3, .dashboard-offer h3, .shop-video-grid h3, .shop-video-grid p, .owner-account-note, .local-footer-brand a, .easy-cards, [data-review-list], select, .easy-intro .eyebrow, [data-feedback], [data-draft-status], .business-card, .notices, script, style')) continue;
         if (text.parentElement.closest('.product-card, .spotlight-card') && !text.parentElement.closest('.product-shop-link, .product-prices, .discount-badge, .sponsor-label, .spotlight-card .text-link')) continue;
         if (!originals.has(text)) originals.set(text, text.textContent);
         const source = originals.get(text), key = source.trim();
