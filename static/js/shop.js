@@ -1,4 +1,15 @@
 (() => {
+  document.querySelectorAll('.product-shop img, .seller-avatar img').forEach(image => {
+    const fallback = () => {
+      const badge = document.createElement('span');
+      badge.className = 'product-shop-monogram';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = (image.alt || 'Shop').trim().charAt(0).toUpperCase();
+      image.replaceWith(badge);
+    };
+    image.addEventListener('error', fallback, {once: true});
+    if (image.complete && !image.naturalWidth) fallback();
+  });
   document.querySelectorAll('input[type="file"][multiple]').forEach(input => {
     const count = document.createElement('p');
     count.className = 'upload-image-status';

@@ -9,6 +9,7 @@ from jobs import shop
 from jobs import simple_accounts
 from jobs import pilot_admin
 from jobs import ad_applications
+from jobs import member_updates
 from jobs import notifications
 from jobs import product_access
 from jobs import password_recovery
@@ -23,6 +24,14 @@ from django.contrib.sitemaps import views as sitemap_views
 from .seo import SITEMAPS, robots, sitemap_index
 
 urlpatterns = [
+    path('super-admin/announcements/', member_updates.announcements, name='admin_announcements'),
+    path('super-admin/announcements/<int:pk>/', member_updates.announcement_report, name='admin_announcement'),
+    path('notifications/announcements/<int:pk>/', member_updates.member_announcement, name='member_announcement'),
+    path('shop/product-insights/', member_updates.product_insights, name='product_insights'),
+    path('super-admin/shop-insights/', member_updates.shop_insights, name='shop_insights'),
+    path('super-admin/shop-insights/<int:pk>/', member_updates.admin_product_insights, name='admin_product_insights'),
+    path('super-admin/shop-conversations/', member_updates.conversations, name='admin_shop_conversations'),
+    path('super-admin/shop-conversations/<int:pk>/', member_updates.conversation_review, name='admin_shop_conversation'),
     path('', include('jobs.assigned_admin')),
     path('', include('jobs.admin_hierarchy')),
     path('robots.txt', robots, name='robots'),

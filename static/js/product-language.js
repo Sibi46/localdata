@@ -6,6 +6,13 @@
   const easy = document.querySelector('[data-easy-products]');
   const originalTitle = document.title;
   const tamil = {
+    'Product views':'பொருட்களைப் பார்த்தவர்கள்',
+    'Product photo unavailable':'பொருளின் படம் இல்லை',
+    'Total opens':'மொத்த பார்வைகள்',
+    'Members':'உறுப்பினர்கள்',
+    'My shop dashboard':'என் கடை முகப்பு',
+    'No products yet.':'இன்னும் பொருட்கள் இல்லை.',
+
     'Your product has been added to LOCALFROM.':'உங்கள் பொருள் LOCALFROM-இல் சேர்க்கப்பட்டது.',
     '{number} products have been added to LOCALFROM.':'{number} பொருட்கள் LOCALFROM-இல் சேர்க்கப்பட்டன.',
     'Edit this product':'இந்தப் பொருளைத் திருத்து', 'Manage products / delete':'பொருட்களை நிர்வகி / நீக்கு',

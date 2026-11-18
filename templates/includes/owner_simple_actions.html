@@ -1,4 +1,5 @@
 <header class="owner-heading"><div><p>My shop</p><h1>{{ company.company_name }}</h1></div><a class="owner-help" href="tel:+919361240355">Call for help</a></header>
 <nav class="owner-primary-actions" aria-label="Shop actions"><a class="owner-add-product" href="{% url 'product_easy_add' %}"><i class="fas fa-camera" aria-hidden="true"></i><span><strong>Add a product</strong><small>Choose a photo</small></span><span aria-hidden="true">+</span></a><a href="#products" data-dashboard-link><i class="fas fa-shopping-bag" aria-hidden="true"></i><span><strong>My products</strong><small>{{ product_count }}</small></span></a><a href="{{ company.get_absolute_url }}"><i class="fas fa-store" aria-hidden="true"></i><span><strong>View my shop</strong></span></a></nav>
 
+<a class="owner-edit-shop" href="{% url 'product_insights' %}">Product views &rarr;</a>
 <a class="owner-edit-shop" href="#my-profile" data-dashboard-link><i class="fas fa-pen" aria-hidden="true"></i> <span>Edit shop details</span></a>

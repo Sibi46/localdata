@@ -56,6 +56,8 @@ def owner_shop(request):
 
 def product_detail(request, pk):
     product = get_object_or_404(public_products().prefetch_related('images'), pk=pk)
+    from .member_updates import record_product_view
+    record_product_view(request, product)
     gallery = ([product.image] if product.image else []) + [item.image for item in product.images.all()]
     return render(request, 'shop/product_detail.html', {'product': product, 'gallery': gallery,
                   'related_products': public_products().filter(shop=product.shop).exclude(pk=product.pk)[:4]})

@@ -797,10 +797,14 @@ class UserNotification(models.Model):
     notif_type = models.CharField(max_length=10, choices=TYPES, default='info')
     link       = models.CharField(max_length=200, blank=True)
     is_read    = models.BooleanField(default=False)
+    opened_at = models.DateTimeField(null=True, blank=True)
+    announcement = models.ForeignKey('AdminAnnouncement', null=True, blank=True,
+                                     on_delete=models.CASCADE, related_name='notifications')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
+        constraints = [models.UniqueConstraint(fields=['user', 'announcement'], name='one_announcement_per_member')]
 
     def __str__(self):
         return self.title
@@ -1126,3 +1130,28 @@ class ShopVideo(models.Model):
 
     def __str__(self):
         return f'{self.title} — {self.shop.company_name}'
+
+
+class AdminAnnouncement(models.Model):
+    title = models.CharField(max_length=160)
+    message = models.TextField(max_length=2000)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    submission_id = models.UUIDField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ProductVisit(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='member_visits')
+    viewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_visits')
+    first_seen = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now_add=True)
+    view_count = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['product', 'viewer'], name='one_product_visit_per_member')]
+
+
+class ConversationAdminAccess(models.Model):
+    admin = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
+    accessed_at = models.DateTimeField(auto_now_add=True)

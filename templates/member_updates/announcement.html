@@ -1,0 +1,1 @@
+{% extends 'shop/base.html' %}{% block content %}<article class="updates-panel"><a href="{% url 'notifications' %}">All notifications</a><h1>{{ item.title }}</h1><p>{{ item.message|linebreaksbr }}</p><small>{{ item.created_at }}</small></article>{% endblock %}

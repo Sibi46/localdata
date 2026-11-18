@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Chat with {{ other.get_full_name|default:other.username }} - Local From{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/chat.css' %}">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/member-updates.css' %}?v=1"><link rel="stylesheet" href="{% static 'css/chat.css' %}">{% endblock %}
 
 {% block content %}
+<p class="chat-review-notice">Shop conversations may be reviewed by Local From superadmins for support and safety. <a href="/privacy/">Privacy policy</a></p>
 <div class="chat-layout">
 
   <!-- Left: conversation list sidebar -->
