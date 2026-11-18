@@ -154,6 +154,26 @@
       entry.photos.forEach((photo, position) => {
         const box = node('div', '', 'easy-photo'), img = node('img');
         img.src = imageURL(photo); img.alt = t('Product {number}, image {image}', {number: index + 1, image: position + 1}); box.append(img);
+        if (!busy && entry.status !== 'published') {
+          const crop = node('button', t('Crop / adjust'), 'easy-photo-crop');
+          crop.type = 'button';
+          crop.setAttribute('aria-label', `${t('Crop / adjust')} ${position + 1}`);
+          crop.onclick = () => {
+            const input = document.createElement('input');
+            input.type = 'file'; input.dataset.imageCrop = 'product';
+            const transfer = new DataTransfer(); transfer.items.add(photo); input.files = transfer.files;
+            input.onchange = async () => {
+              busy = true;
+              try {
+                entry.photos[position] = await preparePhoto(input.files[0]);
+                await save();
+              } catch (error) { say(error.message, true); }
+              finally { busy = false; render(); }
+            };
+            document.dispatchEvent(new CustomEvent('localfrom:cropimage', {detail: {input, index: 0}}));
+          };
+          box.append(crop);
+        }
         if (!busy && entry.status !== 'published' && entry.photos.length > 1) {
           const remove = node('button', '×'); remove.type = 'button';
           remove.setAttribute('aria-label', t('Remove image {number}', {number: position + 1}));

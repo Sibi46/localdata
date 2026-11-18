@@ -1,6 +1,6 @@
 {% extends 'shop/base.html' %}{% load static %}
 {% block title %}Add products | {{ company.company_name }}{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/easy-products.css' %}?v=4">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/easy-products.css' %}?v=5">{% endblock %}
 {% block content %}
 <section class="easy-products" data-easy-products data-shop="{{ company.pk }}" data-owner="{{ request.user.pk }}" data-publish-url="{% url 'product_easy_publish' %}" data-remaining="{{ remaining }}">
   <a class="text-link" href="/employer/dashboard/#products">My products</a>
@@ -16,4 +16,4 @@
   <p class="easy-help">Need help? <a href="tel:+919361240355">Call LOCALFROM: 9361240355</a></p>
 </section>
 {% endblock %}
-{% block extra_js %}<script src="{% static 'js/product-voice.js' %}?v=1" defer></script><script src="{% static 'js/easy-products.js' %}?v=8" defer></script>{% endblock %}
+{% block extra_js %}<script src="{% static 'js/product-voice.js' %}?v=1" defer></script><script src="{% static 'js/easy-products.js' %}?v=9" defer></script>{% endblock %}

@@ -6,6 +6,7 @@
   const easy = document.querySelector('[data-easy-products]');
   const originalTitle = document.title;
   const tamil = {
+    'Crop / adjust':'படத்தை வெட்டு / சரிசெய்',
     'Product views':'பொருட்களைப் பார்த்தவர்கள்',
     'Product photo unavailable':'பொருளின் படம் இல்லை',
     'Total opens':'மொத்த பார்வைகள்',
