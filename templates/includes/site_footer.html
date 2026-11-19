@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{% static 'css/site-footer.css' %}?v=2">
 <footer class="local-footer shell">
   <div class="local-footer-top">
-    <div class="local-footer-brand"><a href="/" aria-label="Local From home"><img src="{% static 'images/logo.png' %}" alt="" width="38" height="34"><span>Local<span>From</span><b>.</b></span></a><p>Good things, closer to home.</p><span class="footer-town"><span aria-hidden="true">&#9679;</span> Starting in Vandavasi</span></div>
+    <div class="local-footer-brand"><a href="/" aria-label="Local From home">{% include 'includes/brand_logo.html' %}</a><p>Good things, closer to home.</p><span class="footer-town"><span aria-hidden="true">&#9679;</span> Starting in Vandavasi</span></div>
     <nav class="local-footer-links" aria-label="Footer navigation"><span>Explore Local From</span><a href="/about/">About us</a><a href="/messages/">Messages</a><a href="{{ local_from_instagram_url }}" target="_blank" rel="noopener noreferrer">Instagram &nearr;</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms &amp; conditions</a></nav>
     <div class="local-footer-contact">{% include 'includes/site_contact.html' %}</div>
   </div>
