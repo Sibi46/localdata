@@ -1,0 +1,12 @@
+{% extends 'pilot_admin/base.html' %}
+{% block admin_content %}<section class="updates-panel"><h2>Site errors</h2>
+<p>Unexpected server failures and OTP service failures appear here after this update. Repeated errors are grouped. A resolved error reopens if it happens again.</p>
+<p>Passwords, OTPs, phone numbers, query strings and message contents are not stored here. Browser connection failures and Nginx timeouts that do not reach Django may not appear. If the database is unavailable, incidents fall back to the service log.</p>
+<nav><a href="{% url 'admin_errors' %}">Unresolved</a><a href="?status=all">All errors</a></nav>
+{% for item in page %}<article><h3>{{ item.get_kind_display }} · {{ item.exception_type }}</h3>
+<p><strong>{{ item.count }} occurrence{{ item.count|pluralize }}</strong> · {{ item.method }} · {{ item.route }} · HTTP {{ item.status_code }}</p>
+<p>First: {{ item.first_seen|date:'d M Y, H:i:s T' }}<br>Latest: {{ item.last_seen|date:'d M Y, H:i:s T' }}</p>
+{% if item.resolved_at %}<p>Resolved {{ item.resolved_at|date:'d M Y, H:i:s T' }}</p>{% else %}<form method="post" action="{% url 'admin_error_resolve' item.pk %}">{% csrf_token %}<input type="hidden" name="count" value="{{ item.count }}"><button type="submit" class="button button-white">Mark resolved</button></form>{% endif %}</article>
+{% empty %}<p>No {% if not show_all %}unresolved {% endif %}errors recorded.</p>{% endfor %}
+{% if page.has_other_pages %}<nav>{% if page.has_previous %}<a href="?status={% if show_all %}all{% endif %}&amp;page={{ page.previous_page_number }}">Previous</a>{% endif %}<span>{{ page.number }} / {{ page.paginator.num_pages }}</span>{% if page.has_next %}<a href="?status={% if show_all %}all{% endif %}&amp;page={{ page.next_page_number }}">Next</a>{% endif %}</nav>{% endif %}
+</section>{% endblock %}

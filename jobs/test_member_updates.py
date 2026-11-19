@@ -25,6 +25,7 @@ class MemberUpdateTests(TestCase):
         self.client.force_login(self.admin)
         return self.client.post(reverse('admin_announcements'), {
             'title': 'Local update', 'message': '<script>Hello</script>',
+            'audience': 'all',
             'submission_id': str(token or uuid.uuid4())})
 
     def test_send_audience_and_duplicate_submission(self):
@@ -122,4 +123,37 @@ class MemberUpdateTests(TestCase):
             'title': 'x'*161, 'message': 'Update', 'submission_id': str(uuid.uuid4())})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(AdminAnnouncement.objects.exists())
+        self.assertFalse(UserNotification.objects.exists())
+
+    def test_specific_shop_only_gets_notice_and_duplicate_does_not_broadcast(self):
+        self.client.force_login(self.admin)
+        data = {'audience': 'shop', 'shop': self.shop.pk, 'title': 'For your shop',
+                'message': 'Please update your products', 'submission_id': str(uuid.uuid4())}
+        response = self.client.post(reverse('admin_announcements'), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(list(UserNotification.objects.values_list('user_id', flat=True)), [self.owner.pk])
+        self.assertContains(self.client.get(response.url), self.shop.company_name)
+        data['audience'] = 'all'
+        self.client.post(reverse('admin_announcements'), data)
+        self.assertEqual(UserNotification.objects.count(), 1)
+        self.client.force_login(self.member)
+        self.assertEqual(self.client.get(reverse('member_announcement', args=[AdminAnnouncement.objects.get().pk])).status_code, 404)
+
+    def test_missing_shop_or_audience_cannot_broadcast(self):
+        self.client.force_login(self.admin)
+        for extra in [{'audience': 'shop'}, {}, {'audience': 'shop', 'shop': 999999}]:
+            response = self.client.post(reverse('admin_announcements'), {
+                'title': 'Update', 'message': 'Text', 'submission_id': str(uuid.uuid4()), **extra})
+            self.assertEqual(response.status_code, 200)
+        self.assertFalse(UserNotification.objects.exists())
+        self.assertFalse(AdminAnnouncement.objects.exists())
+
+    def test_inactive_shop_is_not_a_valid_recipient(self):
+        self.owner.is_active = False
+        self.owner.save(update_fields=['is_active'])
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse('admin_announcements'), {
+            'audience': 'shop', 'shop': self.shop.pk, 'title': 'Update',
+            'message': 'Text', 'submission_id': str(uuid.uuid4())})
+        self.assertEqual(response.status_code, 200)
         self.assertFalse(UserNotification.objects.exists())

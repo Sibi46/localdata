@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.cache import caches
 from django.utils.crypto import salted_hmac
+from .error_monitor import record as record_incident
 
 TTL = 600
 PHONE = re.compile(r'[6-9][0-9]{9}')
@@ -96,6 +97,7 @@ def issue(request, phone, purpose):
                 raise OTPError('Too many OTP requests. Please try again in 10 minutes.')
         code = str(secrets.randbelow(900000) + 100000)
         if not demo_enabled(purpose) and not deliver_code(phone, code):
+            record_incident(request, 'otp_delivery', status=503)
             raise OTPError('OTP delivery is unavailable. Please try again later.')
         nonce = secrets.token_urlsafe(32)
         record = {'phone': phone, 'purpose': purpose, 'created': time.time(),
@@ -112,7 +114,8 @@ def issue(request, phone, purpose):
                 **({'code': code} if demo_enabled(purpose) else {})}
     except OTPError:
         raise
-    except Exception:
+    except Exception as error:
+        record_incident(request, 'otp_issue', error, status=503)
         raise OTPError('OTP verification is temporarily unavailable.') from None
 
 
@@ -152,7 +155,8 @@ def verify(request, phone, purpose, code):
         return True
     except OTPError:
         raise
-    except Exception:
+    except Exception as error:
+        record_incident(request, 'otp_verify', error, status=503)
         raise OTPError('OTP verification is temporarily unavailable.') from None
 
 
@@ -166,5 +170,6 @@ def consume(request, phone, purpose):
         request.session.pop('account_otp_' + purpose, None)
     except OTPError:
         raise
-    except Exception:
+    except Exception as error:
+        record_incident(request, 'otp_consume', error, status=503)
         raise OTPError('OTP verification is temporarily unavailable.') from None

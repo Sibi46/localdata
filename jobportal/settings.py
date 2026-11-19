@@ -148,6 +148,7 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
+    'jobs.error_monitor.ErrorMonitorMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'jobportal.seo.SEOMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -175,6 +176,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'jobs.context_processors.site_ads',
+                'jobs.error_monitor.indicator',
                 'jobportal.context_processors.site_branding',
                 'jobportal.seo.seo_context',
             ],

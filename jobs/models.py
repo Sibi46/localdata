@@ -1155,3 +1155,20 @@ class ConversationAdminAccess(models.Model):
     admin = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     accessed_at = models.DateTimeField(auto_now_add=True)
+
+
+class SiteIncident(models.Model):
+    KINDS = [('server_exception', 'Server error'), ('server_response', 'Server response failure'),
+             ('otp_delivery', 'OTP delivery unavailable'), ('otp_issue', 'OTP request failure'),
+             ('otp_verify', 'OTP verification service failure'), ('otp_consume', 'Account verification service failure')]
+    fingerprint = models.CharField(max_length=64, unique=True)
+    kind = models.CharField(max_length=30, choices=KINDS)
+    route = models.CharField(max_length=160)
+    method = models.CharField(max_length=10)
+    exception_type = models.CharField(max_length=80)
+    status_code = models.PositiveSmallIntegerField(default=500)
+    count = models.PositiveIntegerField(default=1)
+    first_seen = models.DateTimeField()
+    last_seen = models.DateTimeField(db_index=True)
+    resolved_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    resolved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)

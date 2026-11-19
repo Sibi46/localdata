@@ -16,10 +16,31 @@ from .models import (AdminAnnouncement, CompanyProfile, Conversation,
 from .pilot_admin import private
 
 
+class ShopRecipientField(forms.ModelChoiceField):
+    def label_from_instance(self, shop):
+        return f'{shop.company_name} - {shop.user.city or shop.user.pincode or "Local shop"} (#{shop.pk})'
+
+
 class AnnouncementForm(forms.Form):
+    audience = forms.ChoiceField(label='Send to', choices=[
+        ('shop', 'One shop owner'), ('all', 'All registered members and shop owners')], initial='shop')
+    shop = ShopRecipientField(label='Choose shop', queryset=CompanyProfile.objects.none(), required=False,
+                              empty_label='Choose a shop', help_text='Required for One shop owner. Ignored for All registered members.')
     title = forms.CharField(max_length=160)
     message = forms.CharField(max_length=2000, widget=forms.Textarea(attrs={'rows': 5}))
     submission_id = forms.UUIDField(widget=forms.HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['shop'].queryset = CompanyProfile.objects.filter(
+            user__is_active=True, user__is_staff=False, user__is_superuser=False,
+            user__admin_role='').exclude(company_name='').select_related('user').order_by('company_name', 'pk')
+
+    def clean(self):
+        data = super().clean()
+        if data.get('audience') == 'shop' and not data.get('shop'):
+            self.add_error('shop', 'Choose the shop owner who should receive this notification.')
+        return data
 
 
 @private
@@ -34,8 +55,11 @@ def announcements(request):
                     'author': request.user, 'title': form.cleaned_data['title'],
                     'message': form.cleaned_data['message']})
             if created:
-                members = User.objects.filter(is_active=True, is_staff=False,
-                    is_superuser=False, admin_role='').values_list('pk', flat=True).iterator(chunk_size=500)
+                recipients = User.objects.filter(is_active=True, is_staff=False,
+                    is_superuser=False, admin_role='')
+                if form.cleaned_data['audience'] == 'shop':
+                    recipients = recipients.filter(pk=form.cleaned_data['shop'].user_id)
+                members = recipients.values_list('pk', flat=True).iterator(chunk_size=500)
                 while batch := list(islice(members, 500)):
                     UserNotification.objects.bulk_create([UserNotification(
                         user_id=pk, title=item.title, message=item.message,
@@ -52,7 +76,7 @@ def announcements(request):
 @require_GET
 def announcement_report(request, pk):
     item = get_object_or_404(AdminAnnouncement, pk=pk)
-    records = item.notifications.select_related('user').order_by('user_id')
+    records = item.notifications.select_related('user', 'user__company').order_by('user_id')
     sent = records.count()
     opened = records.filter(opened_at__isnull=False).count()
     return render(request, 'member_updates/announcement_report.html', {'item': item,

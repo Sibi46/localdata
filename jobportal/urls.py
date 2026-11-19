@@ -9,6 +9,7 @@ from jobs import shop
 from jobs import simple_accounts
 from jobs import pilot_admin
 from jobs import ad_applications
+from jobs import error_monitor
 from jobs import member_updates
 from jobs import notifications
 from jobs import product_access
@@ -24,6 +25,9 @@ from django.contrib.sitemaps import views as sitemap_views
 from .seo import SITEMAPS, robots, sitemap_index
 
 urlpatterns = [
+    path('super-admin/errors/', error_monitor.dashboard, name='admin_errors'),
+    path('super-admin/errors/feed/', error_monitor.feed, name='admin_error_feed'),
+    path('super-admin/errors/<int:pk>/resolve/', error_monitor.resolve, name='admin_error_resolve'),
     path('super-admin/announcements/', member_updates.announcements, name='admin_announcements'),
     path('super-admin/announcements/<int:pk>/', member_updates.announcement_report, name='admin_announcement'),
     path('notifications/announcements/<int:pk>/', member_updates.member_announcement, name='member_announcement'),
