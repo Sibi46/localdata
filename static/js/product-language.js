@@ -6,6 +6,12 @@
   const easy = document.querySelector('[data-easy-products]');
   const originalTitle = document.title;
   const tamil = {
+    'Forgot your password?':'கடவுச்சொல் மறந்துவிட்டதா?',
+    'Contact Local From support for help getting back into your account.':'உங்கள் கணக்கை மீட்க Local From உதவிக் குழுவைத் தொடர்புகொள்ளுங்கள்.',
+    'Contact admin on WhatsApp':'WhatsApp மூலம் நிர்வாகியைத் தொடர்புகொள்ளுங்கள்',
+    'The admin will verify account ownership before helping you reset your password.':'கடவுச்சொல்லை மாற்ற உதவுவதற்கு முன் கணக்கு உங்களுடையதா என்பதை நிர்வாகி சரிபார்ப்பார்.',
+    'Admin WhatsApp:':'நிர்வாகியின் WhatsApp:',
+    'Do not share your password or OTP on WhatsApp.':'உங்கள் கடவுச்சொல் அல்லது OTP-ஐ WhatsApp-ல் பகிர வேண்டாம்.',
     'Crop / adjust':'படத்தை வெட்டு / சரிசெய்',
     'Product views':'பொருட்களைப் பார்த்தவர்கள்',
     'Product photo unavailable':'பொருளின் படம் இல்லை',

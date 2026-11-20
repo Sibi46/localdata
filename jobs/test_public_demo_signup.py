@@ -215,8 +215,9 @@ class PublicDemoSignupTests(TestCase):
         for method, data in (('get', {}), ('post', {'phone': self.phone}),
                              ('post', {'otp': '123456'}), ('post', {'password': self.password})):
             response = getattr(self.client, method)('/forgot-password/', data)
-            self.assertContains(response, 'Password recovery is temporarily unavailable', status_code=503)
-            self.assertNotContains(response, '<form', status_code=503)
+            self.assertContains(response, 'Contact admin on WhatsApp')
+            self.assertContains(response, 'https://wa.me/919361240355?')
+            self.assertNotContains(response, '<form')
         user.refresh_from_db()
         self.assertTrue(user.check_password(self.password))
         self.delivery.assert_not_called()

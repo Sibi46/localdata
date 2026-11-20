@@ -39,7 +39,7 @@ def recover(request):
     if getattr(settings, 'PUBLIC_DEMO_SIGNUP', False):
         request.session.pop('password_recovery', None)
         request.session.pop('account_otp_reset', None)
-        return render(request, 'accounts/recovery_unavailable.html', status=503)
+        return render(request, 'accounts/recovery_unavailable.html')
     pending=request.session.get('password_recovery')
     if pending and not demo_enabled('reset'):
         pending.pop('code', None)

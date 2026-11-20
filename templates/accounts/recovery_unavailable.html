@@ -1,14 +1,17 @@
 {% extends 'accounts/base.html' %}
-{% block title %}Password recovery unavailable{% endblock %}
+{% block title %}Password recovery help{% endblock %}
 {% block content %}
 <div class="auth-intro">
   <span class="auth-kicker">LOCALFROM</span>
-  <h1>Sign in with your password.</h1>
-  <p>Keep the password you created when signing up.</p>
+  <h1>Forgot your password?</h1>
+  <p>Contact Local From support for help getting back into your account.</p>
 </div>
 <section class="auth-card">
-  <h2>Password recovery is temporarily unavailable</h2>
-  <p class="auth-subtitle">Demo signup codes do not verify phone ownership and cannot reset an existing account's password.</p>
-  <a class="auth-primary" href="{% url 'login' %}">Back to sign in</a>
+  <h2>Contact admin on WhatsApp</h2>
+  <p class="auth-subtitle">The admin will verify account ownership before helping you reset your password.</p>
+  <p><strong>Admin WhatsApp:</strong> <a href="tel:+919361240355" data-product-content>+91 93612 40355</a></p>
+  <a class="auth-primary" href="https://wa.me/919361240355?text=Hello%20Local%20From%2C%20I%20need%20help%20recovering%20my%20account." target="_blank" rel="noopener noreferrer">Contact admin on WhatsApp</a>
+  <p class="auth-subtitle">Do not share your password or OTP on WhatsApp.</p>
+  <a href="{% url 'login' %}">Back to sign in</a>
 </section>
 {% endblock %}
