@@ -232,3 +232,6 @@ urlpatterns = [
     path('super-admin/offers/<int:pk>/approve/',      views.offer_approve,                name='offer_approve'),
     path('super-admin/offers/<int:pk>/delete/',       views.offer_delete,                 name='offer_delete'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+handler404 = "jobportal.error_views.not_found"
