@@ -864,7 +864,7 @@ def offer_post(request):
             contact_phone = phone,
             link_url      = wa_url,
             is_flash      = request.POST.get('is_flash') == '1',
-            is_active     = False,  # pending admin approval
+            is_active     = True,  # Owner offers publish immediately.
         )
         valid_until = request.POST.get('valid_until', '').strip()
         if valid_until:

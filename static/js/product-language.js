@@ -6,6 +6,10 @@
   const easy = document.querySelector('[data-easy-products]');
   const originalTitle = document.title;
   const tamil = {
+    'Offer published. Customers can see it now.':'சலுகை வெளியிடப்பட்டது. வாடிக்கையாளர்கள் இப்போது பார்க்கலாம்.',
+    'Offers appear immediately after you publish.':'வெளியிட்டவுடன் சலுகைகள் வாடிக்கையாளர்களுக்குத் தெரியும்.',
+    'Share a shop offer. It appears publicly as soon as you publish.':'கடைச் சலுகையைப் பகிருங்கள். வெளியிட்டவுடன் அனைவருக்கும் தெரியும்.',
+    'Publish offer':'சலுகையை வெளியிடு',
     'Forgot your password?':'கடவுச்சொல் மறந்துவிட்டதா?',
     'Contact Local From support for help getting back into your account.':'உங்கள் கணக்கை மீட்க Local From உதவிக் குழுவைத் தொடர்புகொள்ளுங்கள்.',
     'Contact admin on WhatsApp':'WhatsApp மூலம் நிர்வாகியைத் தொடர்புகொள்ளுங்கள்',

@@ -172,7 +172,7 @@ a{text-decoration:none;color:inherit}
     <div class="services-grid">
       <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="fas fa-store"></i></div><h3 class="service-name">Local shops</h3><p class="service-desc">Explore business profiles, shop details and updates. Follow shops you like and connect through private messages.</p></article>
       <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="fas fa-shopping-bag"></i></div><h3 class="service-name">Products &amp; offers</h3><p class="service-desc">Browse product photos, prices and discounts from local shops. Contact the shop for availability and purchase details.</p></article>
-      <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="far fa-newspaper"></i></div><h3 class="service-name">Local News</h3><p class="service-desc">Read updates from your area. Signed-in members can share news for admin review before publication.</p></article>
+
       <article class="service-card"><div class="service-icon" aria-hidden="true"><i class="fas fa-car"></i></div><h3 class="service-name">Local Ride</h3><p class="service-desc">Share a planned journey or request to join someone travelling the same way. Connect and discuss the journey before making arrangements.</p></article>
     </div>
   </div>
@@ -185,7 +185,7 @@ a{text-decoration:none;color:inherit}
       <h2 class="ab-h2">Let your neighbourhood discover your shop.</h2>
       <p class="ab-p">Create a personal account, then register your business using the same account. Add your shop logo, banner, products and offers, and manage your shop from your dashboard.</p>
       <p class="ab-p">Your first 20 products are free, with up to 2 images per product. Need more product slots? Contact the LOCALFROM admin to request a higher allowance.</p>
-      <p class="ab-p">You can also apply to advertise your business. Ad applications and submitted offers go through admin review.</p>
+      <p class="ab-p">You can also apply to advertise your business. Ad applications go through admin review. Shop offers publish immediately.</p>
       <a href="{% if request.user.is_authenticated %}{% url 'business_create' %}{% else %}{% url 'register' %}{% endif %}" class="cta-btn" style="margin-top:20px;background:#b49aff;color:#17171f">Register your shop &rarr;</a>
     </div>
     <div class="platform-card pc-blue">

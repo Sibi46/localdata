@@ -2,7 +2,7 @@
   <a href="/"><i class="fas fa-home" aria-hidden="true"></i><span>Home</span></a>
   <a href="/businesses/"><i class="fas fa-store" aria-hidden="true"></i><span>Shops</span></a>
   <a href="/advertise/"><i class="fas fa-tags" aria-hidden="true"></i><span>Offers</span></a>
-  <a href="/news/"><i class="fas fa-newspaper" aria-hidden="true"></i><span>News</span></a>
+
   <a href="/messages/"><i class="fas fa-comment-dots" aria-hidden="true"></i><span>Messages</span></a>
   <a href="{% if request.user.is_authenticated %}/dashboard/{% else %}/register/{% endif %}"><i class="fas fa-user-circle" aria-hidden="true"></i><span>{% if request.user.is_authenticated %}My Account{% else %}Create account{% endif %}</span></a>
 </nav>

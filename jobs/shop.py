@@ -143,9 +143,9 @@ def offer_form(request, pk=None):
         offer = form.save(commit=False)
         offer.owner = request.user
         offer.business_name = shop.company_name
-        offer.is_active = False  # Keep the existing offer moderation policy.
+        offer.is_active = True
         offer.save()
-        messages.success(request, 'Offer sent for review. It will appear publicly after approval.')
+        messages.success(request, 'Offer published. Customers can see it now.')
         return redirect('/employer/dashboard/#offers')
     return render(request, 'shop/manage_form.html', {'company': shop, 'form': form, 'kind': 'offer', 'editing': bool(pk), 'form_title': 'Edit offer' if pk else 'Create a shop offer'})
 

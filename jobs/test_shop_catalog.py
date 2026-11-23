@@ -118,7 +118,7 @@ class ShopCatalogTests(TemporaryMediaMixin, TestCase):
         for text in ['Another shop offer', 'Pending offer', 'Expired offer', 'Hidden tour']:
             self.assertNotContains(response, text)
 
-    def test_upload_photos_videos_and_offer_moderation(self):
+    def test_upload_photos_videos_and_immediate_offer_publication(self):
         self.client.force_login(self.owner)
         response = self.client.post(reverse('gallery_upload'), {'gallery_images': [image_file('one.png'), image_file('two.png')], 'caption': 'Shop entrance'})
         self.assertEqual(response.status_code, 302)
@@ -131,7 +131,7 @@ class ShopCatalogTests(TemporaryMediaMixin, TestCase):
         offer = LocalOffer.objects.get()
         self.assertEqual(offer.owner, self.owner)
         self.assertEqual(offer.business_name, self.shop.company_name)
-        self.assertFalse(offer.is_active)
+        self.assertTrue(offer.is_active)
 
     def test_discounted_price_sort_and_selected_product_pagination(self):
         self.client.force_login(self.owner)
@@ -143,6 +143,28 @@ class ShopCatalogTests(TemporaryMediaMixin, TestCase):
         response = self.client.get(self.shop.get_absolute_url() + f'?product={older.pk}')
         self.assertContains(response, 'Oldest coffee')
         self.assertEqual(response.context['products'].number, 2)
+
+    def test_offer_edit_and_legacy_post_publish_immediately(self):
+        self.client.force_login(self.owner)
+        existing = LocalOffer.objects.create(owner=self.owner, title='Old offer', discount_text='5% off', is_active=False)
+        response = self.client.post(reverse('shop_offer_edit', args=[existing.pk]), {
+            'title': 'Updated offer', 'discount_text': '10% off', 'category': 'shop', 'contact_phone': '9876543210'})
+        self.assertEqual(response.status_code, 302)
+        existing.refresh_from_db()
+        self.assertTrue(existing.is_active)
+        self.assertContains(self.client.get(self.shop.get_absolute_url()), 'Updated offer')
+        response = self.client.post('/offers/post/', {'business_name': self.shop.company_name,
+            'title': 'Direct offer', 'discount_text': '15% off', 'category': 'shop', 'contact_phone': '9876543210'})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(LocalOffer.objects.get(title='Direct offer').is_active)
+
+    def test_local_news_removed_from_home_and_feature_options(self):
+        self.client.force_login(self.owner)
+        response = self.client.get('/')
+        self.assertNotContains(response, 'href="/news/"')
+        from .features import FEATURES, search_features
+        self.assertFalse(any(item['url'] == '/news/' for item in FEATURES))
+        self.assertEqual(search_features('news'), [])
 
     def test_anonymous_management_requires_login(self):
         for name in ['product_add', 'shop_video_add', 'shop_offer_add']:
