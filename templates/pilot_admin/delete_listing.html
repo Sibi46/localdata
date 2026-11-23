@@ -1,0 +1,7 @@
+{% extends 'pilot_admin/base.html' %}{% block title %}Delete {{ kind }} | Superadmin{% endblock %}
+{% block admin_content %}<section class="updates-panel"><h2>Delete {{ kind }}?</h2>
+{% if kind == 'product' %}<h3>{{ product.name }}</h3><p>Shop: {{ company.company_name }}</p><p>This permanently removes this product listing, its gallery records and product view counts. The shop and its other products stay.</p>
+{% else %}<h3>{{ company.company_name }}</h3><p>This permanently removes the shop listing, all its products, videos, reviews and followers, plus the owner's shop offers and gallery records.</p><p><strong>{{ product_count }} products · {{ video_count }} videos · {{ offer_count }} offers · {{ photo_count }} gallery photos</strong></p><p>The owner's personal account, conversations and separate advertising records stay. The owner can create a new shop later.</p>{% endif %}
+<p>This cannot be undone here. Uploaded files and backups are not purged by this action.</p>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit" class="button button-white" style="border-color:#b42318;color:#b42318">Permanently delete {{ kind }}</button></form>
+<p><a href="{% url 'pilot_admin_shop' company.pk %}">Cancel and return to shop</a></p></section>{% endblock %}
