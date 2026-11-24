@@ -1,0 +1,13 @@
+{% extends 'shop/base.html' %}{% load static %}{% block title %}Share {{ company.company_name }} | Local From{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/shop-share.css' %}?v=1">{% endblock %}
+{% block content %}<section class="shop-share" data-shop-share data-title="{{ company.company_name }}" data-url="{{ share_url }}">
+<a href="{% url 'employer_dashboard' %}">&larr; My shop dashboard</a>
+<h1>Share your shop</h1><h2 data-product-content>{{ company.company_name }}</h2>
+<p>Send your shop link to customers or print this QR code for your counter.</p>
+<div class="shop-share-actions"><button class="button button-green" type="button" data-native-share hidden>Share shop</button><a class="button button-white" href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer">Share on WhatsApp</a></div>
+<label for="shop-share-link">Your shop link</label><div class="shop-share-link"><input id="shop-share-link" type="url" readonly value="{{ share_url }}" data-product-content><button class="button button-white" type="button" data-copy-shop>Copy link</button></div>
+<p data-share-status role="status" aria-live="polite"></p>
+<figure><img src="{% url 'shop_share_qr' %}" width="330" height="330" alt="QR code for {{ company.company_name }}"><figcaption>Scan to open this shop on Local From.</figcaption></figure>
+<a class="button button-green" href="{% url 'shop_share_qr' %}?download=1" download="localfrom-{{ company.company_id|slugify }}-qr.png">Download QR code</a>
+<p class="shop-share-note">PNG image. Each shop has its own QR code. Customers may be asked to sign in to view the shop.</p>
+</section>{% endblock %}{% block extra_js %}<script src="{% static 'js/shop-share.js' %}?v=1" defer></script>{% endblock %}

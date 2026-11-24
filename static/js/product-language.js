@@ -6,6 +6,18 @@
   const easy = document.querySelector('[data-easy-products]');
   const originalTitle = document.title;
   const tamil = {
+    'Share shop & QR code':'கடையைப் பகிர் & QR குறியீடு',
+    'Share your shop':'உங்கள் கடையைப் பகிருங்கள்',
+    'Share shop':'கடையைப் பகிர்',
+    'Share on WhatsApp':'WhatsApp-ல் பகிர்',
+    'Your shop link':'உங்கள் கடையின் இணைப்பு',
+    'Copy link':'இணைப்பை நகலெடு',
+    'Download QR code':'QR குறியீட்டைப் பதிவிறக்கு',
+    'Shop link copied.':'கடை இணைப்பு நகலெடுக்கப்பட்டது.',
+    'Select and copy your shop link.':'உங்கள் கடை இணைப்பைத் தேர்ந்தெடுத்து நகலெடுக்கவும்.',
+    'Scan to open this shop on Local From.':'Local From-ல் இந்தக் கடையைத் திறக்க ஸ்கேன் செய்யுங்கள்.',
+    'Send your shop link to customers or print this QR code for your counter.':'கடை இணைப்பை வாடிக்கையாளர்களுக்கு அனுப்புங்கள் அல்லது இந்த QR குறியீட்டை அச்சிட்டுக் கடையில் வையுங்கள்.',
+    'Use WhatsApp or copy the shop link below.':'WhatsApp-ல் பகிருங்கள் அல்லது கீழே உள்ள கடை இணைப்பை நகலெடுங்கள்.',
     'Offer published. Customers can see it now.':'சலுகை வெளியிடப்பட்டது. வாடிக்கையாளர்கள் இப்போது பார்க்கலாம்.',
     'Offers appear immediately after you publish.':'வெளியிட்டவுடன் சலுகைகள் வாடிக்கையாளர்களுக்குத் தெரியும்.',
     'Share a shop offer. It appears publicly as soon as you publish.':'கடைச் சலுகையைப் பகிருங்கள். வெளியிட்டவுடன் அனைவருக்கும் தெரியும்.',
